@@ -5,34 +5,25 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import java.net.URL;
 
-import java.io.IOException;
-
-/**
- * JavaFX App
- */
 public class App extends Application {
-
-    private static Scene scene;
-
     @Override
-    public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("primary"), 640, 480);
-        stage.setScene(scene);
+    public void start(Stage stage) throws Exception {
+        //Pruebas de uso
+//        URL resource = getClass().getResource("/com/mycompany/restaurante/fxml/PedidoMeseroPantalla.fxml");
+        URL resource = getClass().getResource("/com/mycompany/restaurante/fxml/CobrarMesaPantalla.fxml");
+
+        if (resource == null) {
+            throw new RuntimeException("No se encuentra el FXML. Revisa que esté en src/main/resources/com/mycompany/restaurante/");
+        }
+        Parent root = FXMLLoader.load(resource);
+        stage.setScene(new Scene(root));
+        stage.setTitle("Restaurante - Pedido Mesero");
         stage.show();
     }
 
-    static void setRoot(String fxml) throws IOException {
-        scene.setRoot(loadFXML(fxml));
-    }
-
-    private static Parent loadFXML(String fxml) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
-        return fxmlLoader.load();
-    }
-
     public static void main(String[] args) {
-        launch();
+        launch(args);
     }
-
 }

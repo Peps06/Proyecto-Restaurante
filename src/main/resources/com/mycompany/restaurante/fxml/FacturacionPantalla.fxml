@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="420.0" prefWidth="350.0" spacing="20.0" style="-fx-background-color: #F5EFE6;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.restaurante.Controlador.FacturacionController">
+    <padding>
+        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+    </padding>
+
+    <!-- Título -->
+    <Label style="-fx-font-weight: bold; -fx-text-fill: #1a1e2e; -fx-font-family: mont;" text="Datos de Facturación">
+        <font>
+            <Font size="23.0" />
+        </font>
+    </Label>
+   <VBox prefHeight="260.0" prefWidth="200.0" spacing="5.0">
+      <children>
+   
+           <!-- Fila 0: Nombre o Razón Social -->
+           <Label maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="20.0" prefWidth="260.0" style="-fx-font-family: &quot;Montserrat&quot;;" text="Nombre o Razón Social:">
+            <font>
+               <Font name="Candara" size="12.0" />
+            </font>
+         </Label>
+           <TextField fx:id="fieldNombreRazonSocial" promptText="Escriba nombre o razón social" style="-fx-background-color: #F7F4ED; -fx-border-color: #1A1E2E; -fx-border-radius: 5 5 5 5;" />
+   
+           <!-- Fila 1: RFC -->
+           <Label style="-fx-font-family: &quot;Montserrat&quot;;" text="RFC:">
+            <font>
+               <Font name="Candara" size="12.0" />
+            </font>
+         </Label>
+           <TextField fx:id="fieldRFC" promptText="Ej. XAXX010101XXX" style="-fx-background-color: #F7F4ED; -fx-border-color: #1A1E2E; -fx-border-radius: 5 5 5 5;" />
+         <HBox prefHeight="50.0" prefWidth="200.0" spacing="10.0">
+            <children>
+               <VBox prefHeight="50.0" prefWidth="260.0" spacing="5.0">
+                  <children>
+               
+                             <!-- Fila 2: Código Postal -->
+                       <Label style="-fx-font-family: &quot;Montserrat&quot;;" text="Código Postal:">
+                        <font>
+                           <Font name="Candara" size="12.0" />
+                        </font>
+                     </Label>
+                       <TextField fx:id="fieldCodigoPostal" promptText="Código postal" style="-fx-background-color: #F7F4ED; -fx-border-color: #1A1E2E; -fx-border-radius: 5 5 5 5;" />
+                  </children>
+               </VBox>
+               <VBox layoutX="10.0" layoutY="10.0" prefHeight="50.0" prefWidth="260.0" spacing="5.0">
+                  <children>
+               
+                       <!-- Fila 3: Correo Electrónico -->
+                       <Label style="-fx-font-family: &quot;Montserrat&quot;;" text="Correo Electrónico:">
+                        <font>
+                           <Font name="Candara" size="12.0" />
+                        </font>
+                     </Label>
+                       <TextField fx:id="fieldCorreo" promptText="usuario@dominio.com" style="-fx-background-color: #F7F4ED; -fx-border-color: #1A1E2E; -fx-border-radius: 5 5 5 5;" />
+                  </children>
+               </VBox>
+            </children>
+         </HBox>
+   
+           <!-- Fila 4: Régimen Fiscal -->
+           <Label style="-fx-font-family: &quot;Montserrat&quot;;" text="Régimen Fiscal:">
+            <font>
+               <Font name="Candara" size="12.0" />
+            </font>
+         </Label>
+           <ComboBox fx:id="comboRegimenFiscal" prefWidth="300.0" promptText="Seleccione un régimen" style="-fx-background-color: #F7F4ED; -fx-border-color: #1A1E2E; -fx-border-radius: 5 5 5 5;" />
+   
+           <!-- Fila 5: Uso de CFDI -->
+           <Label style="-fx-font-family: &quot;Montserrat&quot;;" text="Uso de CFDI:">
+            <font>
+               <Font name="Candara" size="12.0" />
+            </font>
+         </Label>
+           <ComboBox fx:id="comboUsoCfdi" prefWidth="300.0" promptText="Seleccione un uso" style="-fx-background-color: #F7F4ED; -fx-border-color: #1A1E2E; -fx-border-radius: 5 5 5 5;" />
+      </children>
+      <padding>
+         <Insets bottom="15.0" left="15.0" right="15.0" />
+      </padding>
+   </VBox>
+
+    <!-- Botones -->
+    <HBox alignment="CENTER_RIGHT" maxHeight="-Infinity" maxWidth="-Infinity" spacing="15.0">
+        <Button fx:id="btnFacturaPago" defaultButton="true" maxHeight="-Infinity" maxWidth="-Infinity" onAction="#handleFacturaPago" prefHeight="30.0" prefWidth="200.0" style="-fx-background-color: #8b1a1a; -fx-text-fill: #d4c5b0; -fx-font-weight: bold; -fx-background-radius: 10 10 10 10;" text="Facturar y Registrar pago">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></Button>
+        <Button fx:id="btnCancelarFactura" cancelButton="true" onAction="#handleCancelarFactura" prefHeight="30.0" prefWidth="80.0" style="-fx-background-color: #F7F4ED; -fx-border-radius: 10 10 10 10; -fx-border-color: #1A1E2E; -fx-font-weight: bold;" text="Cancelar">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></Button>
+      <padding>
+         <Insets left="15.0" right="15.0" />
+      </padding>
+    </HBox>
+</VBox>
