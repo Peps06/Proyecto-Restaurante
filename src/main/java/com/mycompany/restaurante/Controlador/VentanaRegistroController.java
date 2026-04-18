@@ -1,0 +1,170 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package com.mycompany.restaurante.Controlador;
+
+/**
+ *
+ * @author dana0
+ */
+
+import com.mycompany.restaurante.Modelo.Producto;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.fxml.FXML;
+import javafx.geometry.Pos;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
+import java.util.Optional;
+
+public class VentanaRegistroController {
+
+    @FXML private TextField txtBusqueda; 
+    @FXML private TableView<Producto> tableMenu;
+    @FXML private TableColumn<Producto, String> ColumnaNombre;
+    @FXML private TableColumn<Producto, String> ColumnaDescripcion;
+    @FXML private TableColumn<Producto, String> ColumnaCantidad;
+    @FXML private TextArea txtDescripcion;
+    @FXML private Button btnRealizarP;
+    @FXML private Button btnCerrarSesion;
+
+    private ObservableList<Producto> masterData = FXCollections.observableArrayList();
+    private FilteredList<Producto> filteredData;
+
+    public void initialize() {
+        // 1. Cargar datos
+        masterData.addAll(
+            new Producto("Ratatouille", "Plato tradicional de verduras", "0"),
+            new Producto("Macarrón", "Pasta gratinada", "0"),
+            new Producto("Soufflé", "Postre esponjoso", "0"),
+            new Producto("Copa de vino", "Vino tinto reserva", "0")
+        );
+
+        // 2. Configurar columnas
+        ColumnaNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+        ColumnaDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
+
+        // 3. Columna Cantidad con botones
+        ColumnaCantidad.setCellFactory(param -> new TableCell<>() {
+            private final Button btnMenos = new Button("-");
+            private final Button btnMas = new Button("+");
+            private final Label lblCant = new Label();
+            private final HBox container = new HBox(10, btnMenos, lblCant, btnMas);
+
+            {
+                container.setAlignment(Pos.CENTER);
+                btnMenos.setStyle("-fx-background-color: #8b1a1a; -fx-text-fill: white; -fx-cursor: hand;");
+                btnMas.setStyle("-fx-background-color: #8b1a1a; -fx-text-fill: white; -fx-cursor: hand;");
+                
+                btnMenos.setOnAction(e -> {
+                    Producto p = getTableView().getItems().get(getIndex());
+                    int actual = Integer.parseInt(p.getCantidad());
+                    if (actual > 0) {
+                        p.setCantidad(String.valueOf(actual - 1));
+                        getTableView().refresh();
+                    }
+                });
+
+                btnMas.setOnAction(e -> {
+                    Producto p = getTableView().getItems().get(getIndex());
+                    int actual = Integer.parseInt(p.getCantidad());
+                    p.setCantidad(String.valueOf(actual + 1));
+                    getTableView().refresh();
+                });
+            }
+
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || getIndex() >= getTableView().getItems().size()) {
+                    setGraphic(null);
+                } else {
+                    Producto p = getTableView().getItems().get(getIndex());
+                    lblCant.setText(p.getCantidad());
+                    setGraphic(container);
+                }
+            }
+        });
+
+        // 4. Configurar filtrado (pero no se aplica hasta dar clic en buscar)
+        filteredData = new FilteredList<>(masterData, p -> true);
+        tableMenu.setItems(filteredData);
+    }
+
+    // --- MÉTODOS DE ACCIÓN ---
+
+    @FXML
+    private void handleBuscar() {
+        String texto = txtBusqueda.getText().toLowerCase();
+        filteredData.setPredicate(producto -> {
+            if (texto == null || texto.isEmpty()) return true;
+            return producto.getNombre().toLowerCase().contains(texto);
+        });
+        txtBusqueda.clear();
+    }
+
+    @FXML
+    private void handleConfirmarPedido() {
+        // 1. Filtrar solo los productos que tienen cantidad mayor a 0
+        StringBuilder resumen = new StringBuilder();
+        boolean hayProductos = false;
+
+        for (Producto p : masterData) {
+            int cantidad = Integer.parseInt(p.getCantidad());
+            if (cantidad > 0) {
+                resumen.append("- ").append(p.getNombre())
+                       .append(" (x").append(cantidad).append(")\n");
+                hayProductos = true;
+            }
+        }
+
+        // 2. Si no seleccionó nada, mostrar error
+        if (!hayProductos) {
+            Alert alertError = new Alert(Alert.AlertType.ERROR);
+            alertError.setTitle("Pedido Vacío");
+            alertError.setHeaderText(null);
+            alertError.setContentText("No has seleccionado ningún producto. Por favor, usa los botones + para añadir elementos.");
+            alertError.showAndWait();
+            return;
+        }
+
+        // 3. Agregar los detalles del TextArea si existen
+        String detalles = txtDescripcion.getText();
+        if (detalles != null && !detalles.trim().isEmpty()) {
+            resumen.append("\nNotas adicionales:\n").append(detalles);
+        }
+
+        // 4. Crear la alerta de Confirmación con el resumen
+        Alert alertConf = new Alert(Alert.AlertType.CONFIRMATION);
+        alertConf.setTitle("Resumen del Pedido");
+        alertConf.setHeaderText("¿Confirmar el siguiente pedido?");
+        alertConf.setContentText(resumen.toString());
+
+        // 5. Manejar la respuesta del usuario (Aceptar o Cancelar)
+        Optional<ButtonType> result = alertConf.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            System.out.println("Pedido enviado a cocina:\n" + resumen.toString());
+            masterData.forEach(p -> p.setCantidad("0"));
+            tableMenu.refresh();
+            txtDescripcion.clear();
+            Alert alertExito = new Alert(Alert.AlertType.CONFIRMATION);
+            alertExito.setTitle("Confirmado");
+            alertExito.setHeaderText(null);
+            alertExito.setContentText("Pedido enviado exitosamente");
+            alertExito.showAndWait();
+            return;
+        } else {
+            System.out.println("El usuario canceló el envío.");
+        }
+    }
+
+    @FXML
+    private void handleCerrarSesion() {
+        Stage stage = (Stage) btnCerrarSesion.getScene().getWindow();
+        stage.close();
+    }
+}
