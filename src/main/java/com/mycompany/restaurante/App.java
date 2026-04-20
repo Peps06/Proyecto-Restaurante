@@ -12,7 +12,7 @@ public class App extends Application {
     public void start(Stage stage) throws Exception {
         //Pruebas de uso
 //        URL resource = getClass().getResource("/com/mycompany/restaurante/fxml/PedidoMeseroPantalla.fxml");
-        URL resource = getClass().getResource("/com/mycompany/restaurante/fxml/CobrarMesaPantalla.fxml");
+        URL resource = getClass().getResource("/com/mycompany/restaurante/fxml/CobrarPantalla.fxml");
 
         if (resource == null) {
             throw new RuntimeException("No se encuentra el FXML. Revisa que esté en src/main/resources/com/mycompany/restaurante/");

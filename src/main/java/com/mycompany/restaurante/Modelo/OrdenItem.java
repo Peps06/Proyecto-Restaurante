@@ -8,26 +8,24 @@ package com.mycompany.restaurante.Modelo;
 public class OrdenItem {
 
     private String producto;
-    private int cantidad;
+    private int    cantidad;
     private double precio;
 
     public OrdenItem(String producto, int cantidad, double precio) {
         this.producto = producto;
         this.cantidad = cantidad;
-        this.precio = precio;
+        this.precio   = precio;
     }
 
-    public String getProducto() { return producto; }
-    public void setProducto(String producto) { this.producto = producto; }
+    public String getProducto()  { return producto; }
+    public void   setProducto(String v) { this.producto = v; }
 
-    public int getCantidad() { return cantidad; }
-    public void setCantidad(int cantidad) { this.cantidad = cantidad; }
+    public int    getCantidad()  { return cantidad; }
+    public void   setCantidad(int v) { this.cantidad = v; }
 
-    public double getPrecio() { return precio; }
-    public void setPrecio(double precio) { this.precio = precio; }
+    public double getPrecio()    { return precio; }
+    public void   setPrecio(double v) { this.precio = v; }
 
-    /** Regresa el subtotal del ítem (cantidad × precio unitario). */
-    public double getSubtotalItem() {
-        return cantidad * precio;
-    }
+    /** Subtotal del ítem: cantidad × precio unitario. */
+    public double getSubtotalItem() { return cantidad * precio; }
 }
