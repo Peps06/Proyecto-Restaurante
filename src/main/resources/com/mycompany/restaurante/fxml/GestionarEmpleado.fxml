@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="470.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.restaurante.Controlador.GestionarEmpleadoController">
+   <top>
+      <HBox alignment="CENTER_LEFT" prefHeight="70.0" style="-fx-background-color: #2c3b62;">
+         <children>
+            <ImageView fitHeight="50.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../../img/tipoAzul.png" />
+               </image>
+               <HBox.margin>
+                  <Insets left="35.0" right="20.0" />
+               </HBox.margin>
+            </ImageView>
+            <ImageView fitHeight="69.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+            <Label alignment="CENTER" text="Administrador" textFill="#f5efe6">
+               <font>
+                  <Font name="Franklin Gothic Heavy" size="30.0" />
+               </font>
+            </Label>
+            <Region HBox.hgrow="ALWAYS" />
+            <Region HBox.hgrow="ALWAYS" />
+         </children>
+      </HBox>
+   </top>
+   <left>
+      <VBox prefWidth="220.0" style="-fx-background-color: #1a1e2e;" BorderPane.alignment="TOP_CENTER">
+         <children>
+            <VBox spacing="12.0" VBox.vgrow="ALWAYS">
+               <VBox.margin>
+                  <Insets left="20.0" right="20.0" top="25.0" />
+               </VBox.margin>
+               <children>
+                  <Button fx:id="btnGestionarPedidos" mnemonicParsing="false" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Empleados" textFill="#d4c5b0">
+                     <font>
+                        <Font name="Candara Bold" size="19.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="btnGestionarPedidos1" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Menú" textFill="#d4c5b0">
+                     <font>
+                        <Font name="Candara Bold" size="19.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="btnGestionarPedidos11" layoutX="10.0" layoutY="64.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Almacén" textFill="#d4c5b0">
+                     <font>
+                        <Font name="Candara Bold" size="19.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="btnGestionarPedidos12" layoutX="10.0" layoutY="64.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Reportes" textFill="#d4c5b0">
+                     <font>
+                        <Font name="Candara Bold" size="19.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="btnGestionarPedidos111" layoutX="10.0" layoutY="119.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Historial" textFill="#d4c5b0">
+                     <font>
+                        <Font name="Candara Bold" size="19.0" />
+                     </font>
+                     <graphic>
+                        <Region />
+                     </graphic>
+                  </Button>
+               </children>
+            </VBox>
+            <VBox>
+               <VBox.margin>
+                  <Insets bottom="25.0" left="20.0" right="20.0" top="15.0" />
+               </VBox.margin>
+               <children>
+                  <Button fx:id="btnCerrarSesion1" mnemonicParsing="false" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Cerrar sesión" textFill="#d4c5b0">
+                     <font>
+                        <Font name="Candara Bold" size="19.0" />
+                     </font>
+                  </Button>
+               </children>
+            </VBox>
+         </children>
+      </VBox>
+   </left>
+   <center>
+      <VBox style="-fx-background-color: #f5efe6;" BorderPane.alignment="CENTER">
+         <children>
+            <HBox alignment="CENTER_LEFT" prefHeight="60.0" style="-fx-background-color: #f5efe6;">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+               <children>
+                  <Label style="-fx-text-fill: #2c3b62;" text="Gestión de empleados" textFill="#1a1e2e">
+                     <font>
+                        <Font name="Candara Bold" size="25.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets left="20.0" />
+                     </HBox.margin>
+                  </Label>
+                  <Region HBox.hgrow="ALWAYS" />
+               </children>
+            </HBox>
+            <Separator prefWidth="200.0" style="-fx-background-color: #c9a84c;" />
+            <VBox alignment="CENTER" spacing="10.0" VBox.vgrow="ALWAYS">
+               <children>
+                  <Pane prefHeight="325.0" prefWidth="580.0">
+                     <children>
+                        <Button fx:id="btnBuscar" layoutX="472.0" layoutY="18.0" mnemonicParsing="false" onAction="#manejarBusqueda" prefHeight="16.0" prefWidth="76.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Buscar" textFill="#d4c5b0">
+                           <font>
+                              <Font name="Candara Bold" size="14.0" />
+                           </font>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </Button>
+                        <Button fx:id="btnCerrarSesion2" layoutX="37.0" layoutY="285.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="76.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Agregar" textFill="#d4c5b0">
+                           <font>
+                              <Font name="Candara Bold" size="14.0" />
+                           </font>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </Button>
+                        <Button fx:id="btnCerrarSesion4" layoutX="457.0" layoutY="285.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="82.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Asistencia" textFill="#d4c5b0">
+                           <font>
+                              <Font name="Candara Bold" size="14.0" />
+                           </font>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </Button>
+                        <Button fx:id="btnEliminar" layoutX="320.0" layoutY="285.0" mnemonicParsing="false" onAction="#manejarEliminar" prefHeight="27.0" prefWidth="82.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Eliminar" textFill="#d4c5b0">
+                           <font>
+                              <Font name="Candara Bold" size="14.0" />
+                           </font>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </Button>
+                        <Button fx:id="btnCerrarSesion411" layoutX="172.0" layoutY="285.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="82.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Editar" textFill="#d4c5b0">
+                           <font>
+                              <Font name="Candara Bold" size="14.0" />
+                           </font>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </Button>
+                        <TableView fx:id="tablaEmpleados" layoutX="31.0" layoutY="63.0" prefHeight="200.0" prefWidth="425.0" style="-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;">
+                          <columns>
+                            <TableColumn fx:id="colId" prefWidth="32.0" text="ID" />
+                            <TableColumn fx:id="colNombre" prefWidth="108.0" text="Nombre" />
+                              <TableColumn fx:id="colPuesto" prefWidth="96.79998779296875" text="Puesto" />
+                              <TableColumn fx:id="colAsistencia" prefWidth="79.20001220703125" text="Asistencia" />
+                              <TableColumn fx:id="colTelefono" prefWidth="107.4000244140625" text="Telefono" />
+                          </columns>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </TableView>
+                        <TextField fx:id="txtBusqueda" layoutX="30.0" layoutY="19.0" onAction="#manejarBusqueda" prefHeight="25.0" prefWidth="426.0" promptText="Ingresa nombre o ID ..." style="-fx-background-radius: 10 10 10 10;" />
+                     </children>
+                  </Pane>
+               </children></VBox>
+         </children>
+      </VBox>
+   </center>
+</BorderPane>

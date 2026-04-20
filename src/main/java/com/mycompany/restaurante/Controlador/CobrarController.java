@@ -65,16 +65,16 @@ public class CobrarController implements Initializable {
 
     //  Estilos 
     private static final String ESTILO_MESA_LIBRE =
-        "-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; " +
+        "-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-background-radius: 10 10 10 10;" +
         "-fx-border-radius: 10 10 10 10; -fx-font-family: mont;";
     private static final String ESTILO_MESA_ACTIVA =
-        "-fx-background-color: #8b1a1a; -fx-border-color: #8b1a1a; " +
+        "-fx-background-color: #8b1a1a; -fx-border-color: #8b1a1a; -fx-background-radius: 10 10 10 10" +
         "-fx-border-radius: 10 10 10 10; -fx-font-family: mont; -fx-text-fill: #d4c5b0;";
     private static final String ESTILO_BTN_ACTIVO =
-        "-fx-background-color: #2c3b62; -fx-text-fill: #d4c5b0; " +
-        "-fx-font-weight: bold; -fx-background-radius: 10 10 10 10;";
+        "-fx-background-color: #2c3b62; -fx-text-fill: #d4c5b0; -fx-background-radius: 10 10 10 10;" +
+        "-fx-font-weight: bold; -fx-background-radius: 10 10 10 10; -fx-font-size: 17px";
     private static final String ESTILO_BTN_INACTIVO =
-        "-fx-font-family: mont; -fx-background-color: #8b1a1a; -fx-font-style: bold; " +
+        "-fx-font-family: mont; -fx-background-color: #8b1a1a; -fx-font-style: bold; -fx-background-radius: 10 10 10 10;" +
         "-fx-background-radius: 10 10 10 10; -fx-text-fill: #d4c5b0;";
 
     //  Datos de prueba por mesa

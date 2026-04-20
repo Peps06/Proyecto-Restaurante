@@ -16,33 +16,8 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<!--
-    =====================================================================
-    Saveurs Paris — Plantilla base de pantalla
-    =====================================================================
-    Estructura:
-      [TOP]    Barra superior: logo | título de rol | info turno
-      [LEFT]   Sidebar: botones de navegación + botón cerrar sesión
-      [CENTER] Área de contenido principal (aquí va el contenido de c/pantalla)
-
-    Para adaptar a otra pantalla:
-      1. Cambia los textos de los botones del sidebar según el rol
-      2. Cambia el Label del centro del TOP (ej. "Chef", "Gerente"...)
-      3. Reemplaza el contenido del CENTER con los elementos de esa pantalla
-
-    NOTAS DE ESCALADO:
-      - BorderPane ocupa todo el espacio disponible automáticamente
-      - El sidebar usa VBox con AnchorPane para empujar "Cerrar Sesión" al fondo
-      - El área central se expande con HBox.hgrow="ALWAYS" y VBox.vgrow="ALWAYS"
-      - NO uses Pane con tamaños fijos como contenedor principal
-    =====================================================================
--->
-
 <BorderPane prefHeight="470.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.restaurante.Controlador.VentanaRegistroController">
 
-    <!-- ═══════════════════════════════════════════════
-         TOP — Barra de navegación superior
-         ═══════════════════════════════════════════════ -->
     <top>
         <HBox alignment="CENTER_LEFT" prefHeight="70.0" style="-fx-background-color: #2c3b62;">
 
@@ -75,9 +50,6 @@
         </HBox>
     </top>
 
-    <!-- ═══════════════════════════════════════════════
-         LEFT — Sidebar de navegación
-         ═══════════════════════════════════════════════ -->
     <left>
         <VBox prefWidth="220.0" style="-fx-background-color: #1a1e2e;" BorderPane.alignment="TOP_CENTER">
 
@@ -87,7 +59,7 @@
                     <Insets left="20.0" right="20.0" top="25.0" />
                 </VBox.margin>
 
-                <Button fx:id="btnDisponibilidad" mnemonicParsing="false" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a;" text="Disponibilidad" textFill="#d4c5b0">
+                <Button fx:id="btnDisponibilidad" cacheShape="false" centerShape="false" focusTraversable="false" mnemonicParsing="false" pickOnBounds="false" prefHeight="42.0" prefWidth="180.0" scaleShape="false" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Disponibilidad" textFill="#d4c5b0">
                     <font>
                         <Font name="Candara Bold" size="19.0" />
                     </font>
@@ -96,7 +68,7 @@
                </cursor>
                 </Button>
 
-                <Button fx:id="btnRealizarPedido" mnemonicParsing="false" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a;" text="Realizar pedido" textFill="#d4c5b0">
+                <Button fx:id="btnRealizarPedido" cacheShape="false" centerShape="false" focusTraversable="false" mnemonicParsing="false" prefHeight="42.0" prefWidth="180.0" scaleShape="false" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Realizar pedido" textFill="#d4c5b0">
                     <font>
                         <Font name="Candara Bold" size="19.0" />
                     </font>
@@ -105,7 +77,7 @@
                </cursor>
                 </Button>
 
-                <Button fx:id="btnGestionar" mnemonicParsing="false" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a;" text="Gestionar pedido" textFill="#d4c5b0">
+                <Button fx:id="btnGestionar" cacheShape="false" centerShape="false" focusTraversable="false" mnemonicParsing="false" prefHeight="42.0" prefWidth="180.0" scaleShape="false" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Gestionar pedido" textFill="#d4c5b0">
                     <font>
                         <Font name="Candara Bold" size="19.0" />
                     </font>
@@ -124,7 +96,7 @@
                 <VBox.margin>
                     <Insets bottom="25.0" left="20.0" right="20.0" top="15.0" />
                 </VBox.margin>
-                <Button fx:id="btnCerrarSesion" mnemonicParsing="false" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a;" text="Cerrar Sesión" textFill="#d4c5b0">
+                <Button fx:id="btnCerrarSesion" cacheShape="false" cancelButton="true" centerShape="false" focusTraversable="false" mnemonicParsing="false" prefHeight="42.0" prefWidth="180.0" scaleShape="false" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Cerrar Sesión" textFill="#d4c5b0">
                     <font>
                         <Font name="Candara Bold" size="19.0" />
                     </font>
@@ -137,10 +109,6 @@
         </VBox>
     </left>
 
-    <!-- ═══════════════════════════════════════════════
-         CENTER — Área de contenido principal
-         Aquí va el contenido específico de cada pantalla
-         ═══════════════════════════════════════════════ -->
     <center>
         <VBox style="-fx-background-color: #f5efe6;" BorderPane.alignment="CENTER">
 
@@ -169,24 +137,25 @@
             <!-- Línea decorativa dorada bajo el sub-encabezado -->
             <Separator prefWidth="200.0" style="-fx-background-color: #c9a84c;" />
 
-            <!-- ─────────────────────────────────────────
-                 ZONA DE CONTENIDO LIBRE
-                 Reemplaza este VBox con los elementos
-                 específicos de cada pantalla
-                 ───────────────────────────────────────── -->
             <VBox alignment="CENTER" spacing="10.0" VBox.vgrow="ALWAYS">
             <children>
                <HBox prefHeight="30.0" prefWidth="580.0">
                   <children>
-                     <TextField fx:id="txtBusqueda" prefHeight="30.0" prefWidth="397.0">
+                     <TextField fx:id="txtBusqueda" focusTraversable="false" prefHeight="30.0" prefWidth="397.0" scaleShape="false">
                         <HBox.margin>
                            <Insets left="20.0" right="10.0" />
                         </HBox.margin>
                         <padding>
                            <Insets top="4.0" />
                         </padding>
+                        <opaqueInsets>
+                           <Insets />
+                        </opaqueInsets>
+                        <cursor>
+                           <Cursor fx:constant="TEXT" />
+                        </cursor>
                      </TextField>
-                     <Button fx:id="btnBuscar" onAction="#handleBuscar" mnemonicParsing="false" style="-fx-background-color: #8b1a1a;" text="Buscar" textFill="#d4c5b0">
+                     <Button fx:id="btnBuscar" cacheShape="false" centerShape="false" defaultButton="true" focusTraversable="false" mnemonicParsing="false" onAction="#handleBuscar" scaleShape="false" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Buscar" textFill="#d4c5b0">
                         <HBox.margin>
                            <Insets />
                         </HBox.margin>
@@ -199,7 +168,7 @@
                      </Button>
                   </children>
                </HBox>
-               <TableView fx:id="tableMenu" prefHeight="202.0" prefWidth="580.0">
+               <TableView fx:id="tableMenu" prefHeight="202.0" prefWidth="580.0" style="-fx-background-radius: 10 10 10 10; -fx-border-color: #c9a84c;">
                  <columns>
                      <TableColumn fx:id="ColumnaNombre" prefWidth="203.199951171875" text="Nombre" />
                      <TableColumn fx:id="ColumnaDescripcion" prefWidth="170.40005493164062" text="Descripción" />
@@ -208,7 +177,7 @@
                </TableView>
                <Pane prefHeight="34.0" prefWidth="580.0">
                   <children>
-                     <Button fx:id="btnRealizarP" layoutX="440.0" layoutY="1.0" mnemonicParsing="false" onAction="#handleConfirmarPedido" style="-fx-background-color: #8b1a1a;" text="Realizar" textFill="#d4c5b0">
+                     <Button fx:id="btnRealizarP" cacheShape="false" centerShape="false" defaultButton="true" focusTraversable="false" layoutX="440.0" layoutY="1.0" mnemonicParsing="false" onAction="#handleConfirmarPedido" scaleShape="false" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Realizar" textFill="#d4c5b0">
                         <font>
                            <Font name="Candara Bold" size="16.0" />
                         </font>
@@ -217,7 +186,10 @@
                         </cursor>
                      </Button>
                      <Label layoutX="25.0" layoutY="9.0" text="Descripción:" />
-                     <TextArea fx:id="txtDescripcion" layoutX="105.0" layoutY="-2.0" prefHeight="53.0" prefWidth="266.0" />
+                     <TextArea fx:id="txtDescripcion" layoutX="105.0" layoutY="-2.0" maxHeight="-Infinity" maxWidth="-Infinity" prefColumnCount="266" prefHeight="53.0" prefRowCount="53" prefWidth="266.0" wrapText="true">
+                        <cursor>
+                           <Cursor fx:constant="TEXT" />
+                        </cursor></TextArea>
                   </children>
                </Pane>
             </children></VBox>

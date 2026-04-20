@@ -26,7 +26,7 @@
          <children>
             <ImageView fitHeight="50.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@Nueva%20Carpeta/Proyecto/Restaurante/src/main/resources/img/tipoAzul.png" />
+                  <Image url="@../../../../img/tipoAzul.png" />
                </image>
                <HBox.margin>
                   <Insets left="35.0" right="20.0" />
@@ -58,9 +58,9 @@
                   <Insets left="20.0" right="20.0" top="25.0" />
                </VBox.margin>
                <children>
-                  <Button fx:id="btnCobrarMesa" mnemonicParsing="false" onAction="#handleCobrarMesa" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a; -fx-font-family: mont; -fx-background-radius: 10 10 10 10;" text="Cobrar Mesa" textFill="#d4c5b0">
+                  <Button fx:id="btnCobrarMesa" mnemonicParsing="false" onAction="#handleCobrarMesa" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Cobrar Mesa" textFill="#d4c5b0">
                      <font>
-                        <Font name="Candara Bold" size="17.0" />
+                        <Font name="Candara Bold" size="19.0" />
                      </font>
                      <cursor>
                         <Cursor fx:constant="HAND" />
@@ -73,9 +73,9 @@
                   <Insets bottom="25.0" left="20.0" right="20.0" top="15.0" />
                </VBox.margin>
                <children>
-                  <Button fx:id="btnCerrarSesion" cancelButton="true" mnemonicParsing="false" onAction="#handleCerrarSesion" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a; -fx-font-family: mont; -fx-background-radius: 10 10 10 10;" text="Cerrar Sesión" textFill="#d4c5b0">
+                  <Button fx:id="btnCerrarSesion" cancelButton="true" mnemonicParsing="false" onAction="#handleCerrarSesion" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Cerrar Sesión" textFill="#d4c5b0">
                      <font>
-                        <Font name="Candara Bold" size="17.0" />
+                        <Font name="Candara Bold" size="19.0" />
                      </font>
                      <cursor>
                         <Cursor fx:constant="HAND" />
@@ -323,7 +323,7 @@
                                  <children>
                                     <HBox maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="40.0" prefWidth="250.0" spacing="15.0">
                                        <children>
-                                          <Button fx:id="btnEfectivo" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#handleEfectivo" prefHeight="30.0" prefWidth="100.0" style="-fx-font-family: mont; -fx-background-color: #8b1a1a; -fx-font-style: bold; -fx-background-radius: 10 10 10 10;" text="Efectivo" textFill="#d4c5b0">
+                                          <Button fx:id="btnEfectivo" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#handleEfectivo" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: #8b1a1a; -fx-font-style: bold; -fx-background-radius: 10 10 10 10;" text="Efectivo" textFill="#d4c5b0">
                                              <cursor>
                                                 <Cursor fx:constant="HAND" />
                                              </cursor>
@@ -331,7 +331,7 @@
                                                 <Font name="System Bold" size="12.0" />
                                              </font>
                                           </Button>
-                                          <Button fx:id="btnTarjeta" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" onAction="#handleTarjeta" prefHeight="30.0" prefWidth="100.0" style="-fx-font-family: mont; -fx-background-color: #8b1a1a; -fx-font-style: bold; -fx-background-radius: 10 10 10 10;" text="Tarjeta" textFill="#d4c5b0">
+                                          <Button fx:id="btnTarjeta" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" onAction="#handleTarjeta" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: #8b1a1a; -fx-font-style: bold; -fx-background-radius: 10 10 10 10;" text="Tarjeta" textFill="#d4c5b0">
                                              <cursor>
                                                 <Cursor fx:constant="HAND" />
                                              </cursor>
@@ -374,7 +374,7 @@
                                     <Separator maxHeight="1.0" minHeight="1.0" prefHeight="1.0" style="-fx-background-color: #c9a84c; -fx-border-width: .5;" />
                                     <HBox layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="40.0" prefWidth="250.0" spacing="15.0">
                                        <children>
-                                          <Button fx:id="btnRegistrarPago" defaultButton="true" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#handleRegistrarPago" prefHeight="30.0" prefWidth="100.0" style="-fx-font-family: mont; -fx-background-color: #8b1a1a; -fx-font-style: bold; -fx-background-radius: 10 10 10 10;" text="Registrar pago" textFill="#d4c5b0">
+                                          <Button fx:id="btnRegistrarPago" defaultButton="true" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#handleRegistrarPago" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: #8b1a1a; -fx-font-style: bold; -fx-background-radius: 10 10 10 10;" text="Registrar pago" textFill="#d4c5b0">
                                              <cursor>
                                                 <Cursor fx:constant="HAND" />
                                              </cursor>
@@ -382,7 +382,7 @@
                                                 <Font name="System Bold" size="12.0" />
                                              </font>
                                           </Button>
-                                          <Button fx:id="btnFacturar" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#handleFacturar" prefHeight="30.0" prefWidth="100.0" style="-fx-font-family: mont; -fx-background-color: #1A1E2E; -fx-font-style: bold; -fx-background-radius: 10 10 10 10;" text="Facturar" textFill="#d4c5b0">
+                                          <Button fx:id="btnFacturar" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#handleFacturar" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: #1A1E2E; -fx-font-style: bold; -fx-background-radius: 10 10 10 10;" text="Facturar" textFill="#d4c5b0">
                                              <cursor>
                                                 <Cursor fx:constant="HAND" />
                                              </cursor>
