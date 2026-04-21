@@ -16,6 +16,7 @@ import javafx.stage.Stage;
 public class RegistrarEmpleadoController {
 
     @FXML private TextField txtNombre;
+    @FXML private TextField txtPassword;
     @FXML private TextField txtTelefono;
     @FXML private ComboBox<String> boxPuesto;
     
@@ -37,7 +38,7 @@ public class RegistrarEmpleadoController {
     @FXML
     private void RegistrarEmpleado() {
         // 1. Validación de campos vacíos
-        if (txtNombre.getText().isEmpty() || txtTelefono.getText().isEmpty() || boxPuesto.getValue() == null) {
+        if (txtNombre.getText().isEmpty() || txtPassword.getText().isEmpty() || txtTelefono.getText().isEmpty() || boxPuesto.getValue() == null) {
             mostrarAlerta("Campos incompletos", "Por favor, llena todos los datos.");
             return;
         }
@@ -54,6 +55,7 @@ public class RegistrarEmpleadoController {
         nuevoEmpleado = new Empleado(
             0, // El ID se asigna en el controlador principal
             txtNombre.getText(),
+            txtPassword.getText(),
             boxPuesto.getValue(),
             "Ausente", // Valor por defecto
             txtTelefono.getText()
@@ -81,6 +83,7 @@ public class RegistrarEmpleadoController {
 
     public void cargarDatos(Empleado empleado) {
         txtNombre.setText(empleado.getNombre());
+        txtPassword.setText(empleado.getPassword());
         txtTelefono.setText(empleado.getTelefono());
         boxPuesto.setValue(empleado.getPuesto());
     }

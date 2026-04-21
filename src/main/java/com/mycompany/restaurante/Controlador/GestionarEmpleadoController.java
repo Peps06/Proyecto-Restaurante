@@ -73,11 +73,11 @@ public class GestionarEmpleadoController {
 
     private void crearDatosFicticios() {
         datosMaestros.addAll(
-            new Empleado(101, "Rubi Mendoza", "Recepcionista", "Presente", "2281112233"),
-            new Empleado(102, "Citlaly Morales", "Mesero", "Presente", "2284445566"),
-            new Empleado(103, "Dana Carmona", "Chef", "Ausente", "2287778899"),
-            new Empleado(104, "Marco Aurelio", "Recepcionista", "Presente", "2282223344"),
-            new Empleado(105, "Sofía Ramírez", "Mesero", "Presente", "2285556677")
+            new Empleado(101, "Rubi Mendoza", "1234", "Recepcionista", "Presente", "2281112233"),
+            new Empleado(102, "Citlaly Morales", "1234", "Mesero", "Presente", "2284445566"),
+            new Empleado(103, "Dana Carmona","1234", "Chef", "Ausente", "2287778899"),
+            new Empleado(104, "Marco Aurelio", "1234", "Recepcionista", "Presente", "2282223344"),
+            new Empleado(105, "Sofía Ramírez", "1234", "Mesero", "Presente", "2285556677")
         );
         tablaEmpleados.setItems(datosMaestros);
     }
@@ -236,16 +236,16 @@ public class GestionarEmpleadoController {
         stage.setScene(new Scene(root));
         stage.showAndWait();
 
-        // 3. Al cerrar la ventana, verificamos si hubo cambios
+        // 3. Al cerrar la ventana, se verifica si hubo cambios
         Empleado editado = controller.getNuevoEmpleado();
         
         if (editado != null) {
-            // Actualizamos los datos del objeto seleccionado originalmente
+            // Se actualizan los datos del objeto seleccionado originalmente
             seleccionado.setNombre(editado.getNombre());
             seleccionado.setPuesto(editado.getPuesto());
             seleccionado.setTelefono(editado.getTelefono());
 
-            // Refrescamos la tabla para ver los cambios
+            // Se refreca la tabla para ver los cambios
             tablaEmpleados.refresh();
             mostrarAlerta("Éxito", "Datos actualizados correctamente.", Alert.AlertType.INFORMATION);
         }

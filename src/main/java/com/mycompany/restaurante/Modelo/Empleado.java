@@ -7,14 +7,16 @@ package com.mycompany.restaurante.Modelo;
 public class Empleado {
     private int id;
     private String nombre;
+    private String password;
     private String puesto;
     private String asistencia;
     private String telefono;
 
     // Constructor
-    public Empleado(int id, String nombre, String puesto, String asistencia, String telefono) {
+    public Empleado(int id, String nombre, String password, String puesto, String asistencia, String telefono) {
         this.id = id;
         this.nombre = nombre;
+        this.password = password;
         this.puesto = puesto;
         this.asistencia = asistencia;
         this.telefono = telefono;
@@ -22,25 +24,41 @@ public class Empleado {
 
     // Getters
     public int getId() { 
-        return id; }
+        return id;
+    }
     public String getNombre() {
-        return nombre; }
+        return nombre;
+    }
+    public String getPassword() {
+        return password;
+    }
     public String getPuesto() {
-        return puesto; }
+        return puesto;
+    }
     public String getAsistencia() {
-        return asistencia; }
+        return asistencia;
+    }
     public String getTelefono() {
-        return telefono; }
+        return telefono;
+    }
     
     // Setters 
     public void setId(int id) {
-        this.id = id; }
+        this.id = id;
+    }
     public void setNombre(String nombre) {
-        this.nombre = nombre; }
+        this.nombre = nombre;
+    }
+    public void setPassword(String password) {
+        this.password = password;
+    }
     public void setPuesto(String puesto) {
-        this.puesto = puesto; }
+        this.puesto = puesto; 
+    }
     public void setAsistencia(String asistencia) {
-        this.asistencia = asistencia; }
+        this.asistencia = asistencia; 
+    }
     public void setTelefono(String telefono) { 
-        this.telefono = telefono; }
+        this.telefono = telefono;
+    }
 }
