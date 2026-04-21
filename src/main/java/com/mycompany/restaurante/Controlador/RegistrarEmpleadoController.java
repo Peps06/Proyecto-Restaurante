@@ -30,24 +30,65 @@ public class RegistrarEmpleadoController {
 
     private Empleado nuevoEmpleado;
 
+    private static final String ESTILO_NORMAL =
+        "-fx-background-color: #F7F4ED; -fx-border-color: #1A1E2E; -fx-border-radius: 5 5 5 5;";
+    private static final String ESTILO_ERROR  =
+        "-fx-background-color: #FFF0F0; -fx-border-color: #cc0000; -fx-border-width: 2; -fx-border-radius: 5 5 5 5;";
+    private static final String ESTILO_COMBO_ERROR =
+        "-fx-background-color: #FFF0F0; -fx-border-color: #cc0000; -fx-border-width: 2; -fx-border-radius: 5 5 5 5;";
+    
     @FXML
     private void initialize() {
-        boxPuesto.getItems().setAll(EMPLEADOS);
+//        boxPuesto.getItems().setAll(EMPLEADOS);
+        boxPuesto.setItems(FXCollections.observableArrayList(EMPLEADOS));
+        
+        txtNombre.textProperty().addListener((o, a, b) -> txtNombre.setStyle(ESTILO_NORMAL));
+        txtPassword.textProperty().addListener((o, a, b) -> txtPassword.setStyle(ESTILO_NORMAL));
+        txtTelefono.textProperty().addListener((o, a, b) -> txtTelefono.setStyle(ESTILO_NORMAL));
     }
 
     @FXML
     private void RegistrarEmpleado() {
         // 1. Validación de campos vacíos
-        if (txtNombre.getText().isEmpty() || txtPassword.getText().isEmpty() || txtTelefono.getText().isEmpty() || boxPuesto.getValue() == null) {
-            mostrarAlerta("Campos incompletos", "Por favor, llena todos los datos.");
+//        if (txtNombre.getText().isEmpty() || txtPassword.getText().isEmpty() || txtTelefono.getText().isEmpty() || boxPuesto.getValue() == null) {
+//            mostrarAlerta("Campos incompletos", "Por favor, llena todos los datos.");
+//            return;
+//        }
+
+        // Validación del txt
+        if (txtNombre.getText().trim().isEmpty()){
+            marcarError(txtNombre);
+            mostrarAlerta("Todos los campos son obligatorios",
+                    "El campo 'Nombre' no puede estar vacio.");
             return;
         }
-
-        // 2. Validación de teléfono (Solo números Y exactamente 10 dígitos)
+        
+        if (txtPassword.getText().trim().isEmpty()){
+            marcarError(txtPassword);
+            mostrarAlerta("Todos los campos son obligatorios",
+                    "El campo 'Contraseña' no puede estar vacio.");
+            return;
+        }
+        
+        if (txtTelefono.getText().trim().isEmpty()){
+            marcarError(txtTelefono);
+            mostrarAlerta("Todos los campos son obligatorios",
+                    "El campo 'Teléfono' no puede estar vacio.");
+            return;
+        }
+        
         String tel = txtTelefono.getText().trim();
         
         if (!tel.matches("\\d{10}")) {
+            marcarError(txtTelefono);
             mostrarAlerta("Error en teléfono", "El teléfono debe contener exactamente 10 dígitos numéricos.");
+            return;
+        }
+        
+        if (boxPuesto.getValue() == null) {
+            boxPuesto.setStyle(ESTILO_COMBO_ERROR);
+            mostrarAlerta("Todos los campos son obligatorios",
+                    "Selecciona un 'Puesto'.");
             return;
         }
 
@@ -94,5 +135,10 @@ public class RegistrarEmpleadoController {
         alerta.setHeaderText(null);
         alerta.setContentText(mensaje);
         alerta.showAndWait();
+    }
+    
+    private void marcarError(TextField campo) {
+        campo.setStyle(ESTILO_ERROR);
+        campo.requestFocus();
     }
 }
