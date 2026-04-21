@@ -9,17 +9,26 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="470.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.restaurante.Controlador.VentanaRegistroController">
+<BorderPane prefHeight="470.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.restaurante.Controlador.RegistrarPedidoController">
 
     <top>
         <HBox alignment="CENTER_LEFT" prefHeight="70.0" style="-fx-background-color: #2c3b62;">
+         <ImageView fitHeight="50.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true">
+            <HBox.margin>
+               <Insets left="35.0" right="20.0" />
+            </HBox.margin>
+            <image>
+               <Image url="@../../../../img/tipoAzul.png" />
+            </image>
+         </ImageView>
 
             <!--
                 NOTA: Para usar tu imagen real en SceneBuilder, descomenta esto
@@ -46,6 +55,7 @@
 
             <!-- Separador flexible para empujar el turno a la derecha -->
             <Region HBox.hgrow="ALWAYS" />
+         <Region layoutX="565.0" layoutY="10.0" HBox.hgrow="ALWAYS" />
 
         </HBox>
     </top>
@@ -68,7 +78,7 @@
                </cursor>
                 </Button>
 
-                <Button fx:id="btnRealizarPedido" cacheShape="false" centerShape="false" focusTraversable="false" mnemonicParsing="false" prefHeight="42.0" prefWidth="180.0" scaleShape="false" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Realizar pedido" textFill="#d4c5b0">
+                <Button fx:id="btnRealizarPedido" cacheShape="false" centerShape="false" defaultButton="true" focusTraversable="false" mnemonicParsing="false" prefHeight="42.0" prefWidth="180.0" scaleShape="false" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Realizar pedido" textFill="#d4c5b0">
                     <font>
                         <Font name="Candara Bold" size="19.0" />
                     </font>
@@ -141,13 +151,10 @@
             <children>
                <HBox prefHeight="30.0" prefWidth="580.0">
                   <children>
-                     <TextField fx:id="txtBusqueda" focusTraversable="false" prefHeight="30.0" prefWidth="397.0" scaleShape="false">
+                     <TextField fx:id="txtBusqueda" focusTraversable="false" prefHeight="25.0" prefWidth="350.0" promptText="Ingresar nombre o ID ..." style="-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;">
                         <HBox.margin>
-                           <Insets left="20.0" right="10.0" />
+                           <Insets />
                         </HBox.margin>
-                        <padding>
-                           <Insets top="4.0" />
-                        </padding>
                         <opaqueInsets>
                            <Insets />
                         </opaqueInsets>
@@ -155,12 +162,22 @@
                            <Cursor fx:constant="TEXT" />
                         </cursor>
                      </TextField>
-                     <Button fx:id="btnBuscar" cacheShape="false" centerShape="false" defaultButton="true" focusTraversable="false" mnemonicParsing="false" onAction="#handleBuscar" scaleShape="false" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Buscar" textFill="#d4c5b0">
+                     <Region HBox.hgrow="ALWAYS" />
+                     <Button fx:id="btnBuscar" cacheShape="false" centerShape="false" defaultButton="true" focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#handleBuscar" prefHeight="25.0" prefWidth="70.0" scaleShape="false" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Buscar" textFill="#d4c5b0">
                         <HBox.margin>
                            <Insets />
                         </HBox.margin>
                         <font>
-                           <Font name="Candara Bold" size="16.0" />
+                           <Font name="Candara Bold" size="14.0" />
+                        </font>
+                        <cursor>
+                           <Cursor fx:constant="HAND" />
+                        </cursor>
+                     </Button>
+                     <Region layoutX="360.0" layoutY="10.0" HBox.hgrow="ALWAYS" />
+                     <Button fx:id="btnMostrarTabla" cacheShape="false" centerShape="false" defaultButton="true" focusTraversable="false" layoutX="480.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#handleMostrarTabla" prefHeight="25.0" prefWidth="70.0" scaleShape="false" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Mostrar" textFill="#d4c5b0">
+                        <font>
+                           <Font name="Candara Bold" size="14.0" />
                         </font>
                         <cursor>
                            <Cursor fx:constant="HAND" />
@@ -168,31 +185,40 @@
                      </Button>
                   </children>
                </HBox>
-               <TableView fx:id="tableMenu" prefHeight="202.0" prefWidth="580.0" style="-fx-background-radius: 10 10 10 10; -fx-border-color: #c9a84c;">
+               <TableView fx:id="tableMenu" focusTraversable="false" prefHeight="202.0" prefWidth="530.0" style="-fx-background-radius: 10 10 10 10; -fx-border-color: #c9a84c;">
                  <columns>
                      <TableColumn fx:id="ColumnaNombre" prefWidth="203.199951171875" text="Nombre" />
-                     <TableColumn fx:id="ColumnaDescripcion" prefWidth="170.40005493164062" text="Descripción" />
-                   <TableColumn fx:id="ColumnaCantidad" prefWidth="207.20001220703125" text="Cantidad" />
+                     <TableColumn fx:id="ColumnaDescripcion" prefWidth="208.79998779296875" text="Descripción" />
+                   <TableColumn fx:id="ColumnaCantidad" prefWidth="124.00006103515625" text="Cantidad" />
                  </columns>
                </TableView>
-               <Pane prefHeight="34.0" prefWidth="580.0">
+               <HBox prefHeight="50.0" prefWidth="280.0">
                   <children>
-                     <Button fx:id="btnRealizarP" cacheShape="false" centerShape="false" defaultButton="true" focusTraversable="false" layoutX="440.0" layoutY="1.0" mnemonicParsing="false" onAction="#handleConfirmarPedido" scaleShape="false" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Realizar" textFill="#d4c5b0">
+                     <Label focusTraversable="false" text="Descripción:   " />
+                     <TextArea fx:id="txtDescripcion" focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefColumnCount="266" prefHeight="50.0" prefRowCount="53" prefWidth="270.0" style="-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;" wrapText="true">
+                        <cursor>
+                           <Cursor fx:constant="TEXT" />
+                        </cursor>
+                     </TextArea>
+                     <Region HBox.hgrow="ALWAYS" />
+                     <Button fx:id="btnRealizarP" cacheShape="false" centerShape="false" defaultButton="true" focusTraversable="false" mnemonicParsing="false" onAction="#handleConfirmarPedido" scaleShape="false" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Realizar Pedido" textFill="#d4c5b0">
                         <font>
-                           <Font name="Candara Bold" size="16.0" />
+                           <Font name="Candara Bold" size="14.0" />
                         </font>
                         <cursor>
                            <Cursor fx:constant="HAND" />
                         </cursor>
+                        <HBox.margin>
+                           <Insets top="10.0" />
+                        </HBox.margin>
                      </Button>
-                     <Label layoutX="25.0" layoutY="9.0" text="Descripción:" />
-                     <TextArea fx:id="txtDescripcion" layoutX="105.0" layoutY="-2.0" maxHeight="-Infinity" maxWidth="-Infinity" prefColumnCount="266" prefHeight="53.0" prefRowCount="53" prefWidth="266.0" wrapText="true">
-                        <cursor>
-                           <Cursor fx:constant="TEXT" />
-                        </cursor></TextArea>
+                     <Region layoutX="341.0" layoutY="10.0" HBox.hgrow="ALWAYS" />
                   </children>
-               </Pane>
-            </children></VBox>
+               </HBox>
+            </children>
+            <padding>
+               <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+            </padding></VBox>
 
         </VBox>
     </center>

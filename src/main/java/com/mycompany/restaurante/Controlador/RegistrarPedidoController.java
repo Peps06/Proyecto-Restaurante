@@ -17,7 +17,7 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import java.util.Optional;
 
-public class VentanaRegistroController {
+public class RegistrarPedidoController {
 
     @FXML private TextField txtBusqueda; 
     @FXML private TableView<Producto> tableMenu;
@@ -97,9 +97,14 @@ public class VentanaRegistroController {
     private void handleBuscar() {
         String texto = txtBusqueda.getText().toLowerCase();
         filteredData.setPredicate(producto -> {
-            if (texto == null || texto.isEmpty()) return true;
             return producto.getNombre().toLowerCase().contains(texto);
         });
+        txtBusqueda.clear();
+    }
+    
+    @FXML
+    private void handleMostrarTabla(){
+        filteredData.setPredicate(p -> true);
         txtBusqueda.clear();
     }
 

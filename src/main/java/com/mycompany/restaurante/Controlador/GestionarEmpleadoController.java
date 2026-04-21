@@ -36,7 +36,6 @@ public class GestionarEmpleadoController {
     @FXML private TableColumn<Empleado, String> colAsistencia;
     @FXML private TableColumn<Empleado, String> colTelefono;
 
-    // Nuestra "base de datos" temporal en memoria
     private ObservableList<Empleado> datosMaestros = FXCollections.observableArrayList();
 
     @FXML
@@ -74,11 +73,11 @@ public class GestionarEmpleadoController {
 
     private void crearDatosFicticios() {
         datosMaestros.addAll(
-            new Empleado(101, "Rubi Mendoza", "Recepcionista", "Presente", "228-111-2233"),
-            new Empleado(102, "Citlaly Morales", "Chef", "Presente", "228-444-5566"),
-            new Empleado(103, "Dana Carmona", "Chef", "Ausente", "228-777-8899"),
-            new Empleado(104, "Marco Aurelio", "Recepcionista", "Presente", "228-222-3344"),
-            new Empleado(105, "Sofía Ramírez", "Mesero", "Presente", "228-555-6677")
+            new Empleado(101, "Rubi Mendoza", "Recepcionista", "Presente", "2281112233"),
+            new Empleado(102, "Citlaly Morales", "Mesero", "Presente", "2284445566"),
+            new Empleado(103, "Dana Carmona", "Chef", "Ausente", "2287778899"),
+            new Empleado(104, "Marco Aurelio", "Recepcionista", "Presente", "2282223344"),
+            new Empleado(105, "Sofía Ramírez", "Mesero", "Presente", "2285556677")
         );
         tablaEmpleados.setItems(datosMaestros);
     }
@@ -110,11 +109,6 @@ public class GestionarEmpleadoController {
     private void manejarBusqueda() {
         String textoBusqueda = txtBusqueda.getText().toLowerCase().trim();
 
-        if (textoBusqueda.isEmpty()) {
-            tablaEmpleados.setItems(datosMaestros);
-            return;
-        }
-
         // Filtra por ID, Nombre o Puesto
         ObservableList<Empleado> filtrados = datosMaestros.filtered(empleado -> 
             String.valueOf(empleado.getId()).contains(textoBusqueda) || 
@@ -128,9 +122,16 @@ public class GestionarEmpleadoController {
         } else {
             tablaEmpleados.setItems(filtrados);
         }
+        txtBusqueda.clear();
+    }
+    
+    @FXML
+    private void handleMostrarTabla(){
+        tablaEmpleados.setItems(datosMaestros);
+        txtBusqueda.clear();
     }
 
-   @FXML
+    @FXML
     private void manejarAsistencia() {
     // 1. Obtener el empleado seleccionado
     Empleado seleccionado = tablaEmpleados.getSelectionModel().getSelectedItem();
@@ -150,7 +151,7 @@ public class GestionarEmpleadoController {
     // 4. Esperar la respuesta del usuario
     Optional<ButtonType> resultado = confirmacion.showAndWait();
 
-    // 5. Si el usuario presiona "Aceptar" (OK)
+    // 5. Si el usuario presiona "Aceptar"
     if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
         // Alternar el estado
         if (seleccionado.getAsistencia().equalsIgnoreCase("Presente")) {
@@ -159,10 +160,10 @@ public class GestionarEmpleadoController {
             seleccionado.setAsistencia("Presente");
         }
 
-        // 6. Refrescar la tabla para que se vea el cambio de color (el que ya programamos)
+        // 6. Refrescar la tabla para que se vea el cambio de color
         tablaEmpleados.refresh();
         
-        // 7. Mensaje de éxito (Opcional, actúa como el "Toast" que mencionabas)
+        // 7. Mensaje de éxito
         mostrarAlerta("Éxito", "Estado actualizado a: " + seleccionado.getAsistencia(), Alert.AlertType.INFORMATION);
     }
 }
@@ -170,33 +171,32 @@ public class GestionarEmpleadoController {
     @FXML
     private void manejarAgregar() {
     try {
-        // 1. Cargamos el FXML de la nueva ventana de registro
+        // 1. el FXML de la nueva ventana de registro
      
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/restaurante/fxml/RegistrarEmpleado.fxml"));
         Parent root = loader.load();
         
-        // 2. Configuramos el "Escenario" (Stage) para la nueva ventana
+        // 2. Escenario para la nueva ventana
         Stage stage = new Stage();
         stage.setTitle("Saveurs Paris - Registro de Personal");
         
-        // Esto hace que no se pueda interactuar con la tabla hasta cerrar el registro
+        // No se puede interactuar con la tabla hasta cerrar el registro
         stage.initModality(Modality.APPLICATION_MODAL); 
         stage.setScene(new Scene(root));
         
-        // 3. Mostramos la ventana y esperamos a que el usuario termine
+        // 3. Se muestra la ventana y se espera a que el usuario termine
         stage.showAndWait();
         
-        // 4. Una vez cerrada, le pedimos al controlador de esa ventana el empleado creado
         RegistrarEmpleadoController controller = loader.getController();
         Empleado nuevo = controller.getNuevoEmpleado();
         
-        // 5. Si el empleado no es nulo (es decir, si no dio clic en Cancelar)
+        // 5. Si el empleado  no dio clic en Cancelar
         if (nuevo != null) {
-            // Asignamos el ID automático basado en el tamaño de la lista actual
+            // Se le asigna el ID automático basado en el tamaño de la lista actual
             int nuevoId = datosMaestros.size() + 101;
             nuevo.setId(nuevoId);
             
-            // Lo agregamos a nuestra lista maestra
+            // Se agrega a la lista "MAestra"
             datosMaestros.add(nuevo);
             
             // Refrescamos la tabla para que aparezca de inmediato

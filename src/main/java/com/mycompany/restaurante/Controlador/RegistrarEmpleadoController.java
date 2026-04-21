@@ -1,51 +1,61 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.restaurante.Controlador;
 
 /**
  *
- * @author mrubi
+ * @author Rubi
  */
 
 import com.mycompany.restaurante.Modelo.Empleado;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 
 public class RegistrarEmpleadoController {
 
-    // Estos nombres deben ser los mismos que pongas en el fx:id de Scene Builder
     @FXML private TextField txtNombre;
     @FXML private TextField txtTelefono;
-    @FXML private TextField txtPuesto;
+    @FXML private ComboBox<String> boxPuesto;
+    
+    private static final String[] EMPLEADOS = {
+        "Administrador",
+        "Cajero",
+        "Chef",
+        "Mesero",
+        "Recepcionista"
+    };
 
     private Empleado nuevoEmpleado;
 
     @FXML
-    private void guardar() {
+    private void initialize() {
+        boxPuesto.getItems().setAll(EMPLEADOS);
+    }
+
+    @FXML
+    private void RegistrarEmpleado() {
         // 1. Validación de campos vacíos
-        if (txtNombre.getText().isEmpty() || txtTelefono.getText().isEmpty() || txtPuesto.getText().isEmpty()) {
+        if (txtNombre.getText().isEmpty() || txtTelefono.getText().isEmpty() || boxPuesto.getValue() == null) {
             mostrarAlerta("Campos incompletos", "Por favor, llena todos los datos.");
             return;
         }
 
         // 2. Validación de teléfono (Solo números Y exactamente 10 dígitos)
         String tel = txtTelefono.getText().trim();
-
+        
         if (!tel.matches("\\d{10}")) {
-        mostrarAlerta("Error en teléfono", "El teléfono debe contener exactamente 10 dígitos numéricos.");
-        return;
-}
+            mostrarAlerta("Error en teléfono", "El teléfono debe contener exactamente 10 dígitos numéricos.");
+            return;
+        }
 
         // 3. Crear el objeto si todo está bien
         nuevoEmpleado = new Empleado(
             0, // El ID se asigna en el controlador principal
             txtNombre.getText(),
-            txtPuesto.getText(),
-            "Presente", // Valor por defecto
+            boxPuesto.getValue(),
+            "Ausente", // Valor por defecto
             txtTelefono.getText()
         );
 
@@ -68,11 +78,12 @@ public class RegistrarEmpleadoController {
     public Empleado getNuevoEmpleado() {
         return nuevoEmpleado;
     }
+
     public void cargarDatos(Empleado empleado) {
-    txtNombre.setText(empleado.getNombre());
-    txtTelefono.setText(empleado.getTelefono());
-    txtPuesto.setText(empleado.getPuesto());
-}
+        txtNombre.setText(empleado.getNombre());
+        txtTelefono.setText(empleado.getTelefono());
+        boxPuesto.setValue(empleado.getPuesto());
+    }
 
     private void mostrarAlerta(String titulo, String mensaje) {
         Alert alerta = new Alert(Alert.AlertType.WARNING);

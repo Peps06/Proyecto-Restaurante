@@ -58,7 +58,7 @@
                   <Insets left="20.0" right="20.0" top="25.0" />
                </VBox.margin>
                <children>
-                  <Button fx:id="btnCobrarMesa" mnemonicParsing="false" onAction="#handleCobrarMesa" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Cobrar Mesa" textFill="#d4c5b0">
+                  <Button fx:id="btnCobrarMesa" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#handleCobrarMesa" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Cobrar Mesa" textFill="#d4c5b0">
                      <font>
                         <Font name="Candara Bold" size="19.0" />
                      </font>
@@ -73,7 +73,7 @@
                   <Insets bottom="25.0" left="20.0" right="20.0" top="15.0" />
                </VBox.margin>
                <children>
-                  <Button fx:id="btnCerrarSesion" cancelButton="true" mnemonicParsing="false" onAction="#handleCerrarSesion" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Cerrar Sesión" textFill="#d4c5b0">
+                  <Button fx:id="btnCerrarSesion" cancelButton="true" focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#handleCerrarSesion" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Cerrar Sesión" textFill="#d4c5b0">
                      <font>
                         <Font name="Candara Bold" size="19.0" />
                      </font>
@@ -149,7 +149,7 @@
                                     <Insets />
                                  </opaqueInsets>
                                  <children>
-                                    <Button fx:id="btnMesa1" layoutX="35.0" layoutY="98.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-font-family: mont;" text="1">
+                                    <Button fx:id="btnMesa1" focusTraversable="false" layoutX="35.0" layoutY="98.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-font-family: mont;" text="1">
                                        <font>
                                           <Font name="Candara" size="15.0" />
                                        </font>
@@ -157,7 +157,7 @@
                                           <Cursor fx:constant="HAND" />
                                        </cursor>
                                     </Button>
-                                    <Button fx:id="btnMesa5" layoutX="260.0" layoutY="23.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-font-family: mont;" text="5" GridPane.rowIndex="1">
+                                    <Button fx:id="btnMesa5" focusTraversable="false" layoutX="260.0" layoutY="23.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-font-family: mont;" text="5" GridPane.rowIndex="1">
                                        <font>
                                           <Font name="Candara" size="15.0" />
                                        </font>
@@ -165,7 +165,7 @@
                                           <Cursor fx:constant="HAND" />
                                        </cursor>
                                     </Button>
-                                    <Button fx:id="btnMesa9" layoutX="260.0" layoutY="98.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-font-family: mont;" text="9" GridPane.rowIndex="2">
+                                    <Button fx:id="btnMesa9" focusTraversable="false" layoutX="260.0" layoutY="98.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-font-family: mont;" text="9" GridPane.rowIndex="2">
                                        <font>
                                           <Font name="Candara" size="15.0" />
                                        </font>
@@ -173,7 +173,7 @@
                                           <Cursor fx:constant="HAND" />
                                        </cursor>
                                     </Button>
-                                    <Button fx:id="btnMesa2" layoutX="35.0" layoutY="23.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-font-family: mont;" text="2" GridPane.columnIndex="1">
+                                    <Button fx:id="btnMesa2" focusTraversable="false" layoutX="35.0" layoutY="23.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-font-family: mont;" text="2" GridPane.columnIndex="1">
                                        <font>
                                           <Font name="Candara" size="15.0" />
                                        </font>
@@ -181,7 +181,7 @@
                                           <Cursor fx:constant="HAND" />
                                        </cursor>
                                     </Button>
-                                    <Button fx:id="btnMesa6" layoutX="35.0" layoutY="98.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-font-family: mont;" text="6" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                    <Button fx:id="btnMesa6" focusTraversable="false" layoutX="35.0" layoutY="98.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-font-family: mont;" text="6" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                        <font>
                                           <Font name="Candara" size="15.0" />
                                        </font>
@@ -189,7 +189,7 @@
                                           <Cursor fx:constant="HAND" />
                                        </cursor>
                                     </Button>
-                                    <Button fx:id="btnMesa10" layoutX="35.0" layoutY="173.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-font-family: mont;" text="10" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                    <Button fx:id="btnMesa10" focusTraversable="false" layoutX="35.0" layoutY="173.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-font-family: mont;" text="10" GridPane.columnIndex="1" GridPane.rowIndex="2">
                                        <font>
                                           <Font name="Candara" size="15.0" />
                                        </font>
@@ -197,7 +197,7 @@
                                           <Cursor fx:constant="HAND" />
                                        </cursor>
                                     </Button>
-                                    <Button fx:id="btnMesa3" layoutX="110.0" layoutY="23.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-font-family: mont;" text="3" GridPane.columnIndex="2">
+                                    <Button fx:id="btnMesa3" focusTraversable="false" layoutX="110.0" layoutY="23.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-font-family: mont;" text="3" GridPane.columnIndex="2">
                                        <font>
                                           <Font name="Candara" size="15.0" />
                                        </font>
@@ -205,7 +205,7 @@
                                           <Cursor fx:constant="HAND" />
                                        </cursor>
                                     </Button>
-                                    <Button fx:id="btnMesa7" layoutX="110.0" layoutY="98.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-font-family: mont;" text="7" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                    <Button fx:id="btnMesa7" focusTraversable="false" layoutX="110.0" layoutY="98.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-font-family: mont;" text="7" GridPane.columnIndex="2" GridPane.rowIndex="1">
                                        <font>
                                           <Font name="Candara" size="15.0" />
                                        </font>
@@ -213,7 +213,7 @@
                                           <Cursor fx:constant="HAND" />
                                        </cursor>
                                     </Button>
-                                    <Button fx:id="btnMesa11" layoutX="110.0" layoutY="173.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-font-family: mont;" text="11" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                                    <Button fx:id="btnMesa11" focusTraversable="false" layoutX="110.0" layoutY="173.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-font-family: mont;" text="11" GridPane.columnIndex="2" GridPane.rowIndex="2">
                                        <font>
                                           <Font name="Candara" size="15.0" />
                                        </font>
@@ -221,7 +221,7 @@
                                           <Cursor fx:constant="HAND" />
                                        </cursor>
                                     </Button>
-                                    <Button fx:id="btnMesa4" layoutX="185.0" layoutY="23.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-font-family: mont;" text="4" GridPane.columnIndex="3">
+                                    <Button fx:id="btnMesa4" focusTraversable="false" layoutX="185.0" layoutY="23.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-font-family: mont;" text="4" GridPane.columnIndex="3">
                                        <font>
                                           <Font name="Candara" size="15.0" />
                                        </font>
@@ -229,7 +229,7 @@
                                           <Cursor fx:constant="HAND" />
                                        </cursor>
                                     </Button>
-                                    <Button fx:id="btnMesa8" layoutX="185.0" layoutY="98.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-font-family: mont;" text="8" GridPane.columnIndex="3" GridPane.rowIndex="1">
+                                    <Button fx:id="btnMesa8" focusTraversable="false" layoutX="185.0" layoutY="98.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-font-family: mont;" text="8" GridPane.columnIndex="3" GridPane.rowIndex="1">
                                        <font>
                                           <Font name="Candara" size="15.0" />
                                        </font>
@@ -237,7 +237,7 @@
                                           <Cursor fx:constant="HAND" />
                                        </cursor>
                                     </Button>
-                                    <Button fx:id="btnMesa12" layoutX="185.0" layoutY="173.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-font-family: mont;" text="12" GridPane.columnIndex="3" GridPane.rowIndex="2">
+                                    <Button fx:id="btnMesa12" focusTraversable="false" layoutX="185.0" layoutY="173.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-font-family: mont;" text="12" GridPane.columnIndex="3" GridPane.rowIndex="2">
                                        <font>
                                           <Font name="Candara" size="15.0" />
                                        </font>
@@ -266,11 +266,11 @@
                                  </font>
                               </Label>
                               <Separator layoutX="10.0" layoutY="294.0" maxHeight="1.0" minHeight="1.0" prefHeight="1.0" style="-fx-background-color: #c9a84c; -fx-border-width: .5;" />
-                              <TableView fx:id="tableVerPedido" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="100.0" prefHeight="200.0" prefWidth="240.0">
+                              <TableView fx:id="tableVerPedido" focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="100.0" prefHeight="200.0" prefWidth="240.0">
                                 <columns>
-                                  <TableColumn fx:id="colProducto" prefWidth="105.0" sortable="false" text="Producto" />
-                                  <TableColumn fx:id="colCantidad" prefWidth="55.0" sortable="false" text="Cant." />
-                                    <TableColumn fx:id="colPrecio" sortable="false" text="Precio" />
+                                  <TableColumn fx:id="colProducto" editable="false" prefWidth="105.0" sortable="false" text="Producto" />
+                                  <TableColumn fx:id="colCantidad" editable="false" prefWidth="55.0" sortable="false" text="Cant." />
+                                    <TableColumn fx:id="colPrecio" editable="false" sortable="false" text="Precio" />
                                 </columns>
                               </TableView>
                               <Separator layoutX="10.0" layoutY="86.0" maxHeight="1.0" minHeight="1.0" prefHeight="1.0" style="-fx-background-color: #c9a84c; -fx-border-width: .5;" />
@@ -323,7 +323,7 @@
                                  <children>
                                     <HBox maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="40.0" prefWidth="250.0" spacing="15.0">
                                        <children>
-                                          <Button fx:id="btnEfectivo" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#handleEfectivo" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: #8b1a1a; -fx-font-style: bold; -fx-background-radius: 10 10 10 10;" text="Efectivo" textFill="#d4c5b0">
+                                          <Button fx:id="btnEfectivo" focusTraversable="false" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleEfectivo" prefHeight="25.0" prefWidth="100.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Efectivo" textFill="#d4c5b0">
                                              <cursor>
                                                 <Cursor fx:constant="HAND" />
                                              </cursor>
@@ -331,7 +331,7 @@
                                                 <Font name="System Bold" size="12.0" />
                                              </font>
                                           </Button>
-                                          <Button fx:id="btnTarjeta" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" onAction="#handleTarjeta" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: #8b1a1a; -fx-font-style: bold; -fx-background-radius: 10 10 10 10;" text="Tarjeta" textFill="#d4c5b0">
+                                          <Button fx:id="btnTarjeta" focusTraversable="false" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" onAction="#handleTarjeta" prefHeight="25.0" prefWidth="100.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Tarjeta" textFill="#d4c5b0">
                                              <cursor>
                                                 <Cursor fx:constant="HAND" />
                                              </cursor>
@@ -351,7 +351,7 @@
                                                 <Insets left="5.0" />
                                              </padding>
                                           </Label>
-                                          <Spinner fx:id="spinnerMonto" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="110.0" />
+                                          <Spinner fx:id="spinnerMonto" focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="110.0" />
                                        </children>
                                     </HBox>
                                     <HBox layoutX="10.0" layoutY="50.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="40.0" prefWidth="250.0" spacing="10.0">
@@ -374,7 +374,7 @@
                                     <Separator maxHeight="1.0" minHeight="1.0" prefHeight="1.0" style="-fx-background-color: #c9a84c; -fx-border-width: .5;" />
                                     <HBox layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="40.0" prefWidth="250.0" spacing="15.0">
                                        <children>
-                                          <Button fx:id="btnRegistrarPago" defaultButton="true" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#handleRegistrarPago" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: #8b1a1a; -fx-font-style: bold; -fx-background-radius: 10 10 10 10;" text="Registrar pago" textFill="#d4c5b0">
+                                          <Button fx:id="btnRegistrarPago" defaultButton="true" focusTraversable="false" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleRegistrarPago" prefHeight="25.0" prefWidth="100.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Registrar pago" textFill="#d4c5b0">
                                              <cursor>
                                                 <Cursor fx:constant="HAND" />
                                              </cursor>
@@ -382,7 +382,7 @@
                                                 <Font name="System Bold" size="12.0" />
                                              </font>
                                           </Button>
-                                          <Button fx:id="btnFacturar" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#handleFacturar" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: #1A1E2E; -fx-font-style: bold; -fx-background-radius: 10 10 10 10;" text="Facturar" textFill="#d4c5b0">
+                                          <Button fx:id="btnFacturar" focusTraversable="false" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleFacturar" prefHeight="25.0" prefWidth="100.0" style="-fx-background-color: #1A1E2E; -fx-background-radius: 10 10 10 10;" text="Facturar" textFill="#d4c5b0">
                                              <cursor>
                                                 <Cursor fx:constant="HAND" />
                                              </cursor>
