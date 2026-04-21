@@ -21,9 +21,26 @@ public class Empleado {
     }
 
     // Getters
-    public int getId() { return id; }
-    public String getNombre() { return nombre; }
-    public String getPuesto() { return puesto; }
-    public String getAsistencia() { return asistencia; }
-    public String getTelefono() { return telefono; }
+    public int getId() { 
+        return id; }
+    public String getNombre() {
+        return nombre; }
+    public String getPuesto() {
+        return puesto; }
+    public String getAsistencia() {
+        return asistencia; }
+    public String getTelefono() {
+        return telefono; }
+    
+    // Setters 
+    public void setId(int id) {
+        this.id = id; }
+    public void setNombre(String nombre) {
+        this.nombre = nombre; }
+    public void setPuesto(String puesto) {
+        this.puesto = puesto; }
+    public void setAsistencia(String asistencia) {
+        this.asistencia = asistencia; }
+    public void setTelefono(String telefono) { 
+        this.telefono = telefono; }
 }

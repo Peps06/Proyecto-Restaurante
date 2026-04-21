@@ -48,7 +48,7 @@
                   <Insets left="20.0" right="20.0" top="25.0" />
                </VBox.margin>
                <children>
-                  <Button fx:id="btnGestionarPedidos" mnemonicParsing="false" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Empleados" textFill="#d4c5b0">
+                  <Button fx:id="btnEmpleados" mnemonicParsing="false" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Empleados" textFill="#d4c5b0">
                      <font>
                         <Font name="Candara Bold" size="19.0" />
                      </font>
@@ -125,7 +125,7 @@
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </Button>
-                        <Button fx:id="btnCerrarSesion2" layoutX="37.0" layoutY="285.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="76.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Agregar" textFill="#d4c5b0">
+                        <Button fx:id="btnAgregar" layoutX="37.0" layoutY="285.0" mnemonicParsing="false" onAction="#manejarAgregar" prefHeight="16.0" prefWidth="76.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Agregar" textFill="#d4c5b0">
                            <font>
                               <Font name="Candara Bold" size="14.0" />
                            </font>
@@ -133,7 +133,7 @@
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </Button>
-                        <Button fx:id="btnCerrarSesion4" layoutX="457.0" layoutY="285.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="82.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Asistencia" textFill="#d4c5b0">
+                        <Button fx:id="btnAsistencia" layoutX="457.0" layoutY="285.0" mnemonicParsing="false" onAction="#manejarAsistencia" prefHeight="27.0" prefWidth="82.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Asistencia" textFill="#d4c5b0">
                            <font>
                               <Font name="Candara Bold" size="14.0" />
                            </font>
@@ -149,7 +149,7 @@
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </Button>
-                        <Button fx:id="btnCerrarSesion411" layoutX="172.0" layoutY="285.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="82.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Editar" textFill="#d4c5b0">
+                        <Button fx:id="btnEditar" layoutX="172.0" layoutY="285.0" mnemonicParsing="false" onAction="#manejarEditar" prefHeight="27.0" prefWidth="82.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Editar" textFill="#d4c5b0">
                            <font>
                               <Font name="Candara Bold" size="14.0" />
                            </font>
