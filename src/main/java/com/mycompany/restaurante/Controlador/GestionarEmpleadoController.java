@@ -18,6 +18,8 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.Modality;
 import java.io.IOException;
+import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
 import javafx.scene.paint.Color; 
 
@@ -35,6 +37,7 @@ public class GestionarEmpleadoController {
     @FXML private TableColumn<Empleado, String> colPuesto;
     @FXML private TableColumn<Empleado, String> colAsistencia;
     @FXML private TableColumn<Empleado, String> colTelefono;
+    @FXML private Button btnCerrarSesion;
 
     private ObservableList<Empleado> datosMaestros = FXCollections.observableArrayList();
 
@@ -261,5 +264,27 @@ public class GestionarEmpleadoController {
         alerta.setHeaderText(null);
         alerta.setContentText(mensaje);
         alerta.showAndWait();
+    }
+    
+    @FXML
+    private void handleCerrarSesion(ActionEvent event) {
+        try {
+            // 1. Cargar directamente la pantalla de Login
+            Parent root = FXMLLoader.load(getClass().getResource("/com/mycompany/restaurante/fxml/LoginPantalla.fxml"));
+
+            // 2. Obtener la ventana actual usando el evento del clic
+            javafx.scene.Node nodoOrigen = (javafx.scene.Node) event.getSource();
+            Stage stageActual = (Stage) nodoOrigen.getScene().getWindow();
+
+            // 3. Cambiar la escena
+            Scene nuevaEscena = new Scene(root);
+            stageActual.setScene(nuevaEscena);
+            stageActual.setTitle("Iniciar sesión - Saveurs Paris");
+            stageActual.centerOnScreen();
+            stageActual.show();
+
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+        }
     }
 }

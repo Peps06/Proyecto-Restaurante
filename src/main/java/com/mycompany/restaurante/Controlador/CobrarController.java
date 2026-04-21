@@ -316,15 +316,24 @@ public class CobrarController implements Initializable {
     // 
     @FXML
     private void handleCerrarSesion(ActionEvent event) {
-        Alert conf = new Alert(Alert.AlertType.CONFIRMATION);
-        conf.setTitle("Cerrar sesión");
-        conf.setHeaderText("¿Desea cerrar la sesión?");
-        conf.setContentText("Se cerrará la pantalla actual.");
-        conf.showAndWait().ifPresent(r -> {
-            if (r == ButtonType.OK) {
-                ((Stage) btnCerrarSesion.getScene().getWindow()).close();
-            }
-        });
+        try {
+            // 1. Cargar directamente la pantalla de Login
+            Parent root = FXMLLoader.load(getClass().getResource("/com/mycompany/restaurante/fxml/LoginPantalla.fxml"));
+
+            // 2. Obtener la ventana actual usando el evento del clic
+            javafx.scene.Node nodoOrigen = (javafx.scene.Node) event.getSource();
+            Stage stageActual = (Stage) nodoOrigen.getScene().getWindow();
+
+            // 3. Cambiar la escena
+            Scene nuevaEscena = new Scene(root);
+            stageActual.setScene(nuevaEscena);
+            stageActual.setTitle("Iniciar sesión - Saveurs Paris");
+            stageActual.centerOnScreen();
+            stageActual.show();
+
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // 
