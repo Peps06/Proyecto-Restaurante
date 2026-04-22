@@ -14,6 +14,8 @@ public class App extends Application {
 //        URL resource = getClass().getResource("/com/mycompany/restaurante/fxml/RegistrarPedidoPantalla.fxml");
 //        URL resource = getClass().getResource("/com/mycompany/restaurante/fxml/CobrarPantalla.fxml");
 //        URL resource = getClass().getResource("/com/mycompany/restaurante/fxml/GestionarEmpleado.fxml");
+
+        //original
         URL resource = getClass().getResource("/com/mycompany/restaurante/fxml/LoginPantalla.fxml");
 
         Parent root = FXMLLoader.load(resource);
