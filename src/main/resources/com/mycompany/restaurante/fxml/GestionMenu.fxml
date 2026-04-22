@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="470.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.restaurante.Controlador.GestionMenuController">
+   <top>
+      <HBox alignment="CENTER_LEFT" prefHeight="70.0" style="-fx-background-color: #2c3b62;">
+         <children>
+            <ImageView fitHeight="50.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../../img/tipoAzul.png" />
+               </image>
+               <HBox.margin>
+                  <Insets left="35.0" right="20.0" />
+               </HBox.margin>
+            </ImageView>
+            <Region HBox.hgrow="ALWAYS" />
+            <Label alignment="CENTER" text="Administrador" textFill="#f5efe6">
+               <font>
+                  <Font name="Franklin Gothic Heavy" size="30.0" />
+               </font>
+            </Label>
+            <Region HBox.hgrow="ALWAYS" />
+            <Region layoutX="602.0" layoutY="10.0" HBox.hgrow="ALWAYS" />
+         </children>
+      </HBox>
+   </top>
+   <left>
+      <VBox prefWidth="220.0" style="-fx-background-color: #1a1e2e;" BorderPane.alignment="TOP_CENTER">
+         <children>
+            <VBox spacing="12.0" VBox.vgrow="ALWAYS">
+               <VBox.margin>
+                  <Insets left="20.0" right="20.0" top="25.0" />
+               </VBox.margin>
+               <children>
+                  <Button fx:id="btnEmpleados" focusTraversable="false" mnemonicParsing="false" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Empleados" textFill="#d4c5b0">
+                     <font>
+                        <Font name="Candara Bold" size="19.0" />
+                     </font>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+                  <Button fx:id="btnGestionarPedidos1" focusTraversable="false" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Menú" textFill="#d4c5b0">
+                     <font>
+                        <Font name="Candara Bold" size="19.0" />
+                     </font>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+                  <Button fx:id="btnGestionarPedidos11" focusTraversable="false" layoutX="10.0" layoutY="64.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Almacén" textFill="#d4c5b0">
+                     <font>
+                        <Font name="Candara Bold" size="19.0" />
+                     </font>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+                  <Button fx:id="btnGestionarPedidos12" focusTraversable="false" layoutX="10.0" layoutY="64.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Reportes" textFill="#d4c5b0">
+                     <font>
+                        <Font name="Candara Bold" size="19.0" />
+                     </font>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+                  <Button fx:id="btnGestionarPedidos111" focusTraversable="false" layoutX="10.0" layoutY="119.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Historial" textFill="#d4c5b0">
+                     <font>
+                        <Font name="Candara Bold" size="19.0" />
+                     </font>
+                     <graphic>
+                        <Region />
+                     </graphic>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+               </children>
+            </VBox>
+            <VBox>
+               <VBox.margin>
+                  <Insets bottom="25.0" left="20.0" right="20.0" top="15.0" />
+               </VBox.margin>
+               <children>
+                  <Button fx:id="btnCerrarSesion1" cancelButton="true" focusTraversable="false" mnemonicParsing="false" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Cerrar sesión" textFill="#d4c5b0">
+                     <font>
+                        <Font name="Candara Bold" size="19.0" />
+                     </font>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+               </children>
+            </VBox>
+         </children>
+      </VBox>
+   </left>
+   <center>
+      <VBox style="-fx-background-color: #f5efe6;" BorderPane.alignment="CENTER">
+         <children>
+            <HBox alignment="CENTER_LEFT" prefHeight="60.0" style="-fx-background-color: #f5efe6;">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+               <children>
+                  <Label style="-fx-text-fill: #2c3b62;" text="Gestión de menú" textFill="#1a1e2e">
+                     <font>
+                        <Font name="Candara Bold" size="25.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets left="20.0" />
+                     </HBox.margin>
+                  </Label>
+                  <Region HBox.hgrow="ALWAYS" />
+               </children>
+            </HBox>
+            <Separator prefWidth="200.0" style="-fx-background-color: #c9a84c;" />
+            <VBox alignment="CENTER" spacing="10.0" VBox.vgrow="ALWAYS">
+               <children>
+                  <Pane prefHeight="325.0" prefWidth="580.0">
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                     <children>
+                        <VBox prefHeight="325.0" prefWidth="580.0" spacing="20.0">
+                           <children>
+                              <HBox maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="580.0">
+                                 <children>
+                                    <TextField fx:id="txtBusqueda" focusTraversable="false" prefHeight="25.0" prefWidth="350.0" promptText="Ingresar nombre ..." style="-fx-background-radius: 10 10 10 10;">
+                                       <cursor>
+                                          <Cursor fx:constant="TEXT" />
+                                       </cursor>
+                                    </TextField>
+                                    <Region HBox.hgrow="ALWAYS" />
+                                    <Button fx:id="btnBuscar" focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#handleBuscar" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Buscar" textFill="#d4c5b0">
+                                       <font>
+                                          <Font name="Candara Bold" size="14.0" />
+                                       </font>
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor>
+                                    </Button>
+                                    <Region layoutX="360.0" layoutY="10.0" HBox.hgrow="ALWAYS" />
+                                    <Button fx:id="btnMostrar" focusTraversable="false" layoutX="464.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#handleMostrarTabla" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Mostrar" textFill="#d4c5b0">
+                                       <font>
+                                          <Font name="Candara Bold" size="14.0" />
+                                       </font>
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor>
+                                    </Button>
+                                 </children>
+                              </HBox>
+                              <TableView fx:id="tablaMenu" focusTraversable="false" prefHeight="422.0" prefWidth="540.0" style="-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;">
+                                 <columns>
+                                    <TableColumn fx:id="colNombre" prefWidth="139.20001220703125" text="Nombre del producto" />
+                                    <TableColumn fx:id="colTipo" prefWidth="103.20001220703125" text="Tipo" />
+                                    <TableColumn fx:id="colPrecio" prefWidth="88.79998779296875" text="Precio" />
+                                    <TableColumn fx:id="colDescripcion" prefWidth="210.4000244140625" text="Descrpción" />
+                                 </columns>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
+                              </TableView>
+                              <HBox prefHeight="100.0" prefWidth="200.0">
+                                 <children>
+                                    <Button fx:id="btnAgregar" focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#manejarAgregar" prefHeight="25.0" prefWidth="85.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Agregar" textFill="#d4c5b0">
+                                       <font>
+                                          <Font name="Candara Bold" size="14.0" />
+                                       </font>
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor>
+                                    </Button>
+                                    <Region HBox.hgrow="ALWAYS" />
+                                    <Button fx:id="btnEditar" focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#manejarEditar" prefHeight="25.0" prefWidth="85.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Editar" textFill="#d4c5b0">
+                                       <font>
+                                          <Font name="Candara Bold" size="14.0" />
+                                       </font>
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor>
+                                    </Button>
+                                    <Region HBox.hgrow="ALWAYS" />
+                                    <Region HBox.hgrow="ALWAYS" />
+                                    <Button fx:id="btnEliminar" focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#manejarEliminar" prefHeight="25.0" prefWidth="85.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Eliminar" textFill="#d4c5b0">
+                                       <font>
+                                          <Font name="Candara Bold" size="14.0" />
+                                       </font>
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor>
+                                    </Button>
+                                 </children>
+                              </HBox>
+                           </children>
+                           <padding>
+                              <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                           </padding>
+                        </VBox>
+                     </children>
+                  </Pane>
+               </children>
+            </VBox>
+         </children>
+      </VBox>
+   </center>
+</BorderPane>
