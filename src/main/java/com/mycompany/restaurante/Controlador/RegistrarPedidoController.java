@@ -16,6 +16,10 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import java.util.Optional;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 
 public class RegistrarPedidoController {
 
@@ -164,8 +168,24 @@ public class RegistrarPedidoController {
     }
 
     @FXML
-    private void handleCerrarSesion() {
-        Stage stage = (Stage) btnCerrarSesion.getScene().getWindow();
-        stage.close();
+    private void handleCerrarSesion(ActionEvent event) {
+        try {
+            // 1. Cargar directamente la pantalla de Login
+            Parent root = FXMLLoader.load(getClass().getResource("/com/mycompany/restaurante/fxml/LoginPantalla.fxml"));
+
+            // 2. Obtener la ventana actual usando el evento del clic
+            javafx.scene.Node nodoOrigen = (javafx.scene.Node) event.getSource();
+            Stage stageActual = (Stage) nodoOrigen.getScene().getWindow();
+
+            // 3. Cambiar la escena
+            Scene nuevaEscena = new Scene(root);
+            stageActual.setScene(nuevaEscena);
+            stageActual.setTitle("Iniciar sesión - Saveurs Paris");
+            stageActual.centerOnScreen();
+            stageActual.show();
+
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+        }
     }
 }

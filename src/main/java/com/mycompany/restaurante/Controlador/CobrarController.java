@@ -72,10 +72,10 @@ public class CobrarController implements Initializable {
         "-fx-border-radius: 10 10 10 10; -fx-text-fill: #d4c5b0;";
     private static final String ESTILO_BTN_ACTIVO =
         "-fx-background-color: #2c3b62; -fx-text-fill: #d4c5b0; -fx-background-radius: 10 10 10 10;" +
-        "-fx-background-radius: 10 10 10 10;";
+        "-fx-border-radius: 10 10 10 10;";
     private static final String ESTILO_BTN_INACTIVO =
         "-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" +
-        "-fx-background-radius: 10 10 10 10; -fx-text-fill: #d4c5b0;";
+        "-fx-border-radius: 10 10 10 10; -fx-text-fill: #d4c5b0;";
 
     //  Datos de prueba por mesa
     private final ObservableList<OrdenItem> ordenMesaPrueba =
@@ -149,8 +149,8 @@ public class CobrarController implements Initializable {
         total = subtotal + iva;
 
         labelSubtotal.setText("$" + String.format("%.2f", subtotal));
-        labelIVA.setText("$"      + String.format("%.2f", iva));
-        labelTotal.setText("$"    + String.format("%.2f", total));
+        labelIVA.setText("$" + String.format("%.2f", iva));
+        labelTotal.setText("$" + String.format("%.2f", total));
 
         // Resetear método de pago y monto
         spinnerMonto.getValueFactory().setValue(0.0);
@@ -316,15 +316,24 @@ public class CobrarController implements Initializable {
     // 
     @FXML
     private void handleCerrarSesion(ActionEvent event) {
-        Alert conf = new Alert(Alert.AlertType.CONFIRMATION);
-        conf.setTitle("Cerrar sesión");
-        conf.setHeaderText("¿Desea cerrar la sesión?");
-        conf.setContentText("Se cerrará la pantalla actual.");
-        conf.showAndWait().ifPresent(r -> {
-            if (r == ButtonType.OK) {
-                ((Stage) btnCerrarSesion.getScene().getWindow()).close();
-            }
-        });
+        try {
+            // 1. Cargar directamente la pantalla de Login
+            Parent root = FXMLLoader.load(getClass().getResource("/com/mycompany/restaurante/fxml/LoginPantalla.fxml"));
+
+            // 2. Obtener la ventana actual usando el evento del clic
+            javafx.scene.Node nodoOrigen = (javafx.scene.Node) event.getSource();
+            Stage stageActual = (Stage) nodoOrigen.getScene().getWindow();
+
+            // 3. Cambiar la escena
+            Scene nuevaEscena = new Scene(root);
+            stageActual.setScene(nuevaEscena);
+            stageActual.setTitle("Iniciar sesión - Saveurs Paris");
+            stageActual.centerOnScreen();
+            stageActual.show();
+
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // 

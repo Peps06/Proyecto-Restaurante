@@ -98,7 +98,7 @@
                   <Insets bottom="25.0" left="20.0" right="20.0" top="15.0" />
                </VBox.margin>
                <children>
-                  <Button fx:id="btnCerrarSesion1" cancelButton="true" focusTraversable="false" mnemonicParsing="false" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Cerrar sesión" textFill="#d4c5b0">
+                  <Button fx:id="btnCerrarSesion" cancelButton="true" focusTraversable="false" mnemonicParsing="false" onAction="#handleCerrarSesion" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Cerrar sesión" textFill="#d4c5b0">
                      <font>
                         <Font name="Candara Bold" size="19.0" />
                      </font>
