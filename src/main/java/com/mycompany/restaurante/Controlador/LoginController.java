@@ -1,4 +1,5 @@
 package com.mycompany.restaurante.Controlador;
+
 /**
  * 
  * @author Dana
@@ -20,14 +21,11 @@ import javafx.stage.Stage;
 
 public class LoginController {
 
-    @FXML
-    private TextField txtUsuario;
+    @FXML private TextField txtUsuario;
 
-    @FXML
-    private PasswordField txtContraseña;
+    @FXML private PasswordField txtContraseña;
 
-    @FXML
-    private Button btnIniciarSesion;
+    @FXML private Button btnIniciarSesion;
 
     // Lista para almacenar los empleados (por si decides usarla más adelante)
     private ObservableList<Empleado> datosMaestros = FXCollections.observableArrayList();

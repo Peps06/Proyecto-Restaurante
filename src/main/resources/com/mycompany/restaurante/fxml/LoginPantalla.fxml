@@ -56,7 +56,7 @@
                               <PasswordField fx:id="txtContraseña" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="43.0" prefWidth="200.0" promptText="Contraseña" style="-fx-background-color: #f5efe6; -fx-background-radius: 10 10 10 10; -fx-font-family: Candara; -fx-font-size: 16px;" />
                            </children>
                         </HBox>
-                        <Button fx:id="btnIniciarSesion" mnemonicParsing="false" onAction="#handleIniciarSesion" prefHeight="42.0" prefWidth="140.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Ingresar" textFill="#d4c5b0">
+                        <Button fx:id="btnIniciarSesion" defaultButton="true" mnemonicParsing="false" onAction="#handleIniciarSesion" prefHeight="42.0" prefWidth="140.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Ingresar" textFill="#d4c5b0">
                            <font>
                               <Font name="Candara Bold" size="19.0" />
                            </font>
