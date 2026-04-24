@@ -1,6 +1,7 @@
 package com.mycompany.restaurante.Controlador;
 
 import com.mycompany.restaurante.Controlador.RegistrarEmpleadoController;
+import com.mycompany.restaurante.DAO.EmpleadoDAO;
 import javafx.collections.ObservableList;
 import javafx.collections.FXCollections;
 import com.mycompany.restaurante.Modelo.Empleado;
@@ -49,6 +50,9 @@ public class GestionarEmpleadoController {
 
     @FXML
     public void initialize() {
+        datosMaestros = EmpleadoDAO.obtenerTodos();
+        tablaEmpleados.setItems(datosMaestros);
+    
         // 1. Vincular columnas con los atributos de la clase Empleado
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
@@ -56,8 +60,6 @@ public class GestionarEmpleadoController {
         colAsistencia.setCellValueFactory(new PropertyValueFactory<>("asistencia"));
         colTelefono.setCellValueFactory(new PropertyValueFactory<>("telefono"));
 
-        // 2. Llenar la lista con datos iniciales
-        crearDatosFicticios();
         
         colAsistencia.setCellFactory(column -> {
             return new TableCell<Empleado, String>() {
@@ -83,16 +85,7 @@ public class GestionarEmpleadoController {
         });
     }
 
-    private void crearDatosFicticios() {
-        datosMaestros.addAll(
-            new Empleado(101, "Rubi Mendoza", "1234", "Recepcionista", "Presente", "2281112233"),
-            new Empleado(102, "Citlaly Morales", "1234", "Mesero", "Presente", "2284445566"),
-            new Empleado(103, "Dana Carmona","1234", "Chef", "Ausente", "2287778899"),
-            new Empleado(104, "Marco Aurelio", "1234", "Recepcionista", "Presente", "2282223344"),
-            new Empleado(105, "Sofía Ramírez", "1234", "Mesero", "Presente", "2285556677")
-        );
-        tablaEmpleados.setItems(datosMaestros);
-    }
+    
 
     @FXML
     private void manejarEliminar() {
@@ -111,6 +104,7 @@ public class GestionarEmpleadoController {
         Optional<ButtonType> resultado = confirmacion.showAndWait();
 
         if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
+            EmpleadoDAO.eliminar(seleccionado.getId());
             datosMaestros.remove(seleccionado);
             tablaEmpleados.setItems(datosMaestros);
             mostrarAlerta("Éxito", "Empleado eliminado correctamente.", Alert.AlertType.INFORMATION);
@@ -204,9 +198,13 @@ public class GestionarEmpleadoController {
 
             // 5. Si el empleado  no dio clic en Cancelar
             if (nuevo != null) {
-                // Se le asigna el ID automático basado en el tamaño de la lista actual
-                int nuevoId = datosMaestros.size() + 101;
-                nuevo.setId(nuevoId);
+                int idGenerado = EmpleadoDAO.insertar(nuevo);
+                
+                if (idGenerado == -1) {
+                    mostrarAlerta("Error", "No se pudo guardar en la base de datos.", Alert.AlertType.ERROR);
+                    return;
+                }
+                nuevo.setId(idGenerado);
 
                 // Se agrega a la lista "MAestra"
                 datosMaestros.add(nuevo);
@@ -260,8 +258,8 @@ public class GestionarEmpleadoController {
                 // Se refreca la tabla para ver los cambios
                 tablaEmpleados.refresh();
                 mostrarAlerta("Éxito", "Datos actualizados correctamente.", Alert.AlertType.INFORMATION);
+                EmpleadoDAO.actualizar(seleccionado);
             }
-
         } catch (IOException e) {
             mostrarAlerta("Error", "No se pudo abrir la ventana de edición.", Alert.AlertType.ERROR);
         }

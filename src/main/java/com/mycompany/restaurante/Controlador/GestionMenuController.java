@@ -1,5 +1,6 @@
 package com.mycompany.restaurante.Controlador;
 
+import com.mycompany.restaurante.DAO.ProductoDAO;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -16,7 +17,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 
 /**
  *
- * @author Rubi
+ * @author Dana, Rubi y Citlaly
+ * @version 2.0 (bd)
  */
 
 public class GestionMenuController {
@@ -45,11 +47,10 @@ public class GestionMenuController {
         colTipo.setCellValueFactory(new PropertyValueFactory<>("tipo"));
         colPrecio.setCellValueFactory(new PropertyValueFactory<>("precio"));
         colDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
-
-        // 2. Cargar algunos datos para probar (como en tu prototipo)
-        datosMenu.add(new Producto("Ratatouille", "Plato fuerte", 400.0, "Platillo cocinado por ratones"));
-        datosMenu.add(new Producto("Macarrón", "Postre", 60.0, "Galleta rellena"));
-        datosMenu.add(new Producto("Suflé", "Postre", 200.0, "Platillo esponjoso"));
+        
+        //2. Agregar datos de la base de datos
+        datosMenu = ProductoDAO.obtenerTodos();
+        tablaMenu.setItems(datosMenu);
 
         // 3. Setear los items a la tabla
         tablaMenu.setItems(datosMenu);
@@ -84,29 +85,29 @@ public class GestionMenuController {
     }
 
     @FXML
-private void manejarAgregar() throws IOException {
-    // 1. Cargamos el FXML de la misma ventanita
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/restaurante/fxml/FormularioProducto.fxml"));
-    Parent root = loader.load();
-    
-    // 2. Obtenemos el controlador de la ventanita
-    FormularioProductoController controlador = loader.getController();
-    
-    // 3. ¡Aquí está el truco! Le pasamos 'null' porque es un producto NUEVO
-    controlador.setProducto(null); 
-    
-    // 4. Mostramos la ventana
-    Stage stage = new Stage();
-    stage.setTitle("Saveurs Paris - Nuevo Producto");
-    stage.setScene(new Scene(root));
-    stage.showAndWait();
-    
-    // 5. Si la usuaria dio clic en "Guardar", añadimos el nuevo producto a la lista
-    if (controlador.isGuardadoExitoso()) {
-        Producto nuevo = controlador.getProducto();
-        datosMenu.add(nuevo); // Esto lo agrega automáticamente a la tabla
+    private void manejarAgregar() throws IOException {
+        // 1. Cargamos el FXML de la misma ventanita
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/restaurante/fxml/FormularioProducto.fxml"));
+        Parent root = loader.load();
+
+        // 2. Obtenemos el controlador de la ventanita
+        FormularioProductoController controlador = loader.getController();
+
+        controlador.setProducto(null); 
+
+        // 3. Mostramos la ventana
+        Stage stage = new Stage();
+        stage.setTitle("Saveurs Paris - Nuevo Producto");
+        stage.setScene(new Scene(root));
+        stage.showAndWait();
+
+        // 4. Si la usuaria dio clic en "Guardar", añadimos el nuevo producto a la lista
+        if (controlador.isGuardadoExitoso()) {
+            Producto nuevo = controlador.getProducto();
+            ProductoDAO.insertar(nuevo);
+            datosMenu.add(nuevo); // Esto lo agrega automáticamente a la tabla
+        }
     }
-}
 
     @FXML
     private void manejarEliminar() {
@@ -124,10 +125,9 @@ private void manejarAgregar() throws IOException {
             // 3. Esperar a que el usuario responda
             confirmacion.showAndWait().ifPresent(respuesta -> {
                 if (respuesta == ButtonType.OK) {
-                    // Si aceptó, lo borramos de la lista
+                    ProductoDAO.eliminar(Integer.parseInt(seleccionado.getCantidad()));
                     datosMenu.remove(seleccionado);
 
-                    // 4. Mostrar mensaje de ÉXITO
                     Alert exito = new Alert(Alert.AlertType.INFORMATION);
                     exito.setTitle("Producto eliminado");
                     exito.setHeaderText(null);
@@ -164,6 +164,7 @@ private void manejarAgregar() throws IOException {
 
             // 4. Si guardó cambios, refrescar la tabla
             if (controlador.isGuardadoExitoso()) {
+                ProductoDAO.actualizar(seleccionado);
                 tablaMenu.refresh();
             }
         }

@@ -62,6 +62,8 @@ public class CobrarController implements Initializable {
     private String metodoPago = "EFECTIVO";   // "EFECTIVO" | "TARJETA"
 
     private static final double TASA_IVA = 0.16;
+    
+    private int idOrdenActual = 0;
 
     //  Estilos 
     private static final String ESTILO_MESA_LIBRE =
@@ -293,6 +295,9 @@ public class CobrarController implements Initializable {
             // Pasar contexto al controlador de facturación
             FacturacionController facturacionCtrl = loader.getController();
             facturacionCtrl.setTotalFactura(total);
+            facturacionCtrl.setIdOrden(idOrdenActual);
+            facturacionCtrl.setSubtotal(subtotal);
+            facturacionCtrl.setIva(iva);
             facturacionCtrl.setNumMesa(mesaSeleccionada);
 
             Stage stage = new Stage();

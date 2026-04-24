@@ -1,6 +1,7 @@
 module com.mycompany.restaurante {
     requires javafx.controls;
     requires javafx.fxml;
+    requires java.sql;
 
     opens com.mycompany.restaurante.fxml to javafx.fxml;
     opens com.mycompany.restaurante.Controlador to javafx.fxml;

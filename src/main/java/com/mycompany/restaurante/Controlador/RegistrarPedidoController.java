@@ -1,10 +1,7 @@
 package com.mycompany.restaurante.Controlador;
 
-/**
- *
- * @author Dana
- */
 
+import com.mycompany.restaurante.DAO.ProductoDAO;
 import com.mycompany.restaurante.Modelo.Producto;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,6 +18,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 
+/**
+ *
+ * @author Dana, Citlaly y Rubi
+ * @version 2 (bd)
+ */
+
 public class RegistrarPedidoController {
 
     @FXML private TextField txtBusqueda; 
@@ -29,6 +32,7 @@ public class RegistrarPedidoController {
     @FXML private TableColumn<Producto, String> ColumnaDescripcion;
     @FXML private TableColumn<Producto, String> ColumnaCantidad;
     @FXML private TextArea txtDescripcion;
+    
     @FXML private Button btnRealizarP;
     @FXML private Button btnCerrarSesion;
 
@@ -37,12 +41,11 @@ public class RegistrarPedidoController {
 
     public void initialize() {
         // 1. Cargar datos
-        masterData.addAll(
-            new Producto("Ratatouille", "Plato tradicional de verduras", "0"),
-            new Producto("Macarrón", "Pasta gratinada", "0"),
-            new Producto("Soufflé", "Postre esponjoso", "0"),
-            new Producto("Copa de vino", "Vino tinto reserva", "0")
-        );
+        for (Producto p : ProductoDAO.obtenerTodos()) {
+            p.setCantidad("0");   // reinicia cantidad para el pedido
+            masterData.add(p);
+        }
+        
 
         // 2. Configurar columnas
         ColumnaNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
