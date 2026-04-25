@@ -13,10 +13,10 @@ public class App extends Application {
         //Pruebas de uso
 //        URL resource = getClass().getResource("/com/mycompany/restaurante/fxml/RegistrarPedidoPantalla.fxml");
 //        URL resource = getClass().getResource("/com/mycompany/restaurante/fxml/CobrarPantalla.fxml");
-//        URL resource = getClass().getResource("/com/mycompany/restaurante/fxml/GestionarEmpleado.fxml");
+        URL resource = getClass().getResource("/com/mycompany/restaurante/fxml/GestionAlmacen.fxml");
 
         //original
-        URL resource = getClass().getResource("/com/mycompany/restaurante/fxml/LoginPantalla.fxml");
+//       URL resource = getClass().getResource("/com/mycompany/restaurante/fxml/LoginPantalla.fxml");
 
         Parent root = FXMLLoader.load(resource);
         stage.setScene(new Scene(root));
