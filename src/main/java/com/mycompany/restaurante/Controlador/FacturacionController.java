@@ -1,5 +1,6 @@
 package com.mycompany.restaurante.Controlador;
 
+import com.mycompany.restaurante.DAO.FacturaDAO;
 import com.mycompany.restaurante.Modelo.DatosFacturacion;
 import com.mycompany.restaurante.Modelo.Factura;
 import javafx.collections.FXCollections;
@@ -16,6 +17,7 @@ import java.util.ResourceBundle;
  * Controlador de FacturacionPantalla.fxml 
  * 
  * @author Citlaly
+ * @version 2.0 (con BD)
  */
 public class FacturacionController implements Initializable {
 
@@ -63,6 +65,22 @@ public class FacturacionController implements Initializable {
         "-fx-background-color: #FFF0F0; -fx-border-color: #cc0000; -fx-border-width: 2; -fx-border-radius: 5 5 5 5;";
     private static final String ESTILO_COMBO_ERROR =
         "-fx-border-color: #cc0000; -fx-border-width: 2;";
+    
+    // campos y 
+    private int idOrden  = 0;
+    private double subtotal = 0.0;
+    private double iva = 0.0;
+    
+    //setters
+    public void setIdOrden(int id) {
+        this.idOrden  = id;
+    }
+    public void setSubtotal(double s) {
+        this.subtotal = s;
+    }
+    public void setIva(double i) {
+        this.iva = i; 
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -98,6 +116,12 @@ public class FacturacionController implements Initializable {
             );
 
             Factura factura = new Factura(numMesa, totalFactura, datos);
+            
+            boolean guardado = FacturaDAO.insertar(factura, idOrden, subtotal, iva);
+            if (!guardado) {
+                // Opcional: mostrar advertencia, la factura se generó pero no se guardó en BD
+                System.err.println("Advertencia: factura generada pero no exsistente en BD.");
+            }
 
             // mostrar mensaje de éxito con folio generado
             Alert exito = new Alert(Alert.AlertType.INFORMATION);

@@ -1,8 +1,10 @@
 package com.mycompany.restaurante.Controlador;
+
 /**
  * 
  * @author Dana
  */
+import com.mycompany.restaurante.DAO.EmpleadoDAO;
 import com.mycompany.restaurante.Modelo.Empleado;
 import java.io.IOException;
 import javafx.collections.FXCollections;
@@ -20,33 +22,17 @@ import javafx.stage.Stage;
 
 public class LoginController {
 
-    @FXML
-    private TextField txtUsuario;
+    @FXML private TextField txtUsuario;
 
-    @FXML
-    private PasswordField txtContraseña;
+    @FXML private PasswordField txtContraseña;
 
-    @FXML
-    private Button btnIniciarSesion;
+    @FXML private Button btnIniciarSesion;
 
     // Lista para almacenar los empleados (por si decides usarla más adelante)
     private ObservableList<Empleado> datosMaestros = FXCollections.observableArrayList();
 
-    @FXML
-    public void initialize() {
-        // Cargar los datos en la memoria (opcional en el login)
-        crearDatosFicticios();
-    }
-
-    private void crearDatosFicticios() {
-        datosMaestros.addAll(
-            new Empleado(101, "Rubí Mendoza", "1234", "Administrador", "Presente", "2281112233"),
-            new Empleado(102, "Dana Carmona", "1234", "Mesero", "Presente", "2287778899"),
-            new Empleado(103, "Citlaly Morales", "1234", "Cajero", "Presente", "2284445566"),
-            new Empleado(104, "Ximena", "1234", "Chef", "Ausente", "2284445566"), 
-            new Empleado(105, "Stephy", "1234", "Recepcionista", "Presente", "2285556677"),
-            new Empleado(106, "Diego", "1234", "Mesero", "Presente", "2282223344")
-        );
+    private String autenticarUsuario(String usr, String pass) {
+        return EmpleadoDAO.autenticar(usr, pass);
     }
     
     @FXML
@@ -90,21 +76,6 @@ public class LoginController {
             // Credenciales incorrectas
             mostrarAlerta(Alert.AlertType.ERROR, "Error de autenticación", "Usuario o contraseña incorrectos.");
         }
-    }
-
-    private String autenticarUsuario(String usr, String pass) {
-        String usuarioNormalizado = usr.toLowerCase().trim();
-
-        if (usuarioNormalizado.equals("rubi") && pass.equals("1234")) return "Administrador";
-        if (usuarioNormalizado.equals("dana") && pass.equals("1234")) return "Mesero";
-        
-        if (usuarioNormalizado.equals("citlaly") && pass.equals("1234")) return "Cajero";
-        if (usuarioNormalizado.equals("ximena") && pass.equals("1234")) return "Chef";
-        
-        if (usuarioNormalizado.equals("stephy") && pass.equals("1234")) return "Recepcionista";
-        if (usuarioNormalizado.equals("diego") && pass.equals("1234")) return "Mesero";
-        
-        return null; 
     }
 
     /**
