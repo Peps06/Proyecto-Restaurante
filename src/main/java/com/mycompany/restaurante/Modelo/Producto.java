@@ -7,15 +7,16 @@ package com.mycompany.restaurante.Modelo;
 public class Producto {
 
     private String nombre;
+    private int id;
     private String descripcion;
-    private String cantidad;
+    private int cantidadPedida;
     private double precio;  
     private String tipo;
     
-    public Producto(String nombre, String descripcion, String cantidad) {
+    public Producto(String nombre, String descripcion, int cantidadPedida) {
         this.nombre = nombre;
         this.descripcion = descripcion;
-        this.cantidad = cantidad;
+        this.cantidadPedida = cantidadPedida;
     }
     public Producto(String nombre, String tipo, double precio, String descripcion) {
         this.nombre = nombre;
@@ -40,13 +41,21 @@ public class Producto {
         this.descripcion = descripcion;
     }
 
-    public String getCantidad() {
-        return cantidad;
+    public int getCantidadPedida() {
+        return cantidadPedida;
     }
 
-    public void setCantidad(String cantidad) {
-        this.cantidad = cantidad;
-    } 
+    public void setCantidadPedida(int cantidadPedida) {
+        this.cantidadPedida = cantidadPedida;
+    }     
+
+    public void setId(int id){
+        this.id = id;
+    }
+    
+    public int getId(){
+        return id;
+    }
     
     public double getPrecio() {
         return precio;

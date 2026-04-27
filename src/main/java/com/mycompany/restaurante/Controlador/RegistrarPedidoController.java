@@ -20,7 +20,7 @@ import javafx.scene.Scene;
 
 /**
  *
- * @author Dana, Citlaly y Rubi
+ * @author Dana, Citlaly
  * @version 2 (bd)
  */
 
@@ -42,7 +42,7 @@ public class RegistrarPedidoController {
     public void initialize() {
         // 1. Cargar datos
         for (Producto p : ProductoDAO.obtenerTodos()) {
-            p.setCantidad("0");   // reinicia cantidad para el pedido
+            p.setCantidadPedida(0);   // reinicia cantidad para el pedido
             masterData.add(p);
         }
         
@@ -65,17 +65,17 @@ public class RegistrarPedidoController {
                 
                 btnMenos.setOnAction(e -> {
                     Producto p = getTableView().getItems().get(getIndex());
-                    int actual = Integer.parseInt(p.getCantidad());
+                    int actual = p.getCantidadPedida();
                     if (actual > 0) {
-                        p.setCantidad(String.valueOf(actual - 1));
+                        p.setCantidadPedida((actual - 1));
                         getTableView().refresh();
                     }
                 });
 
                 btnMas.setOnAction(e -> {
                     Producto p = getTableView().getItems().get(getIndex());
-                    int actual = Integer.parseInt(p.getCantidad());
-                    p.setCantidad(String.valueOf(actual + 1));
+                    int actual = p.getCantidadPedida();
+                    p.setCantidadPedida((actual + 1));
                     getTableView().refresh();
                 });
             }
@@ -87,7 +87,7 @@ public class RegistrarPedidoController {
                     setGraphic(null);
                 } else {
                     Producto p = getTableView().getItems().get(getIndex());
-                    lblCant.setText(p.getCantidad());
+                    lblCant.setText(String.valueOf(p.getCantidadPedida()));
                     setGraphic(container);
                 }
             }
@@ -122,7 +122,7 @@ public class RegistrarPedidoController {
         boolean hayProductos = false;
 
         for (Producto p : masterData) {
-            int cantidad = Integer.parseInt(p.getCantidad());
+            int cantidad = p.getCantidadPedida();
             if (cantidad > 0) {
                 resumen.append("- ").append(p.getNombre())
                        .append(" (x").append(cantidad).append(")\n");
@@ -156,7 +156,7 @@ public class RegistrarPedidoController {
         Optional<ButtonType> result = alertConf.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             System.out.println("Pedido enviado a cocina:\n" + resumen.toString());
-            masterData.forEach(p -> p.setCantidad("0"));
+            masterData.forEach(p -> p.setCantidadPedida(0));
             tableMenu.refresh();
             txtDescripcion.clear();
             Alert alertExito = new Alert(Alert.AlertType.CONFIRMATION);

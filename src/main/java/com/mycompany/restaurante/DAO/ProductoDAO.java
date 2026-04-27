@@ -13,7 +13,7 @@ import java.sql.*;
  * Es el encargado de llenar la tabla de menú, de regisstrar los pedidos, de 
  * guardar si se crea, edita o elimina un producto, todo ello en la base de datos.
  *
- * @author Citlaly, Dana y Rubi
+ * @author Citlaly
  * @version 1
  */
 public class ProductoDAO {
@@ -25,7 +25,7 @@ public class ProductoDAO {
         ObservableList<Producto> lista = FXCollections.observableArrayList();
         String sql = "SELECT idProductos, nombre, tipo, precio, descripcion FROM productos";
 
-        try (Connection con = ConexionDB.getInstancia().getConexion();
+        try (Connection con = ConexionDB.getConexion();
              Statement  st  = con.createStatement();
              ResultSet  rs  = st.executeQuery(sql)) {
 
@@ -37,7 +37,8 @@ public class ProductoDAO {
                     rs.getString("descripcion")
                 );
                 // Se guarda el id en cantidad (temporal) para poder usarlo en altas y bajas.
-                p.setCantidad(String.valueOf(rs.getInt("idProductos")));
+                p.setId(rs.getInt("idProductos"));
+                p.setCantidadPedida(0);
                 lista.add(p);
             }
 
@@ -53,7 +54,7 @@ public class ProductoDAO {
     public static int insertar(Producto p) {
         String sql = "INSERT INTO productos (nombre, tipo, precio, descripcion) VALUES (?,?,?,?)";
 
-        try (Connection con = ConexionDB.getInstancia().getConexion();
+        try (Connection con = ConexionDB.getConexion();
              PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setString(1, p.getNombre());
@@ -79,14 +80,14 @@ public class ProductoDAO {
         String sql = "UPDATE productos SET nombre=?, tipo=?, precio=?, descripcion=? "
                    + "WHERE idProductos=?";
 
-        try (Connection con = ConexionDB.getInstancia().getConexion();
+        try (Connection con = ConexionDB.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, p.getNombre());
             ps.setString(2, p.getTipo());
             ps.setDouble(3, p.getPrecio());
             ps.setString(4, p.getDescripcion());
-            ps.setInt(5, Integer.parseInt(p.getCantidad())); // id guardado en cantidad
+            ps.setInt(5, p.getCantidadPedida());
             return ps.executeUpdate() > 0;
 
         } catch (SQLException | NumberFormatException e) {
@@ -101,7 +102,7 @@ public class ProductoDAO {
     public static boolean eliminar(int id) {
         String sql = "DELETE FROM productos WHERE idProductos=?";
 
-        try (Connection con = ConexionDB.getInstancia().getConexion();
+        try (Connection con = ConexionDB.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, id);

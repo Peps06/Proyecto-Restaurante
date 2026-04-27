@@ -96,6 +96,7 @@ public class LoginController {
             // Si sí existe, cargamos la nueva vista normalmente
             FXMLLoader loader = new FXMLLoader(url);
             Parent root = loader.load();
+            
 
             // Obtener el Stage actual desde el botón
             Stage stageActual = (Stage) btnIniciarSesion.getScene().getWindow();

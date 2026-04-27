@@ -4,6 +4,7 @@ package com.mycompany.restaurante.Modelo;
  * Representa un ítem (producto) dentro de una orden/pedido de mesa.
  * 
  * @author Citlaly
+ * @version 1
  */
 public class OrdenItem {
 
