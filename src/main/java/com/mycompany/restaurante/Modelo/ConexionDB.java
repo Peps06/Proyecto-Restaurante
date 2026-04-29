@@ -28,7 +28,7 @@ public class ConexionDB {
         + "&socketTimeout=30000"; // 30 s para esperar respuesta
 
     private static final String USER = "root";
-    private static final String PASSWORD = "Mend1503";
+    private static final String PASSWORD = "Pe951LInDr0:)";
 
     static {
         try {

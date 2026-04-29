@@ -22,6 +22,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
@@ -53,6 +55,9 @@ public class CobrarController implements Initializable {
     @FXML private Button btnMesa1, btnMesa2, btnMesa3, btnMesa4;
     @FXML private Button btnMesa5, btnMesa6, btnMesa7, btnMesa8;
     @FXML private Button btnMesa9, btnMesa10, btnMesa11, btnMesa12;
+    
+    // Lista de botones
+    private List<Button> botonesMesa;
 
     //  Botones de pago / navegación 
     @FXML private Button btnEfectivo;
@@ -76,11 +81,13 @@ public class CobrarController implements Initializable {
 
     //  Estilos 
     private static final String ESTILO_MESA_LIBRE =
-        "-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-background-radius: 10 10 10 10;" +
-        "-fx-border-radius: 10 10 10 10;";
+        "-fx-background-color: #68A678; -fx-border-color: #68A678;" +
+        "-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;" +
+        "-fx-text-fill: #0a132b;";
     private static final String ESTILO_MESA_ACTIVA =
-        "-fx-background-color: #8b1a1a; -fx-border-color: #8b1a1a; -fx-background-radius: 10 10 10 10" +
-        "-fx-border-radius: 10 10 10 10; -fx-text-fill: #d4c5b0;";
+        "-fx-background-color: #AF5555; -fx-border-color: #AF5555;" +
+        "-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;" +
+        "-fx-text-fill: #0a132b;";
     private static final String ESTILO_BTN_ACTIVO =
         "-fx-background-color: #2c3b62; -fx-text-fill: #d4c5b0; -fx-background-radius: 10 10 10 10;" +
         "-fx-border-radius: 10 10 10 10;";
@@ -121,6 +128,12 @@ public class CobrarController implements Initializable {
 
         // Recalcular cambio en tiempo real
         spinnerMonto.valueProperty().addListener((obs, ov, nv) -> calcularCambio());
+        
+        botonesMesa = Arrays.asList(
+            btnMesa1, btnMesa2, btnMesa3, btnMesa4,
+            btnMesa5, btnMesa6, btnMesa7, btnMesa8,
+            btnMesa9, btnMesa10, btnMesa11, btnMesa12
+        );
 
         vincularBotonesMesa();
         cargarEstadoMesas();
@@ -143,11 +156,20 @@ public class CobrarController implements Initializable {
      * Selecciona mesa y muestra el detalle de la cuenta.
      */
     private void seleccionarMesa(int numMesa, Button[] mesas) {
+        // Guardamos la mesa seleccionada
+        mesaSeleccionada = numMesa;
+
+        // 1. Recargar colores base desde la BD (libre/ocupado) 
+        //    Esto quita cualquier resaltado anterior.
         cargarEstadoMesas();
 
-        mesaSeleccionada = numMesa;
-        idOrdenActual = PedidoDAO.obtenerOrdenAbiertaPorMesa(numMesa);
+        // 2. Ahora, sobre el botón de la mesa elegida, añadimos el resaltado
+        Button botonActual = mesas[numMesa - 1];
+        String estiloBase = botonActual.getStyle();
+        botonActual.setStyle(estiloBase + ESTILO_BTN_ACTIVO);
 
+        // 3. Resto de lógica (cargar orden, actualizar labels, etc.)
+        idOrdenActual = PedidoDAO.obtenerOrdenAbiertaPorMesa(numMesa);
         labelMesa.setText("Mesa " + numMesa);
 
         if (idOrdenActual == 0) {
@@ -163,14 +185,11 @@ public class CobrarController implements Initializable {
         }
 
         labelIdOrden.setText("Orden #" + idOrdenActual + " · " + java.time.LocalDate.now());
-
         ObservableList<OrdenItem> orden = PedidoDAO.obtenerDetalleOrden(idOrdenActual);
         tableVerPedido.setItems(orden);
 
-        subtotal = orden.stream()
-                        .mapToDouble(OrdenItem::getSubtotalItem)
-                        .sum();
-        iva   = subtotal * TASA_IVA;
+        subtotal = orden.stream().mapToDouble(OrdenItem::getSubtotalItem).sum();
+        iva = subtotal * TASA_IVA;
         total = subtotal + iva;
 
         labelSubtotal.setText("$" + String.format("%.2f", subtotal));
@@ -192,7 +211,22 @@ public class CobrarController implements Initializable {
             btnMesa9, btnMesa10, btnMesa11, btnMesa12
         };
 
-        String sql = "SELECT idMesa, estado FROM mesas";
+        String sql2 = "SELECT idMesa FROM mesas";
+        
+        try (Connection con = ConexionDB.getConexion();
+             Statement st = con.createStatement();
+             ResultSet rs = st.executeQuery(sql2)) {
+
+            while (rs.next()) {
+                int id = rs.getInt("idMesa");
+                Button btn = mesas[id - 1];
+                btn.setStyle(ESTILO_MESA_LIBRE);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        String sql = "SELECT idMesa, estado FROM ordenes";
 
         try (Connection con = ConexionDB.getConexion();
              Statement st = con.createStatement();
@@ -201,17 +235,29 @@ public class CobrarController implements Initializable {
             while (rs.next()) {
                 int id = rs.getInt("idMesa");
                 String estado = rs.getString("estado");
+                Button btn = mesas[id - 1];
 
-                if ("Ocupada".equals(estado)) {
-                    mesas[id - 1].setStyle(ESTILO_MESA_ACTIVA);
-                } else {
-                    mesas[id - 1].setStyle(ESTILO_MESA_LIBRE);
+                // Asignar estilo base
+                if ("Abierta".equals(estado)) {
+                    btn.setStyle(ESTILO_MESA_ACTIVA);
                 }
+            }
+
+            // Reaplicar el resaltado a la mesa que esté seleccionada actualmente
+            if (mesaSeleccionada != 0) {
+                Button btnSeleccionada = mesas[mesaSeleccionada - 1];
+                // Conserva el color base y añade el borde
+                btnSeleccionada.setStyle(btnSeleccionada.getStyle() + ESTILO_BTN_ACTIVO);
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+    
+    // botones de mesa
+    @FXML
+    private void handleMesas(ActionEvent event){
     }
 
     //  btnEfectivo
