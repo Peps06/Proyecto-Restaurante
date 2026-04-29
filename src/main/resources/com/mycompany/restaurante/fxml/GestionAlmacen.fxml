@@ -48,7 +48,7 @@
                   <Insets left="20.0" right="20.0" top="25.0" />
                </VBox.margin>
                <children>
-                  <Button fx:id="btnEmpleados" mnemonicParsing="false" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Empleados" textFill="#d4c5b0">
+                  <Button fx:id="btnEmpleados" mnemonicParsing="false" onAction="#handleEmpleados" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Empleados" textFill="#d4c5b0">
                      <font>
                         <Font name="Candara Bold" size="19.0" />
                      </font>
@@ -56,7 +56,7 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
-                  <Button fx:id="btnMenu" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Menú" textFill="#d4c5b0">
+                  <Button fx:id="btnMenu" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#handleMenu" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Menú" textFill="#d4c5b0">
                      <font>
                         <Font name="Candara Bold" size="19.0" />
                      </font>
@@ -64,7 +64,7 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
-                  <Button fx:id="btnAlmacen" layoutX="10.0" layoutY="64.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Almacén" textFill="#d4c5b0">
+                  <Button fx:id="btnAlmacen" layoutX="10.0" layoutY="64.0" mnemonicParsing="false" onAction="#handleAlmacen" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Almacén" textFill="#d4c5b0">
                      <font>
                         <Font name="Candara Bold" size="19.0" />
                      </font>
@@ -98,7 +98,7 @@
                   <Insets bottom="25.0" left="20.0" right="20.0" top="15.0" />
                </VBox.margin>
                <children>
-                  <Button fx:id="btnCerrarSesion1" cancelButton="true" mnemonicParsing="false" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Cerrar sesión" textFill="#d4c5b0">
+                  <Button fx:id="btnCerrarSesion1" cancelButton="true" mnemonicParsing="false" onAction="#handleCerrarSesion" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Cerrar sesión" textFill="#d4c5b0">
                      <font>
                         <Font name="Candara Bold" size="19.0" />
                      </font>

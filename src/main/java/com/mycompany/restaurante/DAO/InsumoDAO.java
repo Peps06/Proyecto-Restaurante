@@ -28,7 +28,7 @@ public class InsumoDAO {
 
         try {
             // Conexión mediante el Singleton
-            Connection con = ConexionDB.getInstancia().getConexion();
+            Connection con = ConexionDB.getConexion();
             PreparedStatement ps = con.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
 
@@ -53,7 +53,7 @@ public class InsumoDAO {
     public boolean insertar(Insumo insumo) {
         String sql = "INSERT INTO insumos (nombre, categoria, stock, unidad, estado) VALUES (?, ?, ?, ?, ?)";
         try {
-            Connection con = ConexionDB.getInstancia().getConexion();
+            Connection con = ConexionDB.getConexion();
             PreparedStatement ps = con.prepareStatement(sql);
             
             ps.setString(1, insumo.getNombre());
@@ -73,7 +73,7 @@ public class InsumoDAO {
     public boolean editar(Insumo insumo) {
         String sql = "UPDATE insumos SET nombre=?, categoria=?, stock=?, unidad=?, estado=? WHERE idInsumo=?";
         try {
-            Connection con = ConexionDB.getInstancia().getConexion();
+            Connection con = ConexionDB.getConexion();
             PreparedStatement ps = con.prepareStatement(sql);
             
             ps.setString(1, insumo.getNombre());
@@ -94,7 +94,7 @@ public class InsumoDAO {
     public boolean eliminar(int id) {
         String sql = "DELETE FROM insumos WHERE idInsumo = ?";
         try {
-            Connection con = ConexionDB.getInstancia().getConexion();
+            Connection con = ConexionDB.getConexion();
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;

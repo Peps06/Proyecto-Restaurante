@@ -16,6 +16,7 @@ import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -224,5 +225,45 @@ public class GestionAlmacenController {
         alert.setHeaderText(null);
         alert.setContentText(mensaje);
         alert.showAndWait();
+    }
+    private void cambiarPantalla(ActionEvent event, String fxmlPath, String titulo) {
+        try {
+            // 1. Cargar la vista desde el recurso
+            Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
+
+            // 2. Obtener el Stage (ventana) actual
+            javafx.scene.Node nodoOrigen = (javafx.scene.Node) event.getSource();
+            Stage stageActual = (Stage) nodoOrigen.getScene().getWindow();
+
+            // 3. Configurar la nueva escena y mostrarla
+            Scene nuevaEscena = new Scene(root);
+            stageActual.setScene(nuevaEscena);
+            stageActual.setTitle(titulo + " - Saveurs Paris");
+            stageActual.centerOnScreen();
+            stageActual.show();
+
+        } catch (java.io.IOException e) {
+            System.err.println("Error al cargar la pantalla: " + fxmlPath);
+            e.printStackTrace();
+        }
+    }
+    @FXML
+    private void handleEmpleados(ActionEvent event) {
+        cambiarPantalla(event, "/com/mycompany/restaurante/fxml/GestionarEmpleado.fxml", "Gestionar Empleado");
+    }
+
+    @FXML
+    private void handleMenu(ActionEvent event) {
+        cambiarPantalla(event, "/com/mycompany/restaurante/fxml/GestionMenu.fxml", "Gestionar Menu");
+    }
+
+    @FXML
+    private void handleAlmacen(ActionEvent event) {
+        cambiarPantalla(event, "/com/mycompany/restaurante/fxml/GestionAlmacen.fxml", "Gestionar Almacen");
+    }
+
+    @FXML
+    private void handleCerrarSesion(ActionEvent event) {
+        cambiarPantalla(event, "/com/mycompany/restaurante/fxml/LoginPantalla.fxml", "Iniciar sesión");
     }
 }
