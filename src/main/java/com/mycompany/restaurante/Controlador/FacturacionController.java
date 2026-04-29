@@ -141,6 +141,7 @@ public class FacturacionController implements Initializable {
             exito.showAndWait();
 
             cerrarVentana();
+            
 
         } catch (Exception e) {
             // Error al generar la factura (conexión PAC / BD / falla interna)
@@ -162,94 +163,79 @@ public class FacturacionController implements Initializable {
         cerrarVentana();
     }
 
-    //  Validación de campos
-
     /**
      * Valida cada campo del formulario en orden.
-     *  
-     * Ante el primer error muestra la alerta correspondiente y marca el campo en rojo.
-     * Regresa true solo si todos los campos son correctos.
+     * 
+     * Primero valida los campos de texto, formatos específicos como RFC, CP,
+     * Correo y ComboBoxes. Al haber un error se muestra la alerta que
+     * corresponda y detiene el proceso.
+     * 
+     * @return true solo si todos los campos cumplen con las reglas de negocio.
      */
     private boolean validarCampos() {
+        
+        // Validar campos de texto (Presencia de datos)
+        if (!validarPresencia(fieldNombreRazonSocial, "Nombre o Razón Social")) return false;
+        if (!validarPresencia(fieldRFC, "RFC")) return false;
+        if (!validarPresencia(fieldCodigoPostal, "Código Postal")) return false;
+        if (!validarPresencia(fieldCorreo, "Correo Electrónico")) return false;
 
-        // Campos vacíos (nombre / razón social)
-        if (fieldNombreRazonSocial.getText().trim().isEmpty()) {
-            marcarError(fieldNombreRazonSocial);
-            mostrarAlertaCampo("Todos los campos son obligatorios",
-                "El campo 'Nombre o Razón Social' no puede estar vacío.");
-            return false;
-        }
+        // Validar formatos específicos (Reglas del SAT y lógica de negocio)
+        if (!validarFormato(fieldRFC, DatosFacturacion.rfcValido(fieldRFC.getText().trim()), 
+            "RFC inválido", "Verifique el formato (ej. XAXX010101XXX).")) return false;
 
-        // RFC inválido
-        String rfcTexto = fieldRFC.getText().trim().toUpperCase();
-        if (rfcTexto.isEmpty()) {
-            marcarError(fieldRFC);
-            mostrarAlertaCampo("Todos los campos son obligatorios",
-                "El campo 'RFC' no puede estar vacío.");
-            return false;
-        }
-        if (!DatosFacturacion.rfcValido(rfcTexto)) {
-            marcarError(fieldRFC);
-            mostrarAlertaCampo("RFC inválido",
-                "RFC inválido. Verifique el formato (ej. XAXX010101XXX).");
-            return false;
-        }
+        if (!validarFormato(fieldCodigoPostal, DatosFacturacion.cpValido(fieldCodigoPostal.getText().trim()), 
+            "Código Postal inválido", "El Código Postal debe tener 5 dígitos.")) return false;
 
-        // Código postal inválido
-        String cpTexto = fieldCodigoPostal.getText().trim();
-        if (cpTexto.isEmpty()) {
-            marcarError(fieldCodigoPostal);
-            mostrarAlertaCampo("Todos los campos son obligatorios",
-                "El campo 'Código Postal' no puede estar vacío.");
-            return false;
-        }
-        if (!DatosFacturacion.cpValido(cpTexto)) {
-            marcarError(fieldCodigoPostal);
-            mostrarAlertaCampo("Código Postal inválido",
-                "Código Postal debe tener 5 dígitos.");
-            return false;
-        }
+        if (!validarFormato(fieldCorreo, DatosFacturacion.correoValido(fieldCorreo.getText().trim()), 
+            "Correo electrónico no válido", "Verifique la estructura del correo.")) return false;
 
-        // Correo electrónico inválido
-        String correoTexto = fieldCorreo.getText().trim();
-        if (correoTexto.isEmpty()) {
-            marcarError(fieldCorreo);
-            mostrarAlertaCampo("Todos los campos son obligatorios",
-                "El campo 'Correo Electrónico' no puede estar vacío.");
-            return false;
-        }
-        if (!DatosFacturacion.correoValido(correoTexto)) {
-            marcarError(fieldCorreo);
-            mostrarAlertaCampo("Correo electrónico no válido",
-                "Correo electrónico no válido.");
-            return false;
-        }
-
-        // ComboBox régimen fiscal vacío
-        if (comboRegimenFiscal.getValue() == null) {
-            comboRegimenFiscal.setStyle(ESTILO_COMBO_ERROR);
-            mostrarAlertaCampo("Todos los campos son obligatorios",
-                "Seleccione un 'Régimen Fiscal'.");
-            return false;
-        } else {
-            comboRegimenFiscal.setStyle("");
-        }
-
-        // ComboBox uso CFDI vacío
-        if (comboUsoCfdi.getValue() == null) {
-            comboUsoCfdi.setStyle(ESTILO_COMBO_ERROR);
-            mostrarAlertaCampo("Todos los campos son obligatorios",
-                "Seleccione un 'Uso de CFDI'.");
-            return false;
-        } else {
-            comboUsoCfdi.setStyle("");
-        }
+        // Validar ComboBoxes
+        if (!validarCombo(comboRegimenFiscal, "Régimen Fiscal")) return false;
+        if (!validarCombo(comboUsoCfdi, "Uso de CFDI")) return false;
 
         return true;
     }
 
-    //  Helpers 
+    /**
+     * Verifica que un campo de texto no esté vacío.
+     */
+    private boolean validarPresencia(TextField campo, String nombre) {
+        if (campo.getText().trim().isEmpty()) {
+            marcarError(campo);
+            mostrarAlertaCampo("Todos los campos son obligatorios", 
+                "El campo '" + nombre + "' no puede estar vacío.");
+            return false;
+        }
+        return true;
+    }
 
+    /**
+     * Verifica que el contenido del campo cumpla con el formato esperado.
+     */
+    private boolean validarFormato(TextField campo, boolean esValido, String titulo, String mensaje) {
+        if (!esValido) {
+            marcarError(campo);
+            mostrarAlertaCampo(titulo, mensaje);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Verifica que se haya seleccionado una opción de la lista desplegable.
+     */
+    private boolean validarCombo(ComboBox<String> combo, String nombre) {
+        if (combo.getValue() == null) {
+            combo.setStyle(ESTILO_COMBO_ERROR);
+            mostrarAlertaCampo("Todos los campos son obligatorios", "Seleccione un '" + nombre + "'.");
+            return false;
+        }
+        combo.setStyle("");
+        return true;
+    }
+
+    //  Helpers 
     private void marcarError(TextField campo) {
         campo.setStyle(ESTILO_ERROR);
         campo.requestFocus();

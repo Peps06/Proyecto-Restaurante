@@ -1,67 +1,56 @@
+// ConexionDB.java — versión corregida
 package com.mycompany.restaurante.Modelo;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- * Singleton de conexión a MySQL para el sistema Saveurs Paris.
+ * Fábrica de conexiones para Saveurs Paris.
+ * Cada llamada a getConexion() devuelve una Connection nueva e independiente.
+ * Los DAO son responsables de cerrarla con try-with-resources.
  *
- * @author Citlaly, Dana y Rubi
- * @version 2.0
+ * @author Citlaly
+ * @version 2
  */
 public class ConexionDB {
 
-    // Parámetros de conexión
-    private static final String URL = "jdbc:mysql://localhost:3306/restaurantedb"
-                                         + "?useSSL=false&serverTimezone=America/Mexico_City";
+    private static final Logger LOG = Logger.getLogger(ConexionDB.class.getName());
+
+    private static final String URL =
+        "jdbc:mysql://localhost:3306/restaurantedb"
+        + "?useSSL=false"
+        + "&serverTimezone=America/Mexico_City"
+        + "&autoReconnect=true" // reconecta si MySQL cerró la conexión
+        + "&connectTimeout=5000" // 5 s para establecer conexión
+        + "&socketTimeout=30000"; // 30 s para esperar respuesta
+
     private static final String USER = "root";
     private static final String PASSWORD = "Mend1503";
 
-    private static ConexionDB instancia;
-
-    /**
-     * Conexión activa.
-     */
-    private Connection conexion;
-
-    private ConexionDB() throws SQLException {
+    static {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            this.conexion = DriverManager.getConnection(URL, USER, PASSWORD);
         } catch (ClassNotFoundException e) {
-            throw new SQLException("Driver MySQL no encontrado. Revisa pom.xml.", e);
+            throw new ExceptionInInitializerError("Driver MySQL no encontrado. Revisa pom.xml.");
         }
     }
 
     /**
-     * Devuelve la instancia única. Si la conexión está cerrada o es nula,
-     * crea una nueva.
+     * Devuelve una conexión NUEVA cada vez.
+     * Úsala siempre dentro de try-with-resources para garantizar el cierre.
+     *
+     * Ejemplo de uso correcto en un DAO:
+     *   try (Connection con = ConexionDB.getConexion()) { ... }
      */
-    public static ConexionDB getInstancia() throws SQLException {
-        if (instancia == null || instancia.conexion.isClosed()) {
-            instancia = new ConexionDB();
-        }
-        return instancia;
+    public static Connection getConexion() throws SQLException {
+        Connection con = DriverManager.getConnection(URL, USER, PASSWORD);
+        LOG.log(Level.FINE, "Conexión abierta: {0}", con);
+        return con;
     }
 
-    /**
-     * Devuelve el objeto {@link Connection} para usar en los DAO.
-     */
-    public Connection getConexion() {
-        return conexion;
-    }
-
-    /**
-     * Cierra la conexión manualmente.
-     */
-    public void cerrar() {
-        try {
-            if (conexion != null && !conexion.isClosed()) {
-                conexion.close();
-            }
-        } catch (SQLException e) {
-            System.err.println("Error al cerrar la conexión: " + e.getMessage());
-        }
-    }
+    // Constructor privado: esta clase no se instancia
+    private ConexionDB() {}
 }

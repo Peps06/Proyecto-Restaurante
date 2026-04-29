@@ -1,5 +1,7 @@
 package com.mycompany.restaurante.Controlador;
 
+import com.mycompany.restaurante.DAO.PedidoDAO;
+import com.mycompany.restaurante.Modelo.ConexionDB;
 import com.mycompany.restaurante.Modelo.OrdenItem;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,8 +18,13 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 /**
  * Controlador de CobrarPantalla.fxml — CU-54 Facturar Cuenta.
@@ -26,6 +33,8 @@ import java.util.ResourceBundle;
  */
 public class CobrarController implements Initializable {
 
+    private static final Logger LOG = Logger.getLogger(CobrarController.class.getName());
+    
     //  Tabla de pedido 
     @FXML private TableView<OrdenItem> tableVerPedido;
     @FXML private TableColumn<OrdenItem, String> colProducto;
@@ -114,6 +123,7 @@ public class CobrarController implements Initializable {
         spinnerMonto.valueProperty().addListener((obs, ov, nv) -> calcularCambio());
 
         vincularBotonesMesa();
+        cargarEstadoMesas();
     }
 
     //   El cajero selecciona una mesa
@@ -133,20 +143,33 @@ public class CobrarController implements Initializable {
      * Selecciona mesa y muestra el detalle de la cuenta.
      */
     private void seleccionarMesa(int numMesa, Button[] mesas) {
-        // Resetear estilo de todas las mesas
-        for (Button b : mesas) b.setStyle(ESTILO_MESA_LIBRE);
-        mesas[numMesa - 1].setStyle(ESTILO_MESA_ACTIVA);
+        cargarEstadoMesas();
 
         mesaSeleccionada = numMesa;
+        idOrdenActual = PedidoDAO.obtenerOrdenAbiertaPorMesa(numMesa);
+
         labelMesa.setText("Mesa " + numMesa);
-        labelIdOrden.setText("Orden #00" + numMesa + " · " + java.time.LocalDate.now());
 
-        // Paso 2: Mostrar detalle de la cuenta (productos, subtotal, IVA, total)
-        tableVerPedido.setItems(ordenMesaPrueba);
+        if (idOrdenActual == 0) {
+            tableVerPedido.getItems().clear();
+            labelIdOrden.setText("Sin orden activa");
+            labelSubtotal.setText("$0.00");
+            labelIVA.setText("$0.00");
+            labelTotal.setText("$0.00");
+            labelCambio.setText("$0.00");
+            subtotal = iva = total = 0.0;
+            LOG.warning("CobrarController: mesa " + numMesa + " no tiene orden abierta.");
+            return;
+        }
 
-        subtotal = ordenMesaPrueba.stream()
-                                  .mapToDouble(OrdenItem::getSubtotalItem)
-                                  .sum();
+        labelIdOrden.setText("Orden #" + idOrdenActual + " · " + java.time.LocalDate.now());
+
+        ObservableList<OrdenItem> orden = PedidoDAO.obtenerDetalleOrden(idOrdenActual);
+        tableVerPedido.setItems(orden);
+
+        subtotal = orden.stream()
+                        .mapToDouble(OrdenItem::getSubtotalItem)
+                        .sum();
         iva   = subtotal * TASA_IVA;
         total = subtotal + iva;
 
@@ -154,13 +177,41 @@ public class CobrarController implements Initializable {
         labelIVA.setText("$" + String.format("%.2f", iva));
         labelTotal.setText("$" + String.format("%.2f", total));
 
-        // Resetear método de pago y monto
         spinnerMonto.getValueFactory().setValue(0.0);
         spinnerMonto.setDisable(false);
         metodoPago = "EFECTIVO";
         btnEfectivo.setStyle(ESTILO_BTN_ACTIVO);
         btnTarjeta.setStyle(ESTILO_BTN_INACTIVO);
         labelCambio.setText("$0.00");
+    }
+    
+    private void cargarEstadoMesas() {
+        Button[] mesas = {
+            btnMesa1, btnMesa2, btnMesa3, btnMesa4,
+            btnMesa5, btnMesa6, btnMesa7, btnMesa8,
+            btnMesa9, btnMesa10, btnMesa11, btnMesa12
+        };
+
+        String sql = "SELECT idMesa, estado FROM mesas";
+
+        try (Connection con = ConexionDB.getConexion();
+             Statement st = con.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+
+            while (rs.next()) {
+                int id = rs.getInt("idMesa");
+                String estado = rs.getString("estado");
+
+                if ("Ocupada".equals(estado)) {
+                    mesas[id - 1].setStyle(ESTILO_MESA_ACTIVA);
+                } else {
+                    mesas[id - 1].setStyle(ESTILO_MESA_LIBRE);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     //  btnEfectivo

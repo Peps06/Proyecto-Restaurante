@@ -118,14 +118,13 @@ public class GestionMenuController {
             // 2. Crear la alerta de CONFIRMACIÓN
             Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
             confirmacion.setTitle("Confirmar eliminación");
-            // Esto pondrá: "¿Estás seguro de eliminar este Postre?" o "¿Estás seguro de eliminar este Bebida?"
             confirmacion.setHeaderText("¿Estás seguro de eliminar este " + seleccionado.getTipo() + "?");
             confirmacion.setContentText("Se eliminará: " + seleccionado.getNombre());
 
             // 3. Esperar a que el usuario responda
             confirmacion.showAndWait().ifPresent(respuesta -> {
                 if (respuesta == ButtonType.OK) {
-                    ProductoDAO.eliminar(Integer.parseInt(seleccionado.getCantidad()));
+                    ProductoDAO.eliminar(seleccionado.getCantidadPedida());
                     datosMenu.remove(seleccionado);
 
                     Alert exito = new Alert(Alert.AlertType.INFORMATION);

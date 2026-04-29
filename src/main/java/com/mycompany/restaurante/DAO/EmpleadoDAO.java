@@ -27,7 +27,7 @@ public class EmpleadoDAO {
         ObservableList<Empleado> lista = FXCollections.observableArrayList();
         String sql = "SELECT idEmpleado, nombre, password, puesto, asistencia, telefono FROM empleados";
 
-        try (Connection con = ConexionDB.getInstancia().getConexion();
+        try (Connection con = ConexionDB.getConexion();
              Statement  st  = con.createStatement();
              ResultSet  rs  = st.executeQuery(sql)) {
 
@@ -56,7 +56,7 @@ public class EmpleadoDAO {
         String sql = "SELECT puesto FROM empleados "
                    + "WHERE LOWER(nombre) LIKE ? AND password = ?";
 
-        try (Connection con = ConexionDB.getInstancia().getConexion();
+        try (Connection con = ConexionDB.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             // El login acepta el primer nombre (ej. "rubi" → busca "rubi%")
@@ -84,7 +84,7 @@ public class EmpleadoDAO {
         String sql = "INSERT INTO empleados (nombre, password, puesto, asistencia, telefono) "
                    + "VALUES (?, ?, ?, ?, ?)";
 
-        try (Connection con = ConexionDB.getInstancia().getConexion();
+        try (Connection con = ConexionDB.getConexion();
              PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setString(1, e.getNombre());
@@ -111,7 +111,7 @@ public class EmpleadoDAO {
         String sql = "UPDATE empleados SET nombre=?, password=?, puesto=?, telefono=? "
                    + "WHERE idEmpleado=?";
 
-        try (Connection con = ConexionDB.getInstancia().getConexion();
+        try (Connection con = ConexionDB.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, e.getNombre());
@@ -133,7 +133,7 @@ public class EmpleadoDAO {
     public static boolean actualizarAsistencia(Empleado e) {
         String sql = "UPDATE empleados SET asistencia=? WHERE idEmpleado=?";
 
-        try (Connection con = ConexionDB.getInstancia().getConexion();
+        try (Connection con = ConexionDB.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, e.getAsistencia());
@@ -152,7 +152,7 @@ public class EmpleadoDAO {
     public static boolean eliminar(int id) {
         String sql = "DELETE FROM empleados WHERE idEmpleado=?";
 
-        try (Connection con = ConexionDB.getInstancia().getConexion();
+        try (Connection con = ConexionDB.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, id);
