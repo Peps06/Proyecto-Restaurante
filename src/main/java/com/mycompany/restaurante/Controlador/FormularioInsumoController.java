@@ -22,6 +22,7 @@ public class FormularioInsumoController {
 
     private Insumo insumo;
     private boolean guardadoExitoso = false;
+    private com.mycompany.restaurante.DAO.InsumoDAO insumoDAO = new com.mycompany.restaurante.DAO.InsumoDAO();
 
     @FXML
     public void initialize() {
@@ -45,28 +46,41 @@ public class FormularioInsumoController {
 
     @FXML
     private void guardar() {
-        if (validarCampos()) {
-            String nombre = txtNombre.getText();
-            double stock = Double.parseDouble(txtStock.getText());
-            String unidad = txtUnidad.getText();
-            String cat = cbCategoria.getValue();
-            String est = cbEstado.getValue();
+    if (validarCampos()) {
+        String nombre = txtNombre.getText();
+        double stock = Double.parseDouble(txtStock.getText());
+        String unidad = txtUnidad.getText();
+        String cat = cbCategoria.getValue();
+        String est = cbEstado.getValue();
 
-            if (insumo == null) {
-                // Es uno nuevo (puedes generar un ID aleatorio o manejarlo con DB después)
-                insumo = new Insumo(0, nombre, cat, stock, unidad, est);
-            } else {
-                // Editando el existente
-                insumo.setNombre(nombre);
-                insumo.setStock(stock);
-                insumo.setUnidad(unidad);
-                insumo.setCategoria(cat);
-                insumo.setEstado(est);
-            }
+        boolean exitoOperacion = false;
+
+        if (insumo == null) {
+            // Creamos el objeto y lo mandamos a la BD
+            insumo = new Insumo(0, nombre, cat, stock, unidad, est);
+            exitoOperacion = insumoDAO.insertar(insumo); // <--- se manda a la bd
+        } else {
+            // Actualizamos el objeto actual
+            insumo.setNombre(nombre);
+            insumo.setStock(stock);
+            insumo.setUnidad(unidad);
+            insumo.setCategoria(cat);
+            insumo.setEstado(est);
+            exitoOperacion = insumoDAO.editar(insumo); // <--- se actualiza la bd
+        }
+
+        if (exitoOperacion) {
             guardadoExitoso = true;
             cerrarVentana();
+        } else {
+            // Si el DAO regresa false (por error de conexión, etc.)
+            Alert error = new Alert(Alert.AlertType.ERROR);
+            error.setTitle("Error de base de datos");
+            error.setContentText("No se pudieron guardar los cambios en el servidor.");
+            error.showAndWait();
         }
     }
+}
 
     private boolean validarCampos() {
     String mensaje = "";

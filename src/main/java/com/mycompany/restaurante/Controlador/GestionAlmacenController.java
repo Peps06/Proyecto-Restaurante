@@ -8,8 +8,11 @@ package com.mycompany.restaurante.Controlador;
  *
  * @author mrubi
  */
+
+import com.mycompany.restaurante.DAO.InsumoDAO;
 import com.mycompany.restaurante.Modelo.Insumo;
 import java.io.IOException;
+import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -31,6 +34,7 @@ public class GestionAlmacenController {
     @FXML private TableColumn<Insumo, Double> colStock;
     @FXML private TableColumn<Insumo, String> colUnidad;
     @FXML private TableColumn<Insumo, String> colEstado;
+    @FXML private InsumoDAO insumoDAO = new InsumoDAO();
 
     // Componentes de Búsqueda y Botones
     @FXML private TextField txtBusqueda;
@@ -40,63 +44,65 @@ public class GestionAlmacenController {
 
     private ObservableList<Insumo> listaInsumos = FXCollections.observableArrayList();
 
-    @FXML
+  @FXML
     public void initialize() {
-        // 1. Vincular las columnas con los atributos de la clase Insumo
-        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        colProducto.setCellValueFactory(new PropertyValueFactory<>("nombre"));
-        colCategoria.setCellValueFactory(new PropertyValueFactory<>("categoria"));
-        colStock.setCellValueFactory(new PropertyValueFactory<>("stock"));
-        colUnidad.setCellValueFactory(new PropertyValueFactory<>("unidad"));
-        colEstado.setCellValueFactory(new PropertyValueFactory<>("estado"));
+    // 1. Vincular las columnas con los atributos de la clase Insumo
+    colId.setCellValueFactory(new PropertyValueFactory<>("id"));
+    colProducto.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+    colCategoria.setCellValueFactory(new PropertyValueFactory<>("categoria"));
+    colStock.setCellValueFactory(new PropertyValueFactory<>("stock"));
+    colUnidad.setCellValueFactory(new PropertyValueFactory<>("unidad"));
+    colEstado.setCellValueFactory(new PropertyValueFactory<>("estado"));
 
-        // 2. Cargar algunos datos de prueba para Saveurs Paris
-        cargarDatosPrueba();
+    
+    // Traemos la lista desde la base de datos usando el DAO
+    List<Insumo> listaBD = insumoDAO.listar();
+    listaInsumos = FXCollections.observableArrayList(listaBD);
 
-        // 3. Asignar la lista a la tabla
-        tablaAlmacen.setItems(listaInsumos);
-        
-        // Mensaje por si la tabla está vacía
-        tablaAlmacen.setPlaceholder(new Label("No hay insumos en el inventario"));
-        
-        //Añade color depende el estado
-        colEstado.setCellFactory(column -> {
-        return new TableCell<Insumo, String>() {
+    // Asignar la lista a la tabla
+    tablaAlmacen.setItems(listaInsumos);
+    
+    // Mensaje por si la tabla está vacía
+    tablaAlmacen.setPlaceholder(new Label("No hay insumos en el inventario"));
+    
+    // Formatear el ID
+    colId.setCellFactory(column -> new TableCell<Insumo, Integer>() {
         @Override
-        protected void updateItem(String item, boolean empty) {
+        protected void updateItem(Integer item, boolean empty) {
             super.updateItem(item, empty);
-
-            if (item == null || empty) {
+            if (empty || item == null) {
                 setText(null);
-                setStyle(""); // Limpia el estilo si la celda está vacía
             } else {
-                setText(item);
-                
-                // Aplicamos estilos según el contenido del texto
-                if (item.equalsIgnoreCase("Disponible")) {
-                    setStyle("-fx-background-color: #d4edda; -fx-text-fill: #155724; -fx-font-weight: bold;"); 
-                    // verde 
-                } else if (item.equalsIgnoreCase("Por agotarse")) {
-                    setStyle("-fx-background-color: #fff3cd; -fx-text-fill: #856404; -fx-font-weight: bold;"); 
-                    //amarillo
-                } else if (item.equalsIgnoreCase("Agotado") || item.equalsIgnoreCase("No disponible")) {
-                    setStyle("-fx-background-color: #f8d7da; -fx-text-fill: #721c24; -fx-font-weight: bold;"); 
-                    // rojo
-                } else {
-                    setStyle(""); // Estilo por defecto para otros textos
-                }
+                setText(String.format("%03d", item));
             }
         }
-    };
-});
-    }
+    });
 
-    private void cargarDatosPrueba() {
-        listaInsumos.add(new Insumo(1, "Harina de Trigo", "Abarrotes", 50.0, "kg", "Disponible"));
-        listaInsumos.add(new Insumo(2, "Mantequilla", "Lácteos", 4.5, "kg", "Por agotarse"));
-        listaInsumos.add(new Insumo(3, "Queso Camembert", "Lácteos", 10.0, "piezas", "Disponible"));
-        listaInsumos.add(new Insumo(4, "Vino Tinto", "Bebidas", 0.0, "botellas", "Agotado"));
-    }
+    // 5. Añade color depende el estado 
+    colEstado.setCellFactory(column -> {
+        return new TableCell<Insumo, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item == null || empty) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    setText(item);
+                    if (item.equalsIgnoreCase("Disponible")) {
+                        setStyle("-fx-background-color: #d4edda; -fx-text-fill: #155724; -fx-font-weight: bold;"); 
+                    } else if (item.equalsIgnoreCase("Por agotarse")) {
+                        setStyle("-fx-background-color: #fff3cd; -fx-text-fill: #856404; -fx-font-weight: bold;"); 
+                    } else if (item.equalsIgnoreCase("Agotado") || item.equalsIgnoreCase("No disponible")) {
+                        setStyle("-fx-background-color: #f8d7da; -fx-text-fill: #721c24; -fx-font-weight: bold;"); 
+                    } else {
+                        setStyle(""); 
+                    }
+                }
+            }
+        };
+    });
+}
 
     @FXML
     private void handleBuscar() {
@@ -135,102 +141,80 @@ public class GestionAlmacenController {
     tablaAlmacen.getSelectionModel().clearSelection();
 }
 
-    @FXML
-    private void manejarAgregar() throws IOException {
-    // 1. Cargamos el FXML del formulario de insumos
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/restaurante/fxml/FormularioInsumo.fxml"));
-    Parent root = loader.load();
-    
-    // 2. Obtenemos el controlador del formulario
-    FormularioInsumoController controlador = loader.getController();
-    
-    // 3. Le pasamos 'null' porque es un registro NUEVO
-    controlador.setInsumo(null); 
-    
-    // 4. Configuramos y mostramos la ventana
-    Stage stage = new Stage();
-    stage.setTitle("Saveurs Paris - Registrar Insumo");
-    stage.setScene(new Scene(root));
-    stage.showAndWait();
-    
-    // 5. Si se guardó con éxito, lo agregamos a nuestra lista de la tabla
-    if (controlador.isGuardadoExitoso()) {
-        Insumo nuevoInsumo = controlador.getInsumo();
-        listaInsumos.add(nuevoInsumo);
+@FXML
+    private void manejarAgregar() {
+    try {
+        
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/restaurante/fxml/FormularioInsumo.fxml"));
+        Parent root = loader.load();
+
+        Stage stage = new Stage();
+        stage.setTitle("Saveurs Paris - Nuevo Insumo");
+        stage.setScene(new Scene(root));
+        stage.showAndWait(); 
+
+        // Refrescar lista desde la BD
+        listaInsumos.setAll(insumoDAO.listar());
+
+    } catch (IOException e) {
+        mostrarAlerta("Error", "No se pudo cargar el formulario.");
+        e.printStackTrace();
     }
 }
 
-    @FXML
+@FXML
     private void manejarEditar() throws IOException {
-    // 1. Verificamos que el usuario haya seleccionado un insumo de la tabla
     Insumo seleccionado = tablaAlmacen.getSelectionModel().getSelectedItem();
     
     if (seleccionado != null) {
-        // 2. Cargamos el mismo FXML
+        
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/restaurante/fxml/FormularioInsumo.fxml"));
         Parent root = loader.load();
         
         FormularioInsumoController controlador = loader.getController();
-        
-        // 3. ¡Aquí está la diferencia! Le pasamos el objeto 'seleccionado'
         controlador.setInsumo(seleccionado); 
         
-        // 4. Mostramos la ventana
         Stage stage = new Stage();
         stage.setTitle("Saveurs Paris - Editar Insumo");
         stage.setScene(new Scene(root));
         stage.showAndWait();
         
-        // 5. Si hubo cambios, refrescamos la tabla para que se vean
         if (controlador.isGuardadoExitoso()) {
-            tablaAlmacen.refresh();
+            // Refrescamos desde la BD para ver los cambios reales
+            listaInsumos.setAll(insumoDAO.listar());
         }
     } else {
-        // Si no seleccionó nada, le avisamos
-        Alert alerta = new Alert(Alert.AlertType.WARNING);
-        alerta.setTitle("Atención");
-        alerta.setHeaderText(null);
-        alerta.setContentText("Por favor, selecciona un insumo de la tabla para editar.");
-        alerta.showAndWait();
+        mostrarAlerta("Atención", "Por favor, selecciona un insumo de la tabla para editar.");
     }
 }
 
+
+
     @FXML
     private void manejarEliminar() {
-    // 1. Obtenemos el insumo seleccionado de la tabla
     Insumo seleccionado = tablaAlmacen.getSelectionModel().getSelectedItem();
 
     if (seleccionado != null) {
-        // 2. Creamos la alerta de confirmación
         Alert alertaConfirmacion = new Alert(Alert.AlertType.CONFIRMATION);
         alertaConfirmacion.setTitle("Confirmar eliminación");
         alertaConfirmacion.setHeaderText("¿Estás seguro de eliminar este insumo?");
-        alertaConfirmacion.setContentText("Insumo: " + seleccionado.getNombre() + "\nEsta acción no se puede deshacer.");
+        alertaConfirmacion.setContentText("Insumo: " + seleccionado.getNombre());
 
-        // 3. Mostramos la alerta y esperamos la respuesta del usuario
         java.util.Optional<ButtonType> resultado = alertaConfirmacion.showAndWait();
 
-        // 4. Si el usuario le dio clic a "Aceptar"
         if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
-            // Borramos de la lista (esto actualiza la tabla automáticamente)
-            listaInsumos.remove(seleccionado);
+            //Llamada al DAO
+            boolean eliminadoExitoso = insumoDAO.eliminar(seleccionado.getId());
 
-            // 5. Mostramos mensaje de éxito
-            Alert alertaExito = new Alert(Alert.AlertType.INFORMATION);
-            alertaExito.setTitle("Eliminación exitosa");
-            alertaExito.setHeaderText(null);
-            alertaExito.setContentText("El insumo ha sido eliminado correctamente.");
-            alertaExito.showAndWait();
+            if (eliminadoExitoso) {
+                listaInsumos.remove(seleccionado);
+                mostrarAlerta("Éxito", "El insumo ha sido eliminado de la base de datos.");
+            } else {
+                mostrarAlerta("Error", "No se pudo eliminar de la base de datos.");
+            }
         }
-        // Si le da a Cancelar, no pasa nada y se cierra la alerta.
-        
     } else {
-        // Si no seleccionó nada, le avisamos
-        Alert alertaError = new Alert(Alert.AlertType.WARNING);
-        alertaError.setTitle("Atención");
-        alertaError.setHeaderText(null);
-        alertaError.setContentText("Por favor, selecciona un insumo de la tabla para eliminar.");
-        alertaError.showAndWait();
+        mostrarAlerta("Atención", "Selecciona un insumo de la tabla.");
     }
 }
 

@@ -13,7 +13,7 @@ public class App extends Application {
         //Pruebas de uso
 //        URL resource = getClass().getResource("/com/mycompany/restaurante/fxml/RegistrarPedidoPantalla.fxml");
 //        URL resource = getClass().getResource("/com/mycompany/restaurante/fxml/CobrarPantalla.fxml");
-//        URL resource = getClass().getResource("/com/mycompany/restaurante/fxml/GestionAlmacen.fxml");
+//        URL resource = getClass().getResource("/com/mycompany/restaurante/fxml/GestionarEmpleados.fxml");
 
         //original
        URL resource = getClass().getResource("/com/mycompany/restaurante/fxml/LoginPantalla.fxml");

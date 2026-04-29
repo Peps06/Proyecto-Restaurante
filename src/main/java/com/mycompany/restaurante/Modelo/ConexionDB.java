@@ -16,7 +16,7 @@ public class ConexionDB {
     private static final String URL = "jdbc:mysql://localhost:3306/restaurantedb"
                                          + "?useSSL=false&serverTimezone=America/Mexico_City";
     private static final String USER = "root";
-    private static final String PASSWORD = "Pe951LInDr0:)";
+    private static final String PASSWORD = "Mend1503";
 
     private static ConexionDB instancia;
 
