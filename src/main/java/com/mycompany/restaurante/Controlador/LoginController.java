@@ -66,7 +66,7 @@ public class LoginController {
                     cargarPantalla("/com/mycompany/restaurante/fxml/CobrarPantalla.fxml", "Panel de Caja");
                     break;
                 case "Recepcionista":
-                    cargarPantalla("/fxml/PantallaRecepcion.fxml", "Panel de Recepción");
+                    cargarPantalla("/com/mycompany/restaurante/fxml/GestionReservas.fxml", "Panel de Recepción");
                     break;
                 default:
                     mostrarAlerta(Alert.AlertType.ERROR, "Error de Rol", "El rol asignado no tiene una vista creada aún.");
