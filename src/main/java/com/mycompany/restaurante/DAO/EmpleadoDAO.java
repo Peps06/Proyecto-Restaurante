@@ -8,20 +8,20 @@ import javafx.collections.ObservableList;
 import java.sql.*;
 
 /**
- * Acceso a datos para la tabla {@code empleados}.
+ * Provee los métodos de acceso a datos (DAO) para la entidad {@code Empleado}.
+ * Gestiona el ciclo de vida de los empleados en la base de datos, incluyendo
+ * el control de credenciales para el inicio de sesión y el seguimiento de asistencia.
  * 
- * Se encarga de llenar la tabla en empleados, de dar la información para las
- * credenciales de ingreso de sesión, registra los nuevos empleaddos agregados,
- * sus ediciones o eliminaciones en la base de datos, así como el estado (presente
- * o ausente)
- *
- *
  * @author Citlaly
+ * @version 1.0
  */
 public class EmpleadoDAO {
 
     /**
-     * Devuelve todos los empleados de la BD como ObservableList.
+     * Recupera todos los empleados registrados en la base de datos.
+     * 
+     * @return Una {@link ObservableList} con los objetos {@link Empleado}.
+     *         Devuelve una lista vacía si ocurre un error en la consulta.
      */
     public static ObservableList<Empleado> obtenerTodos() {
         ObservableList<Empleado> lista = FXCollections.observableArrayList();
@@ -43,14 +43,19 @@ public class EmpleadoDAO {
             }
 
         } catch (SQLException e) {
-            System.err.println("EmpleadoDAO.obtenerTodos(): " + e.getMessage());
+            System.err.println("Error en EmpleadoDAO.obtenerTodos(): " + e.getMessage());
         }
         return lista;
     }
 
     /**
-     * Busca un empleado por nombre (ignorando mayúsculas) y contraseña.
-     * Devuelve el puesto si las credenciales son correctas, {@code null} si no.
+     * Verifica las credenciales de un empleado para permitir el acceso al sistema.
+     * Utiliza una búsqueda insensible a mayúsculas para el nombre.
+     * 
+     * @param nombre   Nombre del empleado ingresado en el login.
+     * @param password Contraseña asociada a la cuenta.
+     * @return El puesto del empleado (ej. "Administrador", "Mesero") si los datos 
+     *         son correctos; {@code null} si las credenciales no coinciden.
      */
     public static String autenticar(String nombre, String password) {
         String sql = "SELECT puesto FROM empleados "
@@ -59,7 +64,7 @@ public class EmpleadoDAO {
         try (Connection con = ConexionDB.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
-            // El login acepta el primer nombre (ej. "rubi" → busca "rubi%")
+            // Se aplica trim() y toLowerCase() para mayor flexibilidad en el login
             ps.setString(1, nombre.toLowerCase().trim() + "%");
             ps.setString(2, password);
 
@@ -70,15 +75,16 @@ public class EmpleadoDAO {
             }
 
         } catch (SQLException e) {
-            System.err.println("EmpleadoDAO.autenticar(): " + e.getMessage());
+            System.err.println("Error en EmpleadoDAO.autenticar(): " + e.getMessage());
         }
         return null;
     }
 
     /**
-     * Inserta un empleado nuevo en la BD y devuelve el ID generado.
-     * Devuelve -1 si hubo error.
-     *
+     * Registra un nuevo empleado en la base de datos.
+     * 
+     * @param e Objeto {@link Empleado} que contiene la información a registrar.
+     * @return El ID autogenerado por la base de datos; -1 si ocurre un error.
      */
     public static int insertar(Empleado e) {
         String sql = "INSERT INTO empleados (nombre, password, puesto, asistencia, telefono) "
@@ -90,7 +96,7 @@ public class EmpleadoDAO {
             ps.setString(1, e.getNombre());
             ps.setString(2, e.getPassword());
             ps.setString(3, e.getPuesto());
-            ps.setString(4, e.getAsistencia());   // "Ausente" por defecto desde el controlador
+            ps.setString(4, e.getAsistencia());   // Normalmente "Ausente" al inicio
             ps.setString(5, e.getTelefono());
             ps.executeUpdate();
 
@@ -99,13 +105,16 @@ public class EmpleadoDAO {
             }
 
         } catch (SQLException ex) {
-            System.err.println("EmpleadoDAO.insertar(): " + ex.getMessage());
+            System.err.println("Error en EmpleadoDAO.insertar(): " + ex.getMessage());
         }
         return -1;
     }
 
     /**
-     * Actualiza nombre, password, puesto y teléfono de un empleado.
+     * Actualiza la información personal y laboral de un empleado existente.
+     * 
+     * @param e Objeto {@link Empleado} con los datos actualizados y su ID.
+     * @return {@code true} si la actualización fue exitosa.
      */
     public static boolean actualizar(Empleado e) {
         String sql = "UPDATE empleados SET nombre=?, password=?, puesto=?, telefono=? "
@@ -122,13 +131,17 @@ public class EmpleadoDAO {
             return ps.executeUpdate() > 0;
 
         } catch (SQLException ex) {
-            System.err.println("EmpleadoDAO.actualizar(): " + ex.getMessage());
+            System.err.println("Error en EmpleadoDAO.actualizar(): " + ex.getMessage());
         }
         return false;
     }
 
     /**
-     * Cambia solo el campo asistencia de un empleado.
+     * Actualiza exclusivamente el estado de asistencia de un empleado.
+     * Útil para módulos de "Check-in/Check-out".
+     * 
+     * @param e Objeto {@link Empleado} que contiene el nuevo estado y el ID.
+     * @return {@code true} si se modificó el estado de asistencia.
      */
     public static boolean actualizarAsistencia(Empleado e) {
         String sql = "UPDATE empleados SET asistencia=? WHERE idEmpleado=?";
@@ -141,13 +154,16 @@ public class EmpleadoDAO {
             return ps.executeUpdate() > 0;
 
         } catch (SQLException ex) {
-            System.err.println("EmpleadoDAO.actualizarAsistencia(): " + ex.getMessage());
+            System.err.println("Error en EmpleadoDAO.actualizarAsistencia(): " + ex.getMessage());
         }
         return false;
     }
 
     /**
-     * Elimina un empleado por ID.
+     * Elimina el registro de un empleado mediante su identificador único.
+     * 
+     * @param id El ID del empleado a eliminar.
+     * @return {@code true} si el registro fue borrado exitosamente.
      */
     public static boolean eliminar(int id) {
         String sql = "DELETE FROM empleados WHERE idEmpleado=?";
@@ -159,7 +175,7 @@ public class EmpleadoDAO {
             return ps.executeUpdate() > 0;
 
         } catch (SQLException ex) {
-            System.err.println("EmpleadoDAO.eliminar(): " + ex.getMessage());
+            System.err.println("Error en EmpleadoDAO.eliminar(): " + ex.getMessage());
         }
         return false;
     }

@@ -23,7 +23,7 @@
          <children>
             <ImageView fitHeight="50.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../Downloads/Restaurante/src/main/resources/img/tipoAzul.png" />
+                  <Image url="@../../../../img/tipoAzul.png" />
                </image>
                <HBox.margin>
                   <Insets left="35.0" right="20.0" />

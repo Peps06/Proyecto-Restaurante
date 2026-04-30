@@ -54,7 +54,7 @@ public class LoginController {
         if (rolEmpleado != null) {
             switch (rolEmpleado) {
                 case "Mesero":
-                    cargarPantalla("/com/mycompany/restaurante/fxml/RegistrarPedidoPantalla.fxml", "Panel de Mesero");
+                    cargarPantalla("/com/mycompany/restaurante/fxml/MesasDisponiblesPantalla.fxml", "Panel de Mesero");
                     break;
                 case "Administrador":
                     cargarPantalla("/com/mycompany/restaurante/fxml/GestionarEmpleado.fxml", "Panel de Administración");
