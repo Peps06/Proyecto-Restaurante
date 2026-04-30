@@ -19,6 +19,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 /**
@@ -236,11 +237,17 @@ public class MesasDisponiblesController implements Initializable {
             RegistrarPedidoController ctrl = loader.getController();
             ctrl.setMesaSeleccionada(numMesa);
 
-            Stage stage = (Stage) btnMesa1.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Realizar Pedido · Mesa " + numMesa + " - Saveurs Paris");
-            stage.showAndWait();
+            Stage nuevoStage = new Stage(); 
+            
+            nuevoStage.setScene(new Scene(root));
+            nuevoStage.setTitle("Realizar Pedido · Mesa " + numMesa + " - Saveurs Paris");
 
+            nuevoStage.initModality(Modality.APPLICATION_MODAL);
+            nuevoStage.initOwner(btnMesa1.getScene().getWindow()); 
+            nuevoStage.setResizable(false);
+            nuevoStage.showAndWait();
+
+            cargarEstadoMesas();
         } catch (IOException e) {
             LOG.severe("[MesasDisponiblesController] No se pudo cargar RegistrarPedidoPantalla: "
                        + e.getMessage());
