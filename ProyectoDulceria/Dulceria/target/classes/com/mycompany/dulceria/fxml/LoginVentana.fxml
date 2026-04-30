@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.text.Font?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" opacity="0.88" prefHeight="410.0" prefWidth="590.0" style="-fx-background-color: #F8E7FE;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.dulceria.Controlador.LoginVentanaController">
+   <children>
+      <Label layoutX="28.0" layoutY="80.0" prefHeight="37.0" prefWidth="208.0" text="LA DULCERIA" textAlignment="CENTER" textFill="#ffa800">
+         <font>
+            <Font name="Rockwell Bold Italic" size="30.0" />
+         </font>
+      </Label>
+      <ImageView fitHeight="433.0" fitWidth="323.0" layoutX="274.0" layoutY="-4.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../../images/dulces.jpg" />
+         </image>
+      </ImageView>
+      <Button fx:id="btnAdministrador" layoutX="73.0" layoutY="172.0" mnemonicParsing="false" onAction="#handleAdministrador" style="-fx-background-color: FFE9A1;" text="Administrador" textOverrun="CLIP">
+         <font>
+            <Font name="Arial Rounded MT Bold" size="14.0" />
+         </font>
+      </Button>
+      <Button fx:id="btnEmpleado" layoutX="73.0" layoutY="238.0" mnemonicParsing="false" onAction="#handleEmpleado" prefHeight="27.0" prefWidth="117.0" style="-fx-background-color: FFE9A1;" text="Empleado">
+         <font>
+            <Font name="Arial Rounded MT Bold" size="14.0" />
+         </font>
+      </Button>
+      <Button fx:id="btnSalir" layoutX="73.0" layoutY="302.0" mnemonicParsing="false" onAction="#handleSalir" prefHeight="27.0" prefWidth="117.0" style="-fx-background-color: FFE9A1;" text="Salir">
+         <font>
+            <Font name="Arial Rounded MT Bold" size="14.0" />
+         </font>
+      </Button>
+   </children>
+   <effect>
+      <DropShadow>
+         <color>
+            <Color red="0.8711110949516296" green="0.35555556416511536" blue="1.0" />
+         </color>
+      </DropShadow>
+   </effect>
+</Pane>
