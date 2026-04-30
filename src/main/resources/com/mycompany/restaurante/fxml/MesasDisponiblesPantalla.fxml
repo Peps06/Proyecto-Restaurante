@@ -18,7 +18,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="470.0" prefWidth="800.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.restaurante.Controlador.CobrarController">
+<BorderPane prefHeight="470.0" prefWidth="717.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.restaurante.Controlador.MesasDisponiblesController">
    <top>
       <HBox alignment="CENTER_LEFT" prefHeight="70.0" style="-fx-background-color: #2c3b62;">
          <children>
@@ -56,7 +56,7 @@
                   <Insets left="20.0" right="20.0" top="25.0" />
                </VBox.margin>
                <children>
-                  <Button fx:id="btnDisponibilidad" cacheShape="false" centerShape="false" focusTraversable="false" mnemonicParsing="false" pickOnBounds="false" prefHeight="42.0" prefWidth="180.0" scaleShape="false" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Disponibilidad" textFill="#d4c5b0">
+                  <Button fx:id="btnDisponibilidad" cacheShape="false" centerShape="false" focusTraversable="false" mnemonicParsing="false" onAction="#handleDisponibilidad" pickOnBounds="false" prefHeight="42.0" prefWidth="180.0" scaleShape="false" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Disponibilidad" textFill="#d4c5b0">
                      <font>
                         <Font name="Candara Bold" size="19.0" />
                      </font>
@@ -72,7 +72,7 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
-                  <Button fx:id="btnGestionar" cacheShape="false" centerShape="false" focusTraversable="false" mnemonicParsing="false" prefHeight="42.0" prefWidth="180.0" scaleShape="false" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Gestionar pedido" textFill="#d4c5b0">
+                  <Button fx:id="btnGestionar" cacheShape="false" centerShape="false" focusTraversable="false" mnemonicParsing="false" onAction="#handleGestionar" prefHeight="42.0" prefWidth="180.0" scaleShape="false" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Gestionar pedido" textFill="#d4c5b0">
                      <font>
                         <Font name="Candara Bold" size="19.0" />
                      </font>
@@ -138,7 +138,7 @@
                      <children>
                         <BorderPane prefHeight="305.0">
                            <top>
-                              <Label style="-fx-text-fill: #8b6914; -fx-font-style: italic;" text="Toque una mesa ocupada para ver su cuenta" BorderPane.alignment="CENTER_LEFT">
+                              <Label style="-fx-text-fill: #8b6914; -fx-font-style: italic;" text="Toque una mesa ocupada para realizar el pedido" BorderPane.alignment="CENTER_LEFT">
                                  <font>
                                     <Font name="Candara" size="12.0" />
                                  </font>
@@ -269,7 +269,7 @@
                                     <Region prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
                                     <HBox prefHeight="25.0" prefWidth="200.0" spacing="10.0">
                                        <children>
-                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="25.0" stroke="TRANSPARENT" strokeType="INSIDE" width="25.0" />
+                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#627096" height="25.0" stroke="TRANSPARENT" strokeType="INSIDE" width="25.0" />
                                           <Label prefHeight="25.0" text="Libre">
                                              <font>
                                                 <Font name="Candara" size="18.0" />
@@ -280,7 +280,7 @@
                                     <Region layoutX="10.0" layoutY="10.0" minHeight="-Infinity" prefHeight="30.0" prefWidth="200.0" />
                                     <HBox layoutX="10.0" layoutY="142.0" prefHeight="25.0" prefWidth="200.0" spacing="10.0">
                                        <children>
-                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="25.0" stroke="TRANSPARENT" strokeType="INSIDE" width="25.0" />
+                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#8a3636" height="25.0" stroke="TRANSPARENT" strokeType="INSIDE" width="25.0" />
                                           <Label prefHeight="25.0" text="Ocupada">
                                              <font>
                                                 <Font name="Candara" size="18.0" />
@@ -291,7 +291,7 @@
                                     <Region layoutX="10.0" layoutY="168.0" minHeight="-Infinity" prefHeight="30.0" prefWidth="200.0" />
                                     <HBox layoutX="10.0" layoutY="194.0" prefHeight="25.0" prefWidth="200.0" spacing="10.0">
                                        <children>
-                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="25.0" stroke="TRANSPARENT" strokeType="INSIDE" width="25.0" />
+                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#c9a84c" height="25.0" stroke="TRANSPARENT" strokeType="INSIDE" width="25.0" />
                                           <Label prefHeight="25.0" text="Reservada">
                                              <font>
                                                 <Font name="Candara" size="18.0" />

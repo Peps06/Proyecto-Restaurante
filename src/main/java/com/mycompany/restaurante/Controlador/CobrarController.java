@@ -22,28 +22,29 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
 /**
- * ControladoR
- *
+ * Controlador principal para la gestión de cobros y monitoreo de mesas.
+ * Permite visualizar el estado de ocupación, calcular cuentas con IVA
+ * y procesar pagos en efectivo o tarjeta.
+ * 
  * @author Citlaly
+ * @version 1.0
  */
 public class CobrarController implements Initializable {
 
     private static final Logger LOG = Logger.getLogger(CobrarController.class.getName());
     
-    //  Tabla de pedido 
+    // TABLA DE PEDIDO
     @FXML private TableView<OrdenItem> tableVerPedido;
     @FXML private TableColumn<OrdenItem, String> colProducto;
     @FXML private TableColumn<OrdenItem, Integer> colCantidad;
     @FXML private TableColumn<OrdenItem, Double> colPrecio;
 
-    //  Labels de resumen 
+    // LABELS DE RESUMEN
     @FXML private Label labelMesa;
     @FXML private Label labelIdOrden;
     @FXML private Label labelSubtotal;
@@ -51,15 +52,12 @@ public class CobrarController implements Initializable {
     @FXML private Label labelTotal;
     @FXML private Label labelCambio;
 
-    //  Botones de mesa 
+    // BOTONES DE MESAS (1 AL 12)
     @FXML private Button btnMesa1, btnMesa2, btnMesa3, btnMesa4;
     @FXML private Button btnMesa5, btnMesa6, btnMesa7, btnMesa8;
     @FXML private Button btnMesa9, btnMesa10, btnMesa11, btnMesa12;
     
-    // Lista de botones
-    private List<Button> botonesMesa;
-
-    //  Botones de pago / navegación 
+    // BOTONES DE PAGO / NAVEGACIÓN
     @FXML private Button btnEfectivo;
     @FXML private Button btnTarjeta;
     @FXML private Button btnRegistrarPago;
@@ -68,24 +66,22 @@ public class CobrarController implements Initializable {
     @FXML private Button btnCerrarSesion;
     @FXML private Spinner<Double> spinnerMonto;
 
-    //  Estado interno 
-    private int    mesaSeleccionada = 0;
+    // ESTADO INTERNO
+    private int mesaSeleccionada = 0;
     private double subtotal = 0.0;
     private double iva = 0.0;
     private double total = 0.0;
-    private String metodoPago = "EFECTIVO";   // "EFECTIVO" | "TARJETA"
-
+    private String metodoPago = "EFECTIVO"; // Opciones: "EFECTIVO" | "TARJETA"
     private static final double TASA_IVA = 0.16;
-    
     private int idOrdenActual = 0;
 
-    //  Estilos 
+    // ESTILOS CSS 
     private static final String ESTILO_MESA_LIBRE =
-        "-fx-background-color: #68A678; -fx-border-color: #68A678;" +
+        "-fx-background-color: #627096; -fx-border-color: #627096; -fx-text-fill: #d4c5b0;" +
         "-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;" +
         "-fx-text-fill: #0a132b;";
     private static final String ESTILO_MESA_ACTIVA =
-        "-fx-background-color: #AF5555; -fx-border-color: #AF5555;" +
+        "-fx-background-color: #8a3636; -fx-border-color: #8a3636; -fx-text-fill: #d4c5b0;" +
         "-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;" +
         "-fx-text-fill: #0a132b;";
     private static final String ESTILO_BTN_ACTIVO =
@@ -95,23 +91,18 @@ public class CobrarController implements Initializable {
         "-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" +
         "-fx-border-radius: 10 10 10 10; -fx-text-fill: #d4c5b0;";
 
-    //  Datos de prueba por mesa
-    private final ObservableList<OrdenItem> ordenMesaPrueba =
-        FXCollections.observableArrayList(
-            new OrdenItem("Soupe à l'oignon", 1, 120.00),
-            new OrdenItem("Coq au Vin", 2, 280.00),
-            new OrdenItem("Crème Brûlée", 2, 95.00),
-            new OrdenItem("Eau minérale 500ml", 3, 40.00)
-        );
-
+    /**
+     * Inicializa la interfaz, configura el formato de celdas de la tabla 
+     * y carga el estado inicial de las mesas desde la base de datos.
+     */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-
-        // Configurar columnas
+        // Configurar columnas de la tabla
         colProducto.setCellValueFactory(new PropertyValueFactory<>("producto"));
         colCantidad.setCellValueFactory(new PropertyValueFactory<>("cantidad"));
         colPrecio.setCellValueFactory(new PropertyValueFactory<>("precio"));
 
+        // Formato de moneda para la columna de precio
         colPrecio.setCellFactory(col -> new TableCell<>() {
             @Override
             protected void updateItem(Double p, boolean empty) {
@@ -120,26 +111,22 @@ public class CobrarController implements Initializable {
             }
         });
 
-        // Spinner: rango $0 – $9 999.99
+        // Configuración del Spinner para montos de pago
         SpinnerValueFactory<Double> svf =
             new SpinnerValueFactory.DoubleSpinnerValueFactory(0, 9999.99, 0, 1);
         spinnerMonto.setValueFactory(svf);
         spinnerMonto.setEditable(true);
 
-        // Recalcular cambio en tiempo real
+        // Listener para recalcular cambio mientras el usuario escribe
         spinnerMonto.valueProperty().addListener((obs, ov, nv) -> calcularCambio());
         
-        botonesMesa = Arrays.asList(
-            btnMesa1, btnMesa2, btnMesa3, btnMesa4,
-            btnMesa5, btnMesa6, btnMesa7, btnMesa8,
-            btnMesa9, btnMesa10, btnMesa11, btnMesa12
-        );
-
         vincularBotonesMesa();
         cargarEstadoMesas();
     }
 
-    //   El cajero selecciona una mesa
+    /**
+     * Vincula el evento ActionEvent a cada uno de los 12 botones de mesa.
+     */
     private void vincularBotonesMesa() {
         Button[] mesas = {
             btnMesa1, btnMesa2, btnMesa3, btnMesa4,
@@ -153,49 +140,48 @@ public class CobrarController implements Initializable {
     }
 
     /**
-     * Selecciona mesa y muestra el detalle de la cuenta.
+     * Gestiona la selección de una mesa, resalta el botón correspondiente y 
+     * carga la orden activa desde el DAO.
+     * 
+     * @param numMesa Identificador de la mesa clicada.
+     * @param mesas Arreglo de botones de mesa para manejo de estilos.
      */
     private void seleccionarMesa(int numMesa, Button[] mesas) {
-        // Guardamos la mesa seleccionada
         mesaSeleccionada = numMesa;
 
-        // 1. Recargar colores base desde la BD (libre/ocupado) 
-        //    Esto quita cualquier resaltado anterior.
+        // Resetear colores base desde la BD
         cargarEstadoMesas();
 
-        // 2. Ahora, sobre el botón de la mesa elegida, añadimos el resaltado
+        // Aplicar resaltado a la mesa seleccionada
         Button botonActual = mesas[numMesa - 1];
         String estiloBase = botonActual.getStyle();
         botonActual.setStyle(estiloBase + ESTILO_BTN_ACTIVO);
 
-        // 3. Resto de lógica (cargar orden, actualizar labels, etc.)
+        // Buscar orden abierta en la BD
         idOrdenActual = PedidoDAO.obtenerOrdenAbiertaPorMesa(numMesa);
         labelMesa.setText("Mesa " + numMesa);
 
         if (idOrdenActual == 0) {
-            tableVerPedido.getItems().clear();
-            labelIdOrden.setText("Sin orden activa");
-            labelSubtotal.setText("$0.00");
-            labelIVA.setText("$0.00");
-            labelTotal.setText("$0.00");
-            labelCambio.setText("$0.00");
-            subtotal = iva = total = 0.0;
-            LOG.warning("CobrarController: mesa " + numMesa + " no tiene orden abierta.");
+            limpiarInterfazOrden();
             return;
         }
 
+        // Cargar detalle de la orden si existe
         labelIdOrden.setText("Orden #" + idOrdenActual + " · " + java.time.LocalDate.now());
         ObservableList<OrdenItem> orden = PedidoDAO.obtenerDetalleOrden(idOrdenActual);
         tableVerPedido.setItems(orden);
 
+        // Cálculos financieros
         subtotal = orden.stream().mapToDouble(OrdenItem::getSubtotalItem).sum();
         iva = subtotal * TASA_IVA;
         total = subtotal + iva;
 
+        // Actualizar visualización
         labelSubtotal.setText("$" + String.format("%.2f", subtotal));
         labelIVA.setText("$" + String.format("%.2f", iva));
         labelTotal.setText("$" + String.format("%.2f", total));
 
+        // Resetear controles de pago
         spinnerMonto.getValueFactory().setValue(0.0);
         spinnerMonto.setDisable(false);
         metodoPago = "EFECTIVO";
@@ -204,6 +190,24 @@ public class CobrarController implements Initializable {
         labelCambio.setText("$0.00");
     }
     
+    /**
+     * Limpia los campos de texto cuando no hay una orden activa.
+     */
+    private void limpiarInterfazOrden() {
+        tableVerPedido.getItems().clear();
+        labelIdOrden.setText("Sin orden activa");
+        labelSubtotal.setText("$0.00");
+        labelIVA.setText("$0.00");
+        labelTotal.setText("$0.00");
+        labelCambio.setText("$0.00");
+        subtotal = iva = total = 0.0;
+        LOG.warning("CobrarController: mesa " + mesaSeleccionada + " no tiene orden abierta.");
+    }
+
+    /**
+     * Sincroniza el color de los botones de mesa con el estado actual en la BD.
+     * Mesas con órdenes "Abiertas" se muestran en color de alerta (rojo/activo).
+     */
     private void cargarEstadoMesas() {
         Button[] mesas = {
             btnMesa1, btnMesa2, btnMesa3, btnMesa4,
@@ -211,23 +215,19 @@ public class CobrarController implements Initializable {
             btnMesa9, btnMesa10, btnMesa11, btnMesa12
         };
 
+        // Pintar todas como libres inicialmente
         String sql2 = "SELECT idMesa FROM mesas";
-        
         try (Connection con = ConexionDB.getConexion();
              Statement st = con.createStatement();
              ResultSet rs = st.executeQuery(sql2)) {
-
             while (rs.next()) {
                 int id = rs.getInt("idMesa");
-                Button btn = mesas[id - 1];
-                btn.setStyle(ESTILO_MESA_LIBRE);
+                mesas[id - 1].setStyle(ESTILO_MESA_LIBRE);
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        } catch (SQLException e) { e.printStackTrace(); }
         
+        // Pintar mesas ocupadas
         String sql = "SELECT idMesa, estado FROM ordenes";
-
         try (Connection con = ConexionDB.getConexion();
              Statement st = con.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
@@ -235,32 +235,24 @@ public class CobrarController implements Initializable {
             while (rs.next()) {
                 int id = rs.getInt("idMesa");
                 String estado = rs.getString("estado");
-                Button btn = mesas[id - 1];
-
-                // Asignar estilo base
                 if ("Abierta".equals(estado)) {
-                    btn.setStyle(ESTILO_MESA_ACTIVA);
+                    mesas[id - 1].setStyle(ESTILO_MESA_ACTIVA);
                 }
             }
 
-            // Reaplicar el resaltado a la mesa que esté seleccionada actualmente
+            // Reaplicar resaltado si hay selección previa
             if (mesaSeleccionada != 0) {
                 Button btnSeleccionada = mesas[mesaSeleccionada - 1];
-                // Conserva el color base y añade el borde
                 btnSeleccionada.setStyle(btnSeleccionada.getStyle() + ESTILO_BTN_ACTIVO);
             }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        } catch (SQLException e) { e.printStackTrace(); }
     }
     
-    // botones de mesa
-    @FXML
-    private void handleMesas(ActionEvent event){
-    }
+    @FXML private void handleMesas(ActionEvent event){ /* si se aplica css*/ }
 
-    //  btnEfectivo
+    /**
+     * Cambia el método de pago a Efectivo y habilita el ingreso de monto.
+     */
     @FXML
     private void handleEfectivo(ActionEvent event) {
         metodoPago = "EFECTIVO";
@@ -270,7 +262,9 @@ public class CobrarController implements Initializable {
         calcularCambio();
     }
 
-    //  btnTarjeta
+    /** 
+     * Cambia el método de pago a Tarjeta y deshabilita el cálculo de cambio. 
+     */
     @FXML
     private void handleTarjeta(ActionEvent event) {
         metodoPago = "TARJETA";
@@ -280,7 +274,9 @@ public class CobrarController implements Initializable {
         labelCambio.setText("N/A");
     }
 
-    //  Cambio en tiempo real 
+    /** 
+     * Calcula la diferencia entre el monto recibido y el total. 
+     */
     private void calcularCambio() {
         if (!"EFECTIVO".equals(metodoPago)) return;
         double monto  = spinnerMonto.getValue() != null ? spinnerMonto.getValue() : 0.0;
@@ -290,39 +286,31 @@ public class CobrarController implements Initializable {
             : "-$" + String.format("%.2f", Math.abs(cambio)));
     }
 
-    //  Muestra confirmación; desde aquí también se puede abrir facturación.
-    //  verifica monto suficiente antes de proceder.
+    /**
+     * Valida la transacción y registra el pago en el sistema.
+     * Ofrece opciones para facturación inmediata tras el registro.
+     */
     @FXML
     private void handleRegistrarPago(ActionEvent event) {
-
         if (mesaSeleccionada == 0) {
-            mostrarAlerta(Alert.AlertType.WARNING,
-                "Sin mesa seleccionada",
-                "Seleccione una mesa antes de registrar el pago.");
+            mostrarAlerta(Alert.AlertType.WARNING, "Sin mesa seleccionada",
+                    "Seleccione una mesa antes de registrar el pago.");
             return;
         }
 
-        // Monto en efectivo insuficiente o no ingresado
         if ("EFECTIVO".equals(metodoPago)) {
             double monto = spinnerMonto.getValue() != null ? spinnerMonto.getValue() : 0.0;
             if (monto < total || monto == 0.0) {
-                mostrarAlerta(Alert.AlertType.WARNING,
-                    "Monto insuficiente",
-                    "El monto recibido debe ser igual o mayor al total.\n" +
-                    "Total: $" + String.format("%.2f", total) + "\n" +
-                    "Recibido: $" + String.format("%.2f", monto));
+                mostrarAlerta(Alert.AlertType.WARNING, "Monto insuficiente",
+                        "Monto insuficiente para el total de $" + String.format("%.2f", total));
                 return;
             }
         }
 
-        // Confirmación con opción de facturar
         Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
         confirmacion.setTitle("Confirmar pago · Mesa " + mesaSeleccionada);
         confirmacion.setHeaderText("Método de pago: " + metodoPago);
-        confirmacion.setContentText(
-            "Total: $" + String.format("%.2f", total) + "\n\n" +
-            "¿Desea también generar una FACTURA para este pago?"
-        );
+        confirmacion.setContentText("Total: $" + String.format("%.2f", total) + "\n\n¿Desea facturar?");
 
         ButtonType btnSoloRegistrar = new ButtonType("Solo registrar pago");
         ButtonType btnConFactura = new ButtonType("Registrar y Facturar");
@@ -341,55 +329,32 @@ public class CobrarController implements Initializable {
     }
 
     private void registrarPagoSimple() {
-        mostrarAlerta(Alert.AlertType.INFORMATION,
-            "Pago registrado",
-            "El pago de Mesa " + mesaSeleccionada +
-            " ha sido registrado.\nTotal: $" + String.format("%.2f", total));
+        
+        mostrarAlerta(Alert.AlertType.INFORMATION, "Pago registrado",
+                "El pago de Mesa " + mesaSeleccionada + " ha sido registrado.");
     }
 
-    // 
-    //  btnFacturar → abre FacturacionPantalla.fxml
-    // 
+    /** 
+     * Verifica requisitos previos y lanza la ventana de facturación. 
+     */
     @FXML
     private void handleFacturar(ActionEvent event) {
-
-        // debe haber una mesa seleccionada con cuenta cargada
         if (mesaSeleccionada == 0) {
-            mostrarAlerta(Alert.AlertType.WARNING,
-                "Sin mesa seleccionada",
-                "Seleccione una mesa antes de generar la factura.");
+            mostrarAlerta(Alert.AlertType.WARNING, "Sin mesa seleccionada",
+                    "Seleccione una mesa primero.");
             return;
         }
-
-        // Si el método es efectivo, verificar monto suficiente
-        if ("EFECTIVO".equals(metodoPago)) {
-            double monto = spinnerMonto.getValue() != null ? spinnerMonto.getValue() : 0.0;
-            if (monto < total || monto == 0.0) {
-                mostrarAlerta(Alert.AlertType.WARNING,
-                    "Monto insuficiente",
-                    "El monto recibido debe ser igual o mayor al total.\n" +
-                    "Total: $" + String.format("%.2f", total) + "\n" +
-                    "Recibido: $" + String.format("%.2f", monto));
-                return;
-            }
-        }
-
         abrirFacturacion();
     }
 
-    /**
-     * Pasa el total y número de mesa al controlador de facturación.
+    /** 
+     * Carga la vista FacturacionPantalla.fxml de forma modal. 
      */
     private void abrirFacturacion() {
         try {
-            FXMLLoader loader = new FXMLLoader(
-                getClass().getResource(
-                    "/com/mycompany/restaurante/fxml/FacturacionPantalla.fxml"
-                )
-            );
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/restaurante/fxml/FacturacionPantalla.fxml"));
             Parent root = loader.load();
 
-            // Pasar contexto al controlador de facturación
             FacturacionController facturacionCtrl = loader.getController();
             facturacionCtrl.setTotalFactura(total);
             facturacionCtrl.setIdOrden(idOrdenActual);
@@ -400,53 +365,31 @@ public class CobrarController implements Initializable {
             Stage stage = new Stage();
             stage.setTitle("Datos de Facturación · Mesa " + mesaSeleccionada);
             stage.setScene(new Scene(root));
-            stage.initModality(Modality.APPLICATION_MODAL);  // bloquea ventana padre
+            stage.initModality(Modality.APPLICATION_MODAL);
             stage.setResizable(false);
             stage.showAndWait();
-            // ventana de facturación cerrada, pantalla de cobro visible
 
         } catch (IOException e) {
-            e.printStackTrace();
-            mostrarAlerta(Alert.AlertType.ERROR,
-                "Error al abrir facturación",
-                "No se pudo cargar FacturacionPantalla.fxml:\n" + e.getMessage());
+            mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo cargar la pantalla de facturación.");
         }
     }
 
-    // 
-    //  btnCerrarSesion
-    // 
+    /** 
+     * Regresa a la pantalla de login cerrando la sesión actual. 
+     */
     @FXML
     private void handleCerrarSesion(ActionEvent event) {
         try {
-            // 1. Cargar directamente la pantalla de Login
             Parent root = FXMLLoader.load(getClass().getResource("/com/mycompany/restaurante/fxml/LoginPantalla.fxml"));
-
-            // 2. Obtener la ventana actual usando el evento del clic
-            javafx.scene.Node nodoOrigen = (javafx.scene.Node) event.getSource();
-            Stage stageActual = (Stage) nodoOrigen.getScene().getWindow();
-
-            // 3. Cambiar la escena
-            Scene nuevaEscena = new Scene(root);
-            stageActual.setScene(nuevaEscena);
+            Stage stageActual = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
+            stageActual.setScene(new Scene(root));
             stageActual.setTitle("Iniciar sesión - Saveurs Paris");
-            stageActual.centerOnScreen();
             stageActual.show();
-
-        } catch (java.io.IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException e) { e.printStackTrace(); }
     }
 
-    // 
-    //  btnCobrarMesa (sidebar) — ya estamos en esta pantalla
-    // 
-    @FXML
-    private void handleCobrarMesa(ActionEvent event) {
-        // Ya estamos en la pantalla de cobro; no se requiere acción.
-    }
+    @FXML private void handleCobrarMesa(ActionEvent event) { /* Pantalla actual */ }
 
-    //  Utilidad 
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String contenido) {
         Alert a = new Alert(tipo);
         a.setTitle(titulo);

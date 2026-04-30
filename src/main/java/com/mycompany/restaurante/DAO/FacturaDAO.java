@@ -9,32 +9,34 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Acceso a datos para la tabla {@code facturas}.
+ * Capa de Acceso a Datos (DAO) para la gestión de facturas fiscales.
+ * Centraliza la inserción de registros en la tabla {@code facturas} y 
+ * la actualización de estados de las órdenes correspondientes.
  * 
- * Se encarga de insertar facturas, el idOrden, el subtotal de la venta y el iva
- * y todo ello lo guarda en la base de datos
- *
  * @author Citlaly
  * @version 1.2
  */
-
 public class FacturaDAO {
 
     private static final Logger LOG = Logger.getLogger(FacturaDAO.class.getName());
 
     /**
-     * Inserta una factura dentro de una transacción explícita.
-     * Si algo falla se hace rollback completo.
+     * Registra una factura en la base de datos y actualiza el estado de la orden.
+     * Si el registro de la factura falla o la actualización de la orden no
+     * se concreta, se deshacen todos los cambios.
      *
-     * @return true si se insertó correctamente.
+     * @param factura Objeto con los datos de la factura (folio, fecha, total).
+     * @param idOrden Identificador de la orden que se está facturando.
+     * @param subtotal Valor de la venta antes de impuestos.
+     * @param iva Monto del impuesto calculado.
+     * @return true si la transacción se confirmó (commit); false si falló la conexión o validación.
+     * @throws SQLException Si ocurre un error durante la ejecución de las sentencias SQL.
      */
-    public static boolean insertar(Factura factura, int idOrden,
-                                   double subtotal, double iva) {
+    public static boolean insertar(Factura factura, int idOrden, double subtotal, double iva) throws SQLException {
 
-        // Verifica que la orden exista
+        // Validación de seguridad para evitar registros solos
         if (idOrden <= 0) {
-            LOG.warning("FacturaDAO.insertar(): idOrden inválido = " + idOrden
-                        + ". La orden no fue guardada antes de facturar.");
+            LOG.warning("FacturaDAO: Intento de facturación fallido. idOrden inválido (" + idOrden + ").");
             return false;
         }
 
@@ -45,19 +47,26 @@ public class FacturaDAO {
             VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
             """;
 
-        String sqlCerrarOrden =
-            "UPDATE ordenes SET estado='Facturada' WHERE idOrden=?";
+        String sqlCerrarOrden = "UPDATE ordenes SET estado='Facturada' WHERE idOrden=?";
+        
+        String sqlLiberarMesa = """
+            UPDATE mesas 
+            SET estado = 'Libre' 
+            WHERE idMesa = (SELECT idMesa FROM ordenes WHERE idOrden = ?)
+            """;
 
         DatosFacturacion d = factura.getDatosFiscales();
 
         try (Connection con = ConexionDB.getConexion()) {
 
-            con.setAutoCommit(false); // inicio de transacción
+            // Se inicializa la transacción manual para asegurar consistencia
+            con.setAutoCommit(false); 
 
             try (PreparedStatement psFactura = con.prepareStatement(sqlFactura);
-                 PreparedStatement psOrden   = con.prepareStatement(sqlCerrarOrden)) {
+                 PreparedStatement psOrden = con.prepareStatement(sqlCerrarOrden);
+                 PreparedStatement psMesa = con.prepareStatement(sqlLiberarMesa)) {
 
-                // INSERT factura 
+                // 1. Mapeo de parámetros para la FACTURA
                 psFactura.setString(1, factura.getFolio());
                 psFactura.setInt(2, idOrden);
                 psFactura.setString(3, d.getNombreRazonSocial());
@@ -66,37 +75,47 @@ public class FacturaDAO {
                 psFactura.setString(6, d.getCorreo());
                 psFactura.setString(7, d.getRegimenFiscal());
                 psFactura.setString(8, d.getUsoCfdi());
-                psFactura.setDouble(9,  subtotal);
+                psFactura.setDouble(9, subtotal);
                 psFactura.setDouble(10, iva);
                 psFactura.setDouble(11, factura.getTotal());
                 psFactura.setTimestamp(12, Timestamp.valueOf(factura.getFechaHora()));
+                
+                psMesa.setInt(1, idOrden);
+                int filasMesa = psMesa.executeUpdate();
 
                 int filasFactura = psFactura.executeUpdate();
-                LOG.info("FacturaDAO: INSERT factura → filas afectadas = " + filasFactura);
+                LOG.info("FacturaDAO: Registro de factura exitoso. Filas: " + filasFactura);
 
-                // orden actualizada
+                // 2. Mapeo de parámetros para cerrar la ORDEN 
                 psOrden.setInt(1, idOrden);
                 int filasOrden = psOrden.executeUpdate();
-                LOG.info("FacturaDAO: UPDATE ordenes → filas afectadas = " + filasOrden);
+                LOG.info("FacturaDAO: Estado de orden #" + idOrden + " actualizado a 'Facturada'.");
 
+                // Se confirman los cambios en la base de datos
                 con.commit();
-                LOG.info("FacturaDAO: transacción confirmada. Folio: " + factura.getFolio());
+                LOG.info("FacturaDAO: Transacción completada (Factura creada + Orden cerrada + Mesa liberada).");
                 return true;
 
             } catch (SQLException e) {
-                con.rollback();  // ✅ cualquier falla: deshacer todo
-                LOG.log(Level.SEVERE,
-                    "FacturaDAO.insertar(): ERROR, rollback ejecutado. idOrden=" + idOrden, e);
-                throw e;         // re-lanzar para que el controlador muestre alerta
+                // En caso de cualquier error, ses revierten ambos INSERT/UPDATE
+                con.rollback();
+                LOG.log(Level.SEVERE, "FacturaDAO: Error en proceso. Rollback ejecutado. idOrden=" + idOrden, e);
+                throw e; // Re-lanzamos para que la UI pueda capturarlo y avisar al usuario
             }
 
         } catch (SQLException e) {
-            LOG.log(Level.SEVERE, "FacturaDAO.insertar(): no se pudo abrir conexión", e);
+            LOG.log(Level.SEVERE, "FacturaDAO: Error al establecer conexión con el servidor de datos.", e);
             return false;
         }
     }
 
-    /** Verifica si ya existe una factura para una orden (evita doble facturación). */
+    /**
+     * Valida la existencia de una factura previa para una orden específica.
+     * Método de control para prevenir duplicidad de folios fiscales.
+     * 
+     * @param idOrden ID de la orden a verificar.
+     * @return true si ya existe al menos un registro; false si la orden no ha sido facturada.
+     */
     public static boolean existeFacturaParaOrden(int idOrden) {
         String sql = "SELECT COUNT(*) FROM facturas WHERE idOrden=?";
         try (Connection con = ConexionDB.getConexion();
@@ -106,7 +125,7 @@ public class FacturaDAO {
                 if (rs.next()) return rs.getInt(1) > 0;
             }
         } catch (SQLException e) {
-            LOG.log(Level.SEVERE, "FacturaDAO.existeFacturaParaOrden()", e);
+            LOG.log(Level.SEVERE, "FacturaDAO: Error al verificar existencia de factura para orden " + idOrden, e);
         }
         return false;
     }

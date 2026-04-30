@@ -12,55 +12,55 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 /**
- * Acceso a datos sobre la creación y gestión de pedidos {@code ordenes}.
+ * Capa de Acceso a Datos (DAO) para la entidad Pedido y sus detalles.
+ * Gestiona la persistencia de las órdenes en la base de datos, asegurando
+ * la atomicidad de las operaciones mediante transacciones.
  * 
- * Se encarga de agregar, eliminar y gestionar los pedidos generados por el
- * mesero.
- *
  * @author Citlaly
- * @version 1
+ * @version 1.0
  */
 public class PedidoDAO {
 
     private static final Logger LOG = Logger.getLogger(PedidoDAO.class.getName());
 
     /**
-     * Inserta una orden con su detalle en una sola transacción ACID.
+     * Registra una orden completa en la base de datos.
+     * Realiza tres operaciones en una sola transacción:
+     * 1. Inserta la cabecera de la orden.
+     * 2. Inserta los productos en el detalle_orden (vía Batch).
+     * 3. Actualiza el estado de la mesa a 'Ocupada'.
      *
-     * @param idMesa → Mesa que genera la orden.
-     * @param idEmpleado → Mesero que registra (necesitas pasarlo desde LoginController).
-     * @param items → Lista de productos con cantidad > 0.
-     * @return idOrden generado, o -1 si falló.
+     * @param idMesa ID de la mesa física asignada.
+     * @param idEmpleado ID del mesero que toma el pedido.
+     * @param items Lista de productos seleccionados.
+     * @return El idOrden generado por la base de datos, o -1 en caso de error.
      */
-    public static int insertarOrdenCompleta(int idMesa, int idEmpleado,
-                                             List<Producto> items) {
+    public static int insertarOrdenCompleta(int idMesa, int idEmpleado, List<Producto> items) {
 
         String sqlOrden = "INSERT INTO ordenes (idMesa, idEmpleado) VALUES (?,?)";
-        String sqlDetalle = "INSERT INTO detalle_orden (idOrden, idProducto, cantidad, precioUnit)"
-                          + " VALUES (?,?,?,?)";
+        String sqlDetalle = "INSERT INTO detalle_orden (idOrden, idProducto, cantidad, precioUnit) VALUES (?,?,?,?)";
         String sqlMesa = "UPDATE mesas SET estado='Ocupada' WHERE idMesa=?";
 
         try (Connection con = ConexionDB.getConexion()) {
-
+            // Desactivar auto-commit para manejar la transacción manualmente (ACID)
             con.setAutoCommit(false); 
 
             try {
-                // 1. Insertar cabecera de la orden
+                // 1. INSERTAR CABECERA DE LA ORDEN
                 int idOrden;
-                try (PreparedStatement psOrden =
-                         con.prepareStatement(sqlOrden, Statement.RETURN_GENERATED_KEYS)) {
+                try (PreparedStatement psOrden = con.prepareStatement(sqlOrden, Statement.RETURN_GENERATED_KEYS)) {
                     psOrden.setInt(1, idMesa);
                     psOrden.setInt(2, idEmpleado);
                     psOrden.executeUpdate();
 
                     try (ResultSet keys = psOrden.getGeneratedKeys()) {
-                        if (!keys.next()) throw new SQLException("No se generó ID de orden.");
+                        if (!keys.next()) throw new SQLException("Error: No se pudo recuperar el ID de la nueva orden.");
                         idOrden = keys.getInt(1);
                     }
                 }
-                LOG.info("PedidoDAO: orden creada con idOrden=" + idOrden);
+                LOG.info("PedidoDAO: Cabecera creada exitosamente. ID: " + idOrden);
 
-                // 2. Insertar cada ítem del detalle
+                // 2. INSERTAR DETALLES
                 try (PreparedStatement psDetalle = con.prepareStatement(sqlDetalle)) {
                     for (Producto p : items) {
                         int cant = p.getCantidadPedida();
@@ -77,31 +77,35 @@ public class PedidoDAO {
                     psDetalle.executeBatch();
                 }
 
-                // 3. Marcar la mesa como Ocupada
+                // 3. ACTUALIZAR ESTADO DE LA MESA
                 try (PreparedStatement psMesa = con.prepareStatement(sqlMesa)) {
                     psMesa.setInt(1, idMesa);
                     psMesa.executeUpdate();
                 }
 
+                // Si todo fue bien, se guardan los cambios permanentemente
                 con.commit();
-                LOG.info("PedidoDAO: transacción confirmada. idOrden=" + idOrden);
+                LOG.info("PedidoDAO: Transacción completada con éxito. Orden: " + idOrden);
                 return idOrden;
 
             } catch (SQLException e) {
+                // Si algo falla, se revierte todos los cambios para evitar datos huérfanos
                 con.rollback();
-                LOG.log(Level.SEVERE,
-                    "PedidoDAO.insertarOrdenCompleta(): rollback. Mesa=" + idMesa, e);
+                LOG.log(Level.SEVERE, "PedidoDAO: Error en la transacción. Se realizó Rollback. Mesa: " + idMesa, e);
                 throw e;
             }
 
         } catch (SQLException e) {
-            LOG.log(Level.SEVERE, "PedidoDAO: error de conexión", e);
+            LOG.log(Level.SEVERE, "PedidoDAO: Error crítico de conexión a la base de datos.", e);
             return -1;
         }
     }
 
     /**
-     * Retorna el idOrden abierto para una mesa, o 0 si no hay ninguno.
+     * Consulta si existe una orden con estado 'Abierta' vinculada a una mesa específica.
+     * 
+     * @param idMesa ID de la mesa a consultar.
+     * @return El idOrden si existe una cuenta abierta, 0 en caso contrario.
      */
     public static int obtenerOrdenAbiertaPorMesa(int idMesa) {
         String sql = "SELECT idOrden FROM ordenes WHERE idMesa=? AND estado='Abierta' LIMIT 1";
@@ -112,13 +116,17 @@ public class PedidoDAO {
                 if (rs.next()) return rs.getInt("idOrden");
             }
         } catch (SQLException e) {
-            LOG.log(Level.SEVERE, "PedidoDAO.obtenerOrdenAbiertaPorMesa()", e);
+            LOG.log(Level.SEVERE, "PedidoDAO: Error al buscar orden abierta para mesa " + idMesa, e);
         }
         return 0;
     }
 
     /**
-     * Retorna los ítems de una orden para mostrarlos en la pantalla del cajero.
+     * Recupera el listado de productos y cantidades asociados a una orden.
+     * Realiza un JOIN con la tabla de productos para obtener los nombres descriptivos.
+     * 
+     * @param idOrden ID de la orden a consultar.
+     * @return ObservableList de OrdenItem, ideal para vincular directamente a una TableView de JavaFX.
      */
     public static ObservableList<OrdenItem> obtenerDetalleOrden(int idOrden) {
         ObservableList<OrdenItem> lista = FXCollections.observableArrayList();
@@ -141,7 +149,7 @@ public class PedidoDAO {
                 }
             }
         } catch (SQLException e) {
-            LOG.log(Level.SEVERE, "PedidoDAO.obtenerDetalleOrden()", e);
+            LOG.log(Level.SEVERE, "PedidoDAO: Error al obtener detalle de la orden #" + idOrden, e);
         }
         return lista;
     }

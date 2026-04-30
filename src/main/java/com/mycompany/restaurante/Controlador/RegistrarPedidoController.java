@@ -35,9 +35,13 @@ public class RegistrarPedidoController {
     
     @FXML private Button btnRealizarP;
     @FXML private Button btnCerrarSesion;
+    @FXML private Button btnCancelarPedido;
 
     private ObservableList<Producto> masterData = FXCollections.observableArrayList();
     private FilteredList<Producto> filteredData;
+    
+    private int idEmpleadoReal;
+    private int idMesaReal;
 
     public void initialize() {
         // 1. Cargar datos
@@ -45,7 +49,6 @@ public class RegistrarPedidoController {
             p.setCantidadPedida(0);   // reinicia cantidad para el pedido
             masterData.add(p);
         }
-        
 
         // 2. Configurar columnas
         ColumnaNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
@@ -96,6 +99,12 @@ public class RegistrarPedidoController {
         // 4. Configurar filtrado (pero no se aplica hasta dar clic en buscar)
         filteredData = new FilteredList<>(masterData, p -> true);
         tableMenu.setItems(filteredData);
+    }
+    
+    // Metodo para recibir la mesa
+    public void setMesaSeleccionada(int numMesa) {
+        this.idMesaReal = numMesa;
+        System.out.println("Mesa seleccionada en el controlador de pedidos: " + numMesa);
     }
 
     // --- MÉTODOS DE ACCIÓN ---
@@ -148,12 +157,11 @@ public class RegistrarPedidoController {
         Optional<ButtonType> result = alertConf.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             
-            // --- 4. MANDAMOS EL PEDIDO A TU NUEVO DAO ---
-            int idMesaTemporal = 1; // Aquí luego pondrás la mesa que el mesero elija
+            // --- 4. Se manda el pedido a DAO ---
             int idEmpleadoTemporal = 3; // El ID de Dana
             
             // Llamamos a tu función. Le pasamos masterData completo, tu DAO ya filtra los que tienen cantidad > 0
-            int idGenerado = com.mycompany.restaurante.DAO.PedidoDAO.insertarOrdenCompleta(idMesaTemporal, idEmpleadoTemporal, masterData);
+            int idGenerado = com.mycompany.restaurante.DAO.PedidoDAO.insertarOrdenCompleta(idMesaReal, idEmpleadoTemporal, masterData);
 
             if (idGenerado != -1) {
                 // Éxito: Limpiamos la pantalla
@@ -178,6 +186,13 @@ public class RegistrarPedidoController {
         } else {
             System.out.println("El mesero canceló el envío de la orden.");
         }
+        
+        cerrarVentana();
+    }
+    
+    @FXML
+    private void handleCancelarPedido(ActionEvent event){
+        cerrarVentana();
     }
 
     @FXML
@@ -200,5 +215,10 @@ public class RegistrarPedidoController {
         } catch (java.io.IOException e) {
             e.printStackTrace();
         }
+    }
+    
+    private void cerrarVentana() {
+        Stage stage = (Stage) btnCancelarPedido.getScene().getWindow();
+        stage.close();
     }
 }

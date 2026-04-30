@@ -8,18 +8,21 @@ import javafx.collections.ObservableList;
 import java.sql.*;
 
 /**
- * Acceso a datos para la tabla {@code productos}.
+ * Provee los métodos de acceso a datos (DAO) para la entidad {@code Producto}.
+ * Se encarga de las operaciones CRUD (Crear, Leer, Actualizar, Eliminar) 
+ * sobre la tabla {@code productos} en la base de datos.
  * 
- * Es el encargado de llenar la tabla de menú, de regisstrar los pedidos, de 
- * guardar si se crea, edita o elimina un producto, todo ello en la base de datos.
- *
  * @author Citlaly
- * @version 1
+ * @version 1.0
  */
 public class ProductoDAO {
 
     /**
-     * Devuelve todos los productos de la BD.
+     * Consulta y devuelve la lista completa de productos registrados.
+     * Ideal para llenar componentes de JavaFX como TableView o ListView.
+     * 
+     * @return Una {@link ObservableList} de objetos {@link Producto}. 
+     *         Si hay un error o no hay datos, devuelve una lista vacía.
      */
     public static ObservableList<Producto> obtenerTodos() {
         ObservableList<Producto> lista = FXCollections.observableArrayList();
@@ -49,7 +52,11 @@ public class ProductoDAO {
     }
 
     /**
-     * Inserta un producto nuevo. Devuelve el ID generado, -1 si hay error.
+     * Registra un nuevo producto en la base de datos.
+     * 
+     * @param p El objeto {@link Producto} con los datos a insertar.
+     * @return El ID generado por la base de datos para el nuevo registro; 
+     *         -1 si la operación falla.
      */
     public static int insertar(Producto p) {
         String sql = "INSERT INTO productos (nombre, tipo, precio, descripcion) VALUES (?,?,?,?)";
@@ -74,7 +81,10 @@ public class ProductoDAO {
     }
 
     /**
-     * Actualiza nombre, tipo, precio y descripción de un producto.
+     * Actualiza la información existente de un producto en la base de datos.
+     * 
+     * @param p Objeto {@link Producto} que contiene los nuevos datos y el ID correspondiente.
+     * @return {@code true} si se actualizó al menos un registro; {@code false} en caso contrario.
      */
     public static boolean actualizar(Producto p) {
         String sql = "UPDATE productos SET nombre=?, tipo=?, precio=?, descripcion=? "
@@ -87,7 +97,7 @@ public class ProductoDAO {
             ps.setString(2, p.getTipo());
             ps.setDouble(3, p.getPrecio());
             ps.setString(4, p.getDescripcion());
-            ps.setInt(5, p.getCantidadPedida());
+            ps.setInt(5, p.getId());
             return ps.executeUpdate() > 0;
 
         } catch (SQLException | NumberFormatException e) {
@@ -97,7 +107,10 @@ public class ProductoDAO {
     }
 
     /**
-     * Elimina un producto por ID.
+     * Elimina de forma permanente un producto de la base de datos mediante su ID.
+     * 
+     * @param id El identificador único del producto a eliminar.
+     * @return {@code true} si la eliminación fue exitosa.
      */
     public static boolean eliminar(int id) {
         String sql = "DELETE FROM productos WHERE idProductos=?";
