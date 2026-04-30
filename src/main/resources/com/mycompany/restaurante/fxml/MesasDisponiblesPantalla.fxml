@@ -64,14 +64,6 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
-                  <Button fx:id="btnRealizarPedido" cacheShape="false" centerShape="false" defaultButton="true" focusTraversable="false" mnemonicParsing="false" prefHeight="42.0" prefWidth="180.0" scaleShape="false" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Realizar pedido" textFill="#d4c5b0">
-                     <font>
-                        <Font name="Candara Bold" size="19.0" />
-                     </font>
-                     <cursor>
-                        <Cursor fx:constant="HAND" />
-                     </cursor>
-                  </Button>
                   <Button fx:id="btnGestionar" cacheShape="false" centerShape="false" focusTraversable="false" mnemonicParsing="false" onAction="#handleGestionar" prefHeight="42.0" prefWidth="180.0" scaleShape="false" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Gestionar pedido" textFill="#d4c5b0">
                      <font>
                         <Font name="Candara Bold" size="19.0" />

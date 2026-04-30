@@ -14,11 +14,11 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="346.0" prefWidth="608.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.restaurante.Controlador.RegistrarPedidoController">
+<BorderPane prefHeight="390.0" prefWidth="687.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.restaurante.Controlador.RegistrarPedidoController">
    <center>
       <VBox style="-fx-background-color: #f5efe6;" BorderPane.alignment="CENTER">
          <children>
-            <HBox alignment="CENTER_LEFT" prefHeight="90.0" style="-fx-background-color: #2C3B62;">
+            <HBox alignment="CENTER_LEFT" prefHeight="70.0" prefWidth="687.0" style="-fx-background-color: #2C3B62;">
                <HBox.margin>
                   <Insets />
                </HBox.margin>
@@ -39,7 +39,7 @@
                <children>
                   <HBox prefHeight="30.0" prefWidth="580.0">
                      <children>
-                        <TextField fx:id="txtBusqueda" focusTraversable="false" prefHeight="26.0" prefWidth="369.0" promptText="Ingresar nombre o ID ..." style="-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;">
+                        <TextField fx:id="txtBusqueda" focusTraversable="false" prefHeight="26.0" prefWidth="410.0" promptText="Ingresar nombre o ID ..." style="-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;">
                            <HBox.margin>
                               <Insets />
                            </HBox.margin>
@@ -76,14 +76,14 @@
                   <TableView fx:id="tableMenu" focusTraversable="false" prefHeight="202.0" prefWidth="530.0" style="-fx-background-radius: 10 10 10 10; -fx-border-color: #c9a84c; -fx-border-radius: 10 10 10 10;">
                      <columns>
                         <TableColumn fx:id="ColumnaNombre" prefWidth="168.00003051757812" text="Nombre" />
-                        <TableColumn fx:id="ColumnaDescripcion" prefWidth="289.5999755859375" text="Descripción" />
-                        <TableColumn fx:id="ColumnaCantidad" prefWidth="92.79998779296875" text="Cantidad" />
+                        <TableColumn fx:id="ColumnaDescripcion" prefWidth="363.20001220703125" text="Descripción" />
+                        <TableColumn fx:id="ColumnaCantidad" minWidth="6.4000244140625" prefWidth="94.39996337890625" text="Cantidad" />
                      </columns>
                   </TableView>
                   <HBox prefHeight="50.0" prefWidth="280.0">
                      <children>
                         <Label focusTraversable="false" text="Descripción:   " />
-                        <TextArea fx:id="txtDescripcion" focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefColumnCount="266" prefHeight="50.0" prefRowCount="53" prefWidth="270.0" style="-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;" wrapText="true">
+                        <TextArea fx:id="txtDescripcion" focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefColumnCount="266" prefHeight="38.0" prefRowCount="53" prefWidth="320.0" style="-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;" wrapText="true">
                            <cursor>
                               <Cursor fx:constant="TEXT" />
                            </cursor>
