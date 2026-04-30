@@ -117,15 +117,14 @@ public class RegistrarPedidoController {
 
     @FXML
     private void handleConfirmarPedido() {
-        // 1. Filtrar solo los productos que tienen cantidad mayor a 0
-        StringBuilder resumen = new StringBuilder();
         boolean hayProductos = false;
+        StringBuilder resumen = new StringBuilder();
 
+        // 1. Verificamos si hay productos en el pedido para el resumen
         for (Producto p : masterData) {
             int cantidad = p.getCantidadPedida();
             if (cantidad > 0) {
-                resumen.append("- ").append(p.getNombre())
-                       .append(" (x").append(cantidad).append(")\n");
+                resumen.append("- ").append(p.getNombre()).append(" (x").append(cantidad).append(")\n");
                 hayProductos = true;
             }
         }
@@ -135,38 +134,49 @@ public class RegistrarPedidoController {
             Alert alertError = new Alert(Alert.AlertType.ERROR);
             alertError.setTitle("Pedido Vacío");
             alertError.setHeaderText(null);
-            alertError.setContentText("No has seleccionado ningún producto. Por favor, usa los botones + para añadir elementos.");
+            alertError.setContentText("No has seleccionado ningún producto. Usa los botones + para añadir elementos.");
             alertError.showAndWait();
             return;
         }
 
-        // 3. Agregar los detalles del TextArea si existen
-        String detalles = txtDescripcion.getText();
-        if (detalles != null && !detalles.trim().isEmpty()) {
-            resumen.append("\nNotas adicionales:\n").append(detalles);
-        }
-
-        // 4. Crear la alerta de Confirmación con el resumen
+        // 3. Crear la alerta de Confirmación
         Alert alertConf = new Alert(Alert.AlertType.CONFIRMATION);
         alertConf.setTitle("Resumen del Pedido");
         alertConf.setHeaderText("¿Confirmar el siguiente pedido?");
         alertConf.setContentText(resumen.toString());
 
-        // 5. Manejar la respuesta del usuario (Aceptar o Cancelar)
         Optional<ButtonType> result = alertConf.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
-            System.out.println("Pedido enviado a cocina:\n" + resumen.toString());
-            masterData.forEach(p -> p.setCantidadPedida(0));
-            tableMenu.refresh();
-            txtDescripcion.clear();
-            Alert alertExito = new Alert(Alert.AlertType.CONFIRMATION);
-            alertExito.setTitle("Confirmado");
-            alertExito.setHeaderText(null);
-            alertExito.setContentText("Pedido enviado exitosamente");
-            alertExito.showAndWait();
-            return;
+            
+            // --- 4. MANDAMOS EL PEDIDO A TU NUEVO DAO ---
+            int idMesaTemporal = 1; // Aquí luego pondrás la mesa que el mesero elija
+            int idEmpleadoTemporal = 3; // El ID de Dana
+            
+            // Llamamos a tu función. Le pasamos masterData completo, tu DAO ya filtra los que tienen cantidad > 0
+            int idGenerado = com.mycompany.restaurante.DAO.PedidoDAO.insertarOrdenCompleta(idMesaTemporal, idEmpleadoTemporal, masterData);
+
+            if (idGenerado != -1) {
+                // Éxito: Limpiamos la pantalla
+                masterData.forEach(p -> p.setCantidadPedida(0));
+                tableMenu.refresh();
+                txtDescripcion.clear();
+                
+                Alert alertExito = new Alert(Alert.AlertType.INFORMATION);
+                alertExito.setTitle("Confirmado");
+                alertExito.setHeaderText(null);
+                alertExito.setContentText("Pedido #" + idGenerado + " enviado a cocina y mesa marcada como ocupada.");
+                alertExito.showAndWait();
+                
+            } else {
+                Alert alertFallo = new Alert(Alert.AlertType.ERROR);
+                alertFallo.setTitle("Error");
+                alertFallo.setHeaderText(null);
+                alertFallo.setContentText("Ocurrió un problema al guardar la orden en la base de datos.");
+                alertFallo.showAndWait();
+            }
+            
         } else {
-            System.out.println("El usuario canceló el envío.");
+            System.out.println("El mesero canceló el envío de la orden.");
         }
     }
 
