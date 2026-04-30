@@ -1,4 +1,3 @@
-// FacturaDAO.java — versión corregida
 package com.mycompany.restaurante.DAO;
 
 import com.mycompany.restaurante.Modelo.ConexionDB;

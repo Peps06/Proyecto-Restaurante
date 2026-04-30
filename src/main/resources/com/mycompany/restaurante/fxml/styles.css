@@ -1,0 +1,59 @@
+/* ===== MESAS ===== */
+
+.mesa-libre {
+    -fx-background-color: #68A678;
+    -fx-border-color: #68A678;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-text-fill: #0a132b;
+}
+
+.mesa-activa {
+    -fx-background-color: #AF5555;
+    -fx-border-color: #AF5555;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-text-fill: #0a132b;
+}
+
+/* Botón seleccionado */
+.mesa-seleccionada {
+    -fx-background-color: #2c3b62;
+    -fx-text-fill: #d4c5b0;
+}
+
+/* ===== BOTONES ===== */
+
+.btn-activo {
+    -fx-background-color: #2c3b62;
+    -fx-text-fill: #d4c5b0;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+}
+
+.btn-inactivo {
+    -fx-background-color: #8b1a1a;
+    -fx-text-fill: #d4c5b0;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+}
+
+/* ===== INPUTS ===== */
+
+.input-normal {
+    -fx-background-color: #F7F4ED;
+    -fx-border-color: #1A1E2E;
+    -fx-border-radius: 5;
+}
+
+.input-error {
+    -fx-background-color: #FFF0F0;
+    -fx-border-color: #cc0000;
+    -fx-border-width: 2;
+    -fx-border-radius: 5;
+}
+
+.combo-error {
+    -fx-border-color: #cc0000;
+    -fx-border-width: 2;
+}

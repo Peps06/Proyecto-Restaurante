@@ -29,7 +29,7 @@ import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
 /**
- * Controlador de CobrarPantalla.fxml — CU-54 Facturar Cuenta.
+ * ControladoR
  *
  * @author Citlaly
  */

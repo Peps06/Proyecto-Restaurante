@@ -5,9 +5,6 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.Spinner?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
@@ -18,9 +15,10 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="620.0" prefWidth="838.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.restaurante.Controlador.CobrarController">
+<BorderPane prefHeight="470.0" prefWidth="800.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.restaurante.Controlador.CobrarController">
    <top>
       <HBox alignment="CENTER_LEFT" prefHeight="70.0" style="-fx-background-color: #2c3b62;">
          <children>
@@ -33,7 +31,7 @@
                </HBox.margin>
             </ImageView>
             <Region HBox.hgrow="ALWAYS" />
-            <Label alignment="CENTER" text="Cajero" textFill="#f5efe6">
+            <Label alignment="CENTER" text="Mesero" textFill="#f5efe6">
                <font>
                   <Font name="Franklin Gothic Heavy" size="30.0" />
                </font>
@@ -58,7 +56,7 @@
                   <Insets left="20.0" right="20.0" top="25.0" />
                </VBox.margin>
                <children>
-                  <Button fx:id="btnCobrarMesa" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#handleCobrarMesa" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Cobrar Mesa" textFill="#d4c5b0">
+                  <Button fx:id="btnDisponibilidad" cacheShape="false" centerShape="false" focusTraversable="false" mnemonicParsing="false" pickOnBounds="false" prefHeight="42.0" prefWidth="180.0" scaleShape="false" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Disponibilidad" textFill="#d4c5b0">
                      <font>
                         <Font name="Candara Bold" size="19.0" />
                      </font>
@@ -66,6 +64,23 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
+                  <Button fx:id="btnRealizarPedido" cacheShape="false" centerShape="false" defaultButton="true" focusTraversable="false" mnemonicParsing="false" prefHeight="42.0" prefWidth="180.0" scaleShape="false" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Realizar pedido" textFill="#d4c5b0">
+                     <font>
+                        <Font name="Candara Bold" size="19.0" />
+                     </font>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+                  <Button fx:id="btnGestionar" cacheShape="false" centerShape="false" focusTraversable="false" mnemonicParsing="false" prefHeight="42.0" prefWidth="180.0" scaleShape="false" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Gestionar pedido" textFill="#d4c5b0">
+                     <font>
+                        <Font name="Candara Bold" size="19.0" />
+                     </font>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+                  <Region />
                </children>
             </VBox>
             <VBox>
@@ -94,7 +109,7 @@
                   <Insets />
                </HBox.margin>
                <children>
-                  <Label style="-fx-font-family: mont;" text="Cobrar Mesa" textFill="#1a1e2e">
+                  <Label text="Disponibilidad de Mesas" textFill="#1a1e2e">
                      <font>
                         <Font name="Candara" size="23.0" />
                      </font>
@@ -133,18 +148,18 @@
                               </Label>
                            </top>
                            <center>
-                              <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="225.0" prefWidth="325.0" BorderPane.alignment="CENTER">
-                                <columnConstraints>
+                              <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="225.0" prefWidth="300.0" BorderPane.alignment="CENTER">
+                                 <columnConstraints>
                                     <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="10.0" prefWidth="75.0" />
                                     <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="10.0" prefWidth="75.0" />
-                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="10.0" prefWidth="75.0" />
-                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="10.0" prefWidth="75.0" />
-                                </columnConstraints>
-                                <rowConstraints>
-                                  <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="75.0" vgrow="SOMETIMES" />
-                                  <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="75.0" vgrow="SOMETIMES" />
-                                  <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="75.0" vgrow="SOMETIMES" />
-                                </rowConstraints>
+                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="10.0" prefWidth="75.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="10.0" prefWidth="75.0" />
+                                 </columnConstraints>
+                                 <rowConstraints>
+                                    <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="75.0" vgrow="SOMETIMES" />
+                                    <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="75.0" vgrow="SOMETIMES" />
+                                    <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="75.0" vgrow="SOMETIMES" />
+                                 </rowConstraints>
                                  <opaqueInsets>
                                     <Insets />
                                  </opaqueInsets>
@@ -248,163 +263,57 @@
                                  </children>
                               </GridPane>
                            </center>
-                        </BorderPane>
-                     </children>
-                  </Pane>
-                  <Pane maxWidth="-Infinity" prefHeight="450.0" prefWidth="250.0">
-                     <children>
-                        <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="450.0" prefWidth="250.0" spacing="5.0">
-                           <children>
-                              <Label fx:id="labelMesa" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="50.0" prefWidth="250.0">
-                                 <font>
-                                    <Font name="Candara Bold" size="20.0" />
-                                 </font>
-                              </Label>
-                              <Label fx:id="labelIdOrden" layoutX="24.0" layoutY="95.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="250.0">
-                                 <font>
-                                    <Font name="Candara" size="12.0" />
-                                 </font>
-                              </Label>
-                              <Separator layoutX="10.0" layoutY="294.0" maxHeight="1.0" minHeight="1.0" prefHeight="1.0" style="-fx-background-color: #c9a84c; -fx-border-width: .5;" />
-                              <TableView fx:id="tableVerPedido" focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="100.0" prefHeight="200.0" prefWidth="240.0">
-                                <columns>
-                                  <TableColumn fx:id="colProducto" editable="false" prefWidth="105.0" sortable="false" text="Producto" />
-                                  <TableColumn fx:id="colCantidad" editable="false" prefWidth="55.0" sortable="false" text="Cant." />
-                                    <TableColumn fx:id="colPrecio" editable="false" sortable="false" text="Precio" />
-                                </columns>
-                              </TableView>
-                              <Separator layoutX="10.0" layoutY="86.0" maxHeight="1.0" minHeight="1.0" prefHeight="1.0" style="-fx-background-color: #c9a84c; -fx-border-width: .5;" />
-                              <GridPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="75.0" prefWidth="250.0">
-                                <columnConstraints>
-                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="125.0" />
-                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="125.0" />
-                                </columnConstraints>
-                                <rowConstraints>
-                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                </rowConstraints>
+                           <right>
+                              <VBox prefHeight="200.0" prefWidth="220.0" BorderPane.alignment="CENTER">
                                  <children>
-                                    <Label style="-fx-font-family: mont;" text="Subtotal">
-                                       <font>
-                                          <Font name="Candara Bold" size="12.0" />
-                                       </font>
-                                       <padding>
-                                          <Insets left="5.0" />
-                                       </padding>
-                                    </Label>
-                                    <Label layoutX="10.0" layoutY="12.0" style="-fx-font-family: mont;" text="IVA" GridPane.rowIndex="1">
-                                       <font>
-                                          <Font name="Candara Bold" size="12.0" />
-                                       </font>
-                                       <padding>
-                                          <Insets left="5.0" />
-                                       </padding>
-                                    </Label>
-                                    <Label layoutX="10.0" layoutY="34.0" style="-fx-font-family: mont;" text="Total" GridPane.rowIndex="2">
-                                       <font>
-                                          <Font name="Candara Bold" size="14.0" />
-                                       </font>
-                                       <padding>
-                                          <Insets left="5.0" />
-                                       </padding>
-                                    </Label>
-                                    <Label fx:id="labelSubtotal" alignment="CENTER_RIGHT" prefWidth="110.0" style="-fx-font-family: mont;" GridPane.columnIndex="1" />
-                                    <Label fx:id="labelIVA" alignment="CENTER_RIGHT" layoutX="135.0" layoutY="12.0" prefWidth="110.0" style="-fx-font-family: mont;" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                    <Label fx:id="labelTotal" alignment="CENTER_RIGHT" layoutX="135.0" layoutY="33.0" prefWidth="110.0" style="-fx-font-family: mont;" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                                       <font>
-                                          <Font size="14.0" />
-                                       </font>
-                                    </Label>
+                                    <Region prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                                    <HBox prefHeight="25.0" prefWidth="200.0" spacing="10.0">
+                                       <children>
+                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="25.0" stroke="TRANSPARENT" strokeType="INSIDE" width="25.0" />
+                                          <Label prefHeight="25.0" text="Libre">
+                                             <font>
+                                                <Font name="Candara" size="18.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </HBox>
+                                    <Region layoutX="10.0" layoutY="10.0" minHeight="-Infinity" prefHeight="30.0" prefWidth="200.0" />
+                                    <HBox layoutX="10.0" layoutY="142.0" prefHeight="25.0" prefWidth="200.0" spacing="10.0">
+                                       <children>
+                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="25.0" stroke="TRANSPARENT" strokeType="INSIDE" width="25.0" />
+                                          <Label prefHeight="25.0" text="Ocupada">
+                                             <font>
+                                                <Font name="Candara" size="18.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </HBox>
+                                    <Region layoutX="10.0" layoutY="168.0" minHeight="-Infinity" prefHeight="30.0" prefWidth="200.0" />
+                                    <HBox layoutX="10.0" layoutY="194.0" prefHeight="25.0" prefWidth="200.0" spacing="10.0">
+                                       <children>
+                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="25.0" stroke="TRANSPARENT" strokeType="INSIDE" width="25.0" />
+                                          <Label prefHeight="25.0" text="Reservada">
+                                             <font>
+                                                <Font name="Candara" size="18.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </HBox>
+                                    <Region layoutX="10.0" layoutY="220.0" prefHeight="200.0" prefWidth="200.0" />
                                  </children>
-                              </GridPane>
-                              <Separator layoutX="10.0" layoutY="245.0" maxHeight="1.0" minHeight="1.0" prefHeight="1.0" style="-fx-background-color: #c9a84c; -fx-border-width: .5;" />
-                              <VBox maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="100.0" prefWidth="250.0" spacing="10.0">
-                                 <children>
-                                    <HBox maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="40.0" prefWidth="250.0" spacing="15.0">
-                                       <children>
-                                          <Button fx:id="btnEfectivo" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleEfectivo" prefHeight="25.0" prefWidth="100.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Efectivo" textFill="#d4c5b0">
-                                             <cursor>
-                                                <Cursor fx:constant="HAND" />
-                                             </cursor>
-                                             <font>
-                                                <Font name="System Bold" size="12.0" />
-                                             </font>
-                                          </Button>
-                                          <Button fx:id="btnTarjeta" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" onAction="#handleTarjeta" prefHeight="25.0" prefWidth="100.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Tarjeta" textFill="#d4c5b0">
-                                             <cursor>
-                                                <Cursor fx:constant="HAND" />
-                                             </cursor>
-                                             <font>
-                                                <Font name="System Bold" size="12.0" />
-                                             </font>
-                                          </Button>
-                                       </children>
-                                       <padding>
-                                          <Insets left="12.0" />
-                                       </padding>
-                                    </HBox>
-                                    <HBox maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="40.0" prefWidth="250.0" spacing="10.0">
-                                       <children>
-                                          <Label maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="110.0" style="-fx-font-family: mont; -fx-border-style: &quot;Bold&quot;;" text="Monto recibido">
-                                             <padding>
-                                                <Insets left="5.0" />
-                                             </padding>
-                                          </Label>
-                                          <Spinner fx:id="spinnerMonto" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="110.0" />
-                                       </children>
-                                    </HBox>
-                                    <HBox layoutX="10.0" layoutY="50.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="40.0" prefWidth="250.0" spacing="10.0">
-                                       <children>
-                                          <Label maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="110.0" style="-fx-font-family: mont; -fx-border-style: &quot;Bold&quot;;" text="Cambio">
-                                             <padding>
-                                                <Insets left="5.0" />
-                                             </padding>
-                                             <font>
-                                                <Font name="Candara Bold" size="12.0" />
-                                             </font>
-                                          </Label>
-                                          <Label fx:id="labelCambio" alignment="CENTER_RIGHT" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="110.0" style="-fx-font-family: mont;">
-                                             <padding>
-                                                <Insets left="5.0" />
-                                             </padding>
-                                          </Label>
-                                       </children>
-                                    </HBox>
-                                    <Separator maxHeight="1.0" minHeight="1.0" prefHeight="1.0" style="-fx-background-color: #c9a84c; -fx-border-width: .5;" />
-                                    <HBox layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="40.0" prefWidth="250.0" spacing="15.0">
-                                       <children>
-                                          <Button fx:id="btnRegistrarPago" defaultButton="true" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleRegistrarPago" prefHeight="25.0" prefWidth="100.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Registrar pago" textFill="#d4c5b0">
-                                             <cursor>
-                                                <Cursor fx:constant="HAND" />
-                                             </cursor>
-                                             <font>
-                                                <Font name="System Bold" size="12.0" />
-                                             </font>
-                                          </Button>
-                                          <Button fx:id="btnFacturar" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleFacturar" prefHeight="25.0" prefWidth="100.0" style="-fx-background-color: #1A1E2E; -fx-background-radius: 10 10 10 10;" text="Facturar" textFill="#d4c5b0">
-                                             <cursor>
-                                                <Cursor fx:constant="HAND" />
-                                             </cursor>
-                                             <font>
-                                                <Font name="System Bold" size="12.0" />
-                                             </font>
-                                          </Button>
-                                       </children>
-                                       <padding>
-                                          <Insets left="12.0" />
-                                       </padding>
-                                    </HBox>
-                                 </children>
+                                 <padding>
+                                    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                                 </padding>
                               </VBox>
-                           </children>
-                        </VBox>
+                           </right>
+                        </BorderPane>
                      </children>
                   </Pane>
                </children>
                <padding>
                   <Insets left="20.0" right="20.0" top="20.0" />
-               </padding></HBox>
+               </padding>
+            </HBox>
          </children>
       </VBox>
    </center>

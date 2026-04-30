@@ -1,4 +1,3 @@
-// PedidoDAO.java — versión corregida con insertar() y cerrar()
 package com.mycompany.restaurante.DAO;
 
 import com.mycompany.restaurante.Modelo.ConexionDB;

@@ -18,14 +18,29 @@ public class OrdenItem {
         this.precio = precio;
     }
 
-    public String getProducto()  { return producto; }
-    public void   setProducto(String v) { this.producto = v; }
+    public String getProducto() {
+        return producto;
+    }
 
-    public int getCantidad()  { return cantidad; }
-    public void setCantidad(int v) { this.cantidad = v; }
+    public void setProducto(String producto) {
+        this.producto = producto;
+    }
 
-    public double getPrecio() { return precio; }
-    public void setPrecio(double v) { this.precio = v; }
+    public int getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(int cantidad) {
+        this.cantidad = cantidad;
+    }
+
+    public double getPrecio() {
+        return precio;
+    }
+
+    public void setPrecio(double precio) {
+        this.precio = precio;
+    }    
 
     /** Subtotal del ítem: cantidad × precio unitario. */
     public double getSubtotalItem() { return cantidad * precio; }

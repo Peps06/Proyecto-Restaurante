@@ -187,8 +187,8 @@
                </HBox>
                <TableView fx:id="tableMenu" focusTraversable="false" prefHeight="202.0" prefWidth="530.0" style="-fx-background-radius: 10 10 10 10; -fx-border-color: #c9a84c;">
                  <columns>
-                     <TableColumn fx:id="ColumnaNombre" prefWidth="203.199951171875" text="Nombre" />
-                     <TableColumn fx:id="ColumnaDescripcion" prefWidth="208.79998779296875" text="Descripción" />
+                     <TableColumn fx:id="ColumnaNombre" prefWidth="183.199951171875" text="Nombre" />
+                     <TableColumn fx:id="ColumnaDescripcion" prefWidth="228.800048828125" text="Descripción" />
                    <TableColumn fx:id="ColumnaCantidad" prefWidth="124.00006103515625" text="Cantidad" />
                  </columns>
                </TableView>
