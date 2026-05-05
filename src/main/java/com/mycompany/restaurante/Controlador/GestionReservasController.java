@@ -21,8 +21,9 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Optional;
+import javafx.stage.Modality;
 
-public class ReservacionesController {
+public class GestionReservasController {
 
     @FXML private Button btnReservas;
     @FXML private Button btnMesas;
@@ -39,6 +40,7 @@ public class ReservacionesController {
     @FXML private TableColumn<Reservacion, LocalDate> colFecha;
     @FXML private TableColumn<Reservacion, String> colHora;
     @FXML private TableColumn<Reservacion, String> colTelefono;
+    @FXML private TableColumn<Reservacion, Integer> colNumPersonas;
     @FXML private TableColumn<Reservacion, String> colEstado;
 
     @FXML private Button btnAgregar;
@@ -57,6 +59,7 @@ public class ReservacionesController {
         colFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
         colHora.setCellValueFactory(new PropertyValueFactory<>("hora"));
         colTelefono.setCellValueFactory(new PropertyValueFactory<>("telefono"));
+        colNumPersonas.setCellValueFactory(new PropertyValueFactory<>("numeroPersonas"));
         colEstado.setCellValueFactory(new PropertyValueFactory<>("estado"));
 
         // 2. Cargar los datos desde la Base de Datos usando el método estático
@@ -94,18 +97,82 @@ public class ReservacionesController {
 
     @FXML
     private void manejarAgregar(ActionEvent event) {
-        mostrarAlerta(Alert.AlertType.INFORMATION, "Próximamente", "Ventana para registrar una nueva reserva.");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/restaurante/fxml/RegistrarReserva.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("Saveurs Paris - Registro de Reserva");
+            stage.initModality(Modality.APPLICATION_MODAL); 
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+
+            // Al cerrarse la ventana, recuperamos la reserva generada
+            RegistrarReservaController controller = loader.getController();
+            Reservacion nueva = controller.getReserva();
+
+            if (nueva != null) {
+                int idGenerado = ReservacionDAO.insertar(nueva);
+                
+                if (idGenerado == -1) {
+                    mostrarAlerta(Alert.AlertType.WARNING,"Error", "No se pudo guardar en la base de datos.");
+                    return;
+                }
+                nueva.setId(idGenerado);
+
+                masterData.add(nueva);
+                tablaReservas.refresh();
+                mostrarAlerta(Alert.AlertType.WARNING,"Éxito", "Reserva de " + nueva.getNombreCliente() + " registrada correctamente.");
+            }
+
+        } catch (IOException e) {
+            mostrarAlerta(Alert.AlertType.WARNING,"Error de Sistema", "No se pudo cargar la ventana de registro: " + e.getMessage());
+            e.printStackTrace(); 
+        }
     }
 
     @FXML
     private void manejarEditar(ActionEvent event) {
         Reservacion seleccionada = tablaReservas.getSelectionModel().getSelectedItem();
+        
         if (seleccionada == null) {
             mostrarAlerta(Alert.AlertType.WARNING, "Sin selección", "Por favor, selecciona una reserva de la tabla para editarla.");
             return;
         }
-        
-        mostrarAlerta(Alert.AlertType.INFORMATION, "Próximamente", "Aquí abriremos la ventana para editar la reserva de: " + seleccionada.getNombreCliente());
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/restaurante/fxml/RegistrarReserva.fxml"));
+            Parent root = loader.load();
+
+            // Pasar los datos antes de abrir la ventana
+            RegistrarReservaController controller = loader.getController();
+            controller.cargarDatos(seleccionada);
+
+            Stage stage = new Stage();
+            stage.setTitle("Editar Reserva - Saveurs Paris");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+
+            // Recuperar la reserva editada
+            Reservacion editada = controller.getReserva();
+
+            if (editada != null) {
+                // Actualizar los datos en la tabla (y memoria)
+                seleccionada.setNombreCliente(editada.getNombreCliente());
+                seleccionada.setTelefono(editada.getTelefono());
+                seleccionada.setFecha(editada.getFecha());
+                seleccionada.setHora(editada.getHora());
+                seleccionada.setNumeroPersonas(editada.getNumeroPersonas());
+
+                ReservacionDAO.actualizar(seleccionada);
+                tablaReservas.refresh();
+                mostrarAlerta(Alert.AlertType.WARNING,"Éxito", "Datos actualizados correctamente.");
+            }
+        } catch (IOException e) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo abrir la ventana de edición.");
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -144,6 +211,22 @@ public class ReservacionesController {
             mostrarAlerta(Alert.AlertType.INFORMATION, "Cliente en restaurante", "El cliente " + seleccionada.getNombreCliente() + " ha sido marcado como Llegó. Ya puedes asignarle su mesa en el sistema de órdenes.");
         } else {
             mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo actualizar el estado en la base de datos.");
+        }
+    }
+    
+    private void cambiarPantalla(ActionEvent event, String fxmlPath, String titulo) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
+            javafx.scene.Node nodoOrigen = (javafx.scene.Node) event.getSource();
+            Stage stageActual = (Stage) nodoOrigen.getScene().getWindow();
+            Scene nuevaEscena = new Scene(root);
+            stageActual.setScene(nuevaEscena);
+            stageActual.setTitle(titulo + " - Saveurs Paris");
+            stageActual.centerOnScreen();
+            stageActual.show();
+        } catch (java.io.IOException e) {
+            System.err.println("Error al cargar la pantalla: " + fxmlPath);
+            e.printStackTrace();
         }
     }
     
