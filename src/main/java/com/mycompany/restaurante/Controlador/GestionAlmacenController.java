@@ -68,16 +68,17 @@ public class GestionAlmacenController {
     
     // Formatear el ID
     colId.setCellFactory(column -> new TableCell<Insumo, Integer>() {
-        @Override
-        protected void updateItem(Integer item, boolean empty) {
-            super.updateItem(item, empty);
-            if (empty || item == null) {
-                setText(null);
-            } else {
-                setText(String.format("%03d", item));
-            }
+    @Override
+    protected void updateItem(Integer item, boolean empty) {
+        super.updateItem(item, empty);
+        if (empty || item == null) {
+            setText(null);
+        } else {
+           
+            setText(String.valueOf(item)); 
         }
-    });
+    }
+});
 
     // 5. Añade color depende el estado 
     colEstado.setCellFactory(column -> {

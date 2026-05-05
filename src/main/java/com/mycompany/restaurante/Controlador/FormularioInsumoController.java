@@ -16,8 +16,8 @@ import javafx.stage.Stage;
 
 public class FormularioInsumoController {
 
-    @FXML private TextField txtNombre, txtStock, txtUnidad;
-    @FXML private ComboBox<String> cbCategoria, cbEstado;
+    @FXML private TextField txtNombre, txtStock; 
+    @FXML private ComboBox<String> cbCategoria, cbUnidad;
     @FXML private Label lblTitulo;
 
     private Insumo insumo;
@@ -27,7 +27,7 @@ public class FormularioInsumoController {
     @FXML
     public void initialize() {
         cbCategoria.getItems().addAll("Abarrotes", "Lácteos", "Carnes", "Bebidas", "Vegetales");
-        cbEstado.getItems().addAll("Disponible", "Por agotarse", "Agotado");
+        cbUnidad.getItems().addAll("kg", "litros", "piezas", "gramos", "ml", "botellas");
     }
 
     public void setInsumo(Insumo i) {
@@ -36,9 +36,8 @@ public class FormularioInsumoController {
             lblTitulo.setText("Editar Insumo");
             txtNombre.setText(i.getNombre());
             txtStock.setText(String.valueOf(i.getStock()));
-            txtUnidad.setText(i.getUnidad());
+            cbUnidad.setValue(i.getUnidad()); 
             cbCategoria.setValue(i.getCategoria());
-            cbEstado.setValue(i.getEstado());
         } else {
             lblTitulo.setText("Nuevo Insumo");
         }
@@ -46,71 +45,75 @@ public class FormularioInsumoController {
 
     @FXML
     private void guardar() {
-    if (validarCampos()) {
-        String nombre = txtNombre.getText();
-        double stock = Double.parseDouble(txtStock.getText());
-        String unidad = txtUnidad.getText();
-        String cat = cbCategoria.getValue();
-        String est = cbEstado.getValue();
+        if (validarCampos()) {
+            try {
+                String nombre = txtNombre.getText();
+                double stock = Double.parseDouble(txtStock.getText());
+                String unidad = cbUnidad.getValue(); 
+                String cat = cbCategoria.getValue();
+                
+                // Calculamos el estado automáticamente
+                String est = definirEstado(stock); 
 
-        boolean exitoOperacion = false;
+                boolean exitoOperacion = false;
 
-        if (insumo == null) {
-            // Creamos el objeto y lo mandamos a la BD
-            insumo = new Insumo(0, nombre, cat, stock, unidad, est);
-            exitoOperacion = insumoDAO.insertar(insumo); // <--- se manda a la bd
-        } else {
-            // Actualizamos el objeto actual
-            insumo.setNombre(nombre);
-            insumo.setStock(stock);
-            insumo.setUnidad(unidad);
-            insumo.setCategoria(cat);
-            insumo.setEstado(est);
-            exitoOperacion = insumoDAO.editar(insumo); // <--- se actualiza la bd
-        }
+                if (insumo == null) {
+                    insumo = new Insumo(0, nombre, cat, stock, unidad, est);
+                    exitoOperacion = insumoDAO.insertar(insumo); 
+                } else {
+                    insumo.setNombre(nombre);
+                    insumo.setStock(stock);
+                    insumo.setUnidad(unidad);
+                    insumo.setCategoria(cat);
+                    insumo.setEstado(est); 
+                    exitoOperacion = insumoDAO.editar(insumo); 
+                }
 
-        if (exitoOperacion) {
-            guardadoExitoso = true;
-            cerrarVentana();
-        } else {
-            // Si el DAO regresa false (por error de conexión, etc.)
-            Alert error = new Alert(Alert.AlertType.ERROR);
-            error.setTitle("Error de base de datos");
-            error.setContentText("No se pudieron guardar los cambios en el servidor.");
-            error.showAndWait();
+                if (exitoOperacion) {
+                    guardadoExitoso = true;
+                    cerrarVentana();
+                } else {
+                    mostrarAlerta("No se pudieron guardar los cambios en el servidor.");
+                }
+            } catch (NumberFormatException e) {
+                mostrarAlerta("La cantidad de stock debe ser un número válido.");
+            }
         }
     }
-}
+
+    private String definirEstado(double stock) {
+       if (stock <= 0) return "Agotado";
+       if (stock <= 5) return "Por agotarse";
+       return "Disponible";
+    }
+
+   
+    private void mostrarAlerta(String mensaje) {
+        Alert alerta = new Alert(Alert.AlertType.ERROR);
+        alerta.setTitle("Error");
+        alerta.setHeaderText(null);
+        alerta.setContentText(mensaje);
+        alerta.showAndWait();
+    }
 
     private boolean validarCampos() {
-    String mensaje = "";
-
-    // Validar nombre
-    if (txtNombre.getText().trim().isEmpty()) {
-        mensaje += "- El nombre del producto es obligatorio.\n";
-    }
-
-    // Validar categoría
-    if (cbCategoria.getValue() == null) {
-        mensaje += "- Debe seleccionar una categoría.\n";
-    }
-
-    // Validar stock (el try-catch que ya tenías)
-    try {
-        if (txtStock.getText().isEmpty()) {
-            mensaje += "- El stock no puede estar vacío.\n";
-        } else {
-            Double.parseDouble(txtStock.getText());
+        String mensaje = "";
+        if (txtNombre.getText().trim().isEmpty()) mensaje += "- El nombre es obligatorio.\n";
+        if (cbCategoria.getValue() == null) mensaje += "- Seleccione una categoría.\n";
+        if (cbUnidad.getValue() == null) mensaje += "- Seleccione una unidad.\n";
+        
+        try {
+            if (txtStock.getText().isEmpty()) {
+                mensaje += "- El stock no puede estar vacío.\n";
+            } else {
+                Double.parseDouble(txtStock.getText());
+            }
+        } catch (NumberFormatException e) {
+            mensaje += "- El stock debe ser un número.\n";
         }
-    } catch (NumberFormatException e) {
-        mensaje += "- El stock debe ser un número (ej: 10.5).\n";
-    }
 
-    // Si el mensaje sigue vacío, todo está bien
-    if (mensaje.isEmpty()) {
-        return true;
-    } else {
-        // Mostramos el error
+        if (mensaje.isEmpty()) return true;
+        
         Alert alerta = new Alert(Alert.AlertType.WARNING);
         alerta.setTitle("Datos incompletos");
         alerta.setHeaderText("Por favor corrija lo siguiente:");
@@ -118,17 +121,12 @@ public class FormularioInsumoController {
         alerta.showAndWait();
         return false;
     }
-}
 
-    @FXML private void cancelar() { 
-        cerrarVentana(); }
+    @FXML private void cancelar() { cerrarVentana(); }
     
-    private void cerrarVentana() { 
-        ((Stage) txtNombre.getScene().getWindow()).close(); }
+    private void cerrarVentana() { ((Stage) txtNombre.getScene().getWindow()).close(); }
     
-    public Insumo getInsumo() { 
-        return insumo; }
+    public Insumo getInsumo() { return insumo; }
     
-    public boolean isGuardadoExitoso() { 
-        return guardadoExitoso; }
+    public boolean isGuardadoExitoso() { return guardadoExitoso; }
 }
