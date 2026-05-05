@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="600.0" prefWidth="622.0" style="-fx-background-color: #F8E7FE;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.dulceria.Controlador.RegistrarVentanaController">
+    
+    <!-- Panel Superior - Título -->
+    <top>
+        <VBox alignment="CENTER" style="-fx-background-color: #F8E7FE;">
+            <padding>
+                <Insets bottom="10" top="15" />
+            </padding>
+            <Label text="VENTA" textFill="#ffa800">
+                <font>
+                    <Font name="Arial Rounded MT Bold" size="18" />
+                </font>
+            </Label>
+            
+            <!-- ID Venta y Fecha -->
+            <HBox alignment="CENTER" spacing="30">
+                <padding>
+                    <Insets top="10" />
+                </padding>
+                
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label text="ID de venta:" textFill="#000000">
+                        <font>
+                            <Font name="Segoe UI Emoji" size="14" />
+                        </font>
+                    </Label>
+                    <TextField fx:id="txtIdVenta" editable="false" prefWidth="100" style="-fx-background-color: #f0f0f0;">
+                        <font>
+                            <Font name="Segoe UI Emoji" size="14" />
+                        </font>
+                    </TextField>
+                </HBox>
+                
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label text="Fecha:" textFill="#000000">
+                        <font>
+                            <Font name="Segoe UI Emoji" size="14" />
+                        </font>
+                    </Label>
+                    <TextField fx:id="txtFecha" editable="false" prefWidth="120" style="-fx-background-color: #f0f0f0;">
+                        <font>
+                            <Font name="Segoe UI Emoji" size="14" />
+                        </font>
+                    </TextField>
+                </HBox>
+            </HBox>
+        </VBox>
+    </top>
+    
+    <!-- Panel Central -->
+    <center>
+        <VBox spacing="15" style="-fx-background-color: #F8E7FE;">
+            <padding>
+                <Insets bottom="10" left="30" right="30" top="10" />
+            </padding>
+            
+            <!-- Panel Buscar Producto -->
+            <VBox spacing="10" style="-fx-background-color: #EFFFFF; -fx-padding: 15; -fx-background-radius: 5;">
+                <Label text="Buscar producto" textFill="#000000">
+                    <font>
+                        <Font name="Arial Rounded MT Bold" size="14" />
+                    </font>
+                </Label>
+                
+                <GridPane hgap="15" vgap="10">
+                    <!-- Fila 1: ID Producto -->
+                    <Label text="ID producto:" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                        <font>
+                            <Font name="Segoe UI Emoji" size="14" />
+                        </font>
+                    </Label>
+                    <TextField fx:id="txtIdProduc" prefWidth="150" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                        <font>
+                            <Font name="Segoe UI Emoji" size="14" />
+                        </font>
+                    </TextField>
+                    <Button fx:id="btnBuscar" onAction="#buscarProducto" style="-fx-background-color: #FFE9A1; -fx-background-radius: 5;" text="Buscar" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                        <font>
+                            <Font name="Arial Rounded MT Bold" size="14" />
+                        </font>
+                    </Button>
+                    
+                    <!-- Fila 2: Nombre -->
+                    <Label text="Nombre:" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                        <font>
+                            <Font name="Segoe UI Emoji" size="14" />
+                        </font>
+                    </Label>
+                    <TextField fx:id="txtNombre" editable="false" prefWidth="300" style="-fx-background-color: #f0f0f0;" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="1">
+                        <font>
+                            <Font name="Segoe UI Emoji" size="14" />
+                        </font>
+                    </TextField>
+                    
+                    <!-- Fila 3: Precio de venta -->
+                    <Label text="Precio de venta:" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                        <font>
+                            <Font name="Segoe UI Emoji" size="14" />
+                        </font>
+                    </Label>
+                    <TextField fx:id="txtPrecio" editable="false" prefWidth="150" style="-fx-background-color: #f0f0f0;" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                        <font>
+                            <Font name="Segoe UI Emoji" size="14" />
+                        </font>
+                    </TextField>
+                    
+                    <!-- Fila 4: Cantidad a vender -->
+                    <Label text="Cantidad a vender:" GridPane.columnIndex="0" GridPane.rowIndex="3">
+                        <font>
+                            <Font name="Segoe UI Emoji" size="14" />
+                        </font>
+                    </Label>
+                    <TextField fx:id="txtCantidad" prefWidth="150" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                        <font>
+                            <Font name="Segoe UI Emoji" size="14" />
+                        </font>
+                    </TextField>
+                    <Button fx:id="btnAgregar" onAction="#agregarProducto" style="-fx-background-color: #FFE9A1; -fx-background-radius: 5;" text="Agregar" GridPane.columnIndex="2" GridPane.rowIndex="3">
+                        <font>
+                            <Font name="Arial Rounded MT Bold" size="14" />
+                        </font>
+                    </Button>
+               <columnConstraints>
+                  <ColumnConstraints />
+                  <ColumnConstraints />
+                  <ColumnConstraints />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+               </rowConstraints>
+                </GridPane>
+            </VBox>
+            
+            <!-- Tabla de productos -->
+            <TableView fx:id="tabla" prefHeight="200">
+                <columns>
+                    <TableColumn fx:id="colId" prefWidth="80" text="ID" />
+                    <TableColumn fx:id="colNombre" prefWidth="180" text="NOMBRE" />
+                    <TableColumn fx:id="colCantidad" prefWidth="100" text="CANTIDAD" />
+                    <TableColumn fx:id="colPrecio" prefWidth="100" text="PRECIO" />
+                    <TableColumn fx:id="colSubtotal" prefWidth="100" text="SUBTOTAL" />
+                </columns>
+            </TableView>
+            
+            <!-- Total -->
+            <HBox alignment="CENTER_RIGHT" spacing="10">
+                <Label text="Total:" textFill="#000000">
+                    <font>
+                        <Font name="Arial Rounded MT Bold" size="16" />
+                    </font>
+                </Label>
+                <TextField fx:id="txtTotal" editable="false" prefWidth="120" style="-fx-background-color: #f0f0f0;" text="0">
+                    <font>
+                        <Font name="Segoe UI Emoji" size="16" />
+                    </font>
+                </TextField>
+            </HBox>
+        </VBox>
+    </center>
+    
+    <!-- Panel Inferior - Botones -->
+    <bottom>
+        <HBox alignment="CENTER" spacing="15" style="-fx-background-color: #F8E7FE;">
+            <padding>
+                <Insets bottom="20" top="15" />
+            </padding>
+            
+            <Button fx:id="btnRegresar" onAction="#regresar" prefWidth="120" style="-fx-background-color: #FFE9A1; -fx-background-radius: 5;" text="Regresar">
+                <font>
+                    <Font name="Arial Rounded MT Bold" size="14" />
+                </font>
+            </Button>
+            
+            <Button fx:id="btnCancelar" onAction="#cancelarVenta" prefWidth="120" style="-fx-background-color: #FFE9A1; -fx-background-radius: 5;" text="Cancelar">
+                <font>
+                    <Font name="Arial Rounded MT Bold" size="14" />
+                </font>
+            </Button>
+            
+            <Button fx:id="btnRegistrar" onAction="#registrarVenta" prefWidth="140" style="-fx-background-color: #FFE9A1; -fx-background-radius: 5;" text="Registrar Venta">
+                <font>
+                    <Font name="Arial Rounded MT Bold" size="14" />
+                </font>
+            </Button>
+        </HBox>
+    </bottom>
+    
+</BorderPane>

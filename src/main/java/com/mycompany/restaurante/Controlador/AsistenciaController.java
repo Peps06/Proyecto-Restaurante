@@ -1,14 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.restaurante.Controlador;
-
-
-/**
- *
- * @author mrubi
- */
 
 import com.mycompany.restaurante.DAO.AsistenciaDAO;
 import com.mycompany.restaurante.Modelo.Asistencia;
@@ -24,6 +14,11 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+
+/**
+ *
+ * @author Rubi
+ */
 
 public class AsistenciaController implements Initializable {
 

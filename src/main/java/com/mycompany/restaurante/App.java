@@ -10,13 +10,8 @@ import java.net.URL;
 public class App extends Application {
     @Override
     public void start(Stage stage) throws Exception {
-        //Pruebas de uso
-//        URL resource = getClass().getResource("/com/mycompany/restaurante/fxml/RegistrarPedidoPantalla.fxml");
-//        URL resource = getClass().getResource("/com/mycompany/restaurante/fxml/CobrarPantalla.fxml");
-//        URL resource = getClass().getResource("/com/mycompany/restaurante/fxml/GestionarEmpleados.fxml");
 
-        //original
-       URL resource = getClass().getResource("/com/mycompany/restaurante/fxml/LoginPantalla.fxml");
+        URL resource = getClass().getResource("/com/mycompany/restaurante/fxml/LoginPantalla.fxml");
 
         Parent root = FXMLLoader.load(resource);
         stage.setScene(new Scene(root));

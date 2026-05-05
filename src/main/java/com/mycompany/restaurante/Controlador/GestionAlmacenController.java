@@ -1,10 +1,5 @@
 package com.mycompany.restaurante.Controlador;
 
-/**
- *
- * @author mrubi
- */
-
 import com.mycompany.restaurante.DAO.InsumoDAO;
 import com.mycompany.restaurante.Modelo.Insumo;
 import java.io.IOException;
@@ -21,6 +16,10 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
+/**
+ *
+ * @author Rubi
+ */
 public class GestionAlmacenController {
 
     // Componentes de la Tabla

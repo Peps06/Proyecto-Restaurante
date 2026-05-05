@@ -1,12 +1,11 @@
 package com.mycompany.restaurante.Modelo;
 
+import java.time.LocalDate;
+
 /**
  *
  * @author dana0
  */
-
-import java.time.LocalDate;
-
 public class Reservacion {
     private int id;
     private String nombreCliente;

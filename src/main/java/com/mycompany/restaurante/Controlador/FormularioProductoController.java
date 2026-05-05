@@ -1,19 +1,14 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.restaurante.Controlador;
-
-/**
- *
- * @author mrubi
- */
 
 import com.mycompany.restaurante.Modelo.Producto;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
+/**
+ *
+ * @author mrubi
+ */
 public class FormularioProductoController {
 
     @FXML private Label lblTitulo;

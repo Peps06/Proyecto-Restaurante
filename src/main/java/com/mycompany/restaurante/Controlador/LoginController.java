@@ -1,9 +1,5 @@
 package com.mycompany.restaurante.Controlador;
 
-/**
- * 
- * @author Dana
- */
 import com.mycompany.restaurante.DAO.EmpleadoDAO;
 import com.mycompany.restaurante.Modelo.Empleado;
 import java.io.IOException;
@@ -20,6 +16,10 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+/**
+ * 
+ * @author Dana
+ */
 public class LoginController {
 
     @FXML private TextField txtUsuario;
@@ -28,7 +28,7 @@ public class LoginController {
 
     @FXML private Button btnIniciarSesion;
 
-    // Lista para almacenar los empleados (por si decides usarla más adelante)
+    // Lista para almacenar los empleados
     private ObservableList<Empleado> datosMaestros = FXCollections.observableArrayList();
 
     private String autenticarUsuario(String usr, String pass) {

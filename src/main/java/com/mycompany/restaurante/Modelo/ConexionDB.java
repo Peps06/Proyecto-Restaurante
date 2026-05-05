@@ -1,4 +1,3 @@
-// ConexionDB.java — versión corregida
 package com.mycompany.restaurante.Modelo;
 
 import java.sql.Connection;
