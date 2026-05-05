@@ -14,10 +14,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.text.Text;
 
 /**
  *
- * @author Dana, Rubi y Citlaly
+ * @author Rubi y Citlaly
  * @version 2.0 (bd)
  */
 
@@ -47,6 +48,27 @@ public class GestionMenuController {
         colTipo.setCellValueFactory(new PropertyValueFactory<>("tipo"));
         colPrecio.setCellValueFactory(new PropertyValueFactory<>("precio"));
         colDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
+        
+        colDescripcion.setCellFactory(tc -> new TableCell<>() {
+            private final Text text = new Text();
+            {
+                text.wrappingWidthProperty().bind(colDescripcion.widthProperty());
+            }
+            
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null);
+                } else {
+                    text.setText(item);
+                    setGraphic(text);
+                }
+            }
+        });
+        
+        tablaMenu.setFixedCellSize(-1);
+
         
         //2. Agregar datos de la base de datos
         datosMenu = ProductoDAO.obtenerTodos();

@@ -1,6 +1,5 @@
 package com.mycompany.restaurante.Controlador;
 
-import com.mycompany.restaurante.Controlador.RegistrarEmpleadoController;
 import com.mycompany.restaurante.DAO.EmpleadoDAO;
 import javafx.collections.ObservableList;
 import javafx.collections.FXCollections;
@@ -22,7 +21,6 @@ import java.io.IOException;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
-import javafx.scene.paint.Color; 
 
 /**
  * Controlador para la gestión de empleados en el sistema Saveurs Paris.

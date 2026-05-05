@@ -198,19 +198,19 @@ public class MesasDisponiblesController implements Initializable {
 
     @FXML
     private void handleRealizarPedido(ActionEvent event) {
-        navegarA("/com/mycompany/restaurante/fxml/RegistrarPedidoPantalla.fxml",
+        cambiarPantalla("/com/mycompany/restaurante/fxml/RegistrarPedidoPantalla.fxml",
                  "Realizar Pedido - Saveurs Paris", event);
     }
 
     @FXML
     private void handleGestionar(ActionEvent event) {
-        navegarA("/com/mycompany/restaurante/fxml/GestionarPedidoPantalla.fxml",
+        cambiarPantalla("/com/mycompany/restaurante/fxml/GestionarPedidoPantalla.fxml",
                  "Gestionar Pedido - Saveurs Paris", event);
     }
 
     @FXML
     private void handleCerrarSesion(ActionEvent event) {
-        navegarA("/com/mycompany/restaurante/fxml/LoginPantalla.fxml",
+        cambiarPantalla("/com/mycompany/restaurante/fxml/LoginPantalla.fxml",
                  "Iniciar sesión - Saveurs Paris", event);
     }
     
@@ -265,7 +265,7 @@ public class MesasDisponiblesController implements Initializable {
     /**
      * Método genérico para la navegación entre escenas.
      */
-    private void navegarA(String rutaFxml, String titulo, ActionEvent event) {
+    private void cambiarPantalla(String rutaFxml, String titulo, ActionEvent event) {
         try {
             Parent root = FXMLLoader.load(getClass().getResource(rutaFxml));
             Stage stageActual = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();

@@ -17,6 +17,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.text.Text;
 
 /**
  *
@@ -53,6 +54,26 @@ public class RegistrarPedidoController {
         // 2. Configurar columnas
         ColumnaNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         ColumnaDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
+        
+        ColumnaDescripcion.setCellFactory(tc -> new TableCell<>() {
+            private final Text text = new Text();
+            {
+                text.wrappingWidthProperty().bind(ColumnaDescripcion.widthProperty());
+            }
+            
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null);
+                } else {
+                    text.setText(item);
+                    setGraphic(text);
+                }
+            }
+        });
+        
+        tableMenu.setFixedCellSize(-1);
 
         // 3. Columna Cantidad con botones
         ColumnaCantidad.setCellFactory(param -> new TableCell<>() {
