@@ -147,28 +147,36 @@ public class GestionMenuController {
     @FXML
     private void manejarEditar() throws IOException {
     Producto seleccionado = tablaMenu.getSelectionModel().getSelectedItem();
-        if (seleccionado != null) {
-            // 1. Cargar el FXML de la ventanita
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/restaurante/fxml/FormularioProducto.fxml"));
-            Parent root = loader.load();
-        
-            // 2. Obtener el controlador y PASARLE el producto seleccionado
-            FormularioProductoController controlador = loader.getController();
-            controlador.setProducto(seleccionado);
-
-            // 3. Mostrar la ventana
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.showAndWait();
-
-            // 4. Si guardó cambios, refrescar la tabla
-            if (controlador.isGuardadoExitoso()) {
-                ProductoDAO.actualizar(seleccionado);
-                tablaMenu.refresh();
-            }
-        }
-    }
     
+    if (seleccionado != null) {
+        // 1. Cargar el FXML de la ventanita
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/restaurante/fxml/FormularioProducto.fxml"));
+        Parent root = loader.load();
+        
+        // 2. Obtener el controlador y PASARLE el producto seleccionado
+        FormularioProductoController controlador = loader.getController();
+        controlador.setProducto(seleccionado);
+
+        // 3. Mostrar la ventana
+        Stage stage = new Stage();
+        stage.setScene(new Scene(root));
+        stage.showAndWait();
+
+        // 4. Si guardó cambios, refrescar la tabla
+        if (controlador.isGuardadoExitoso()) {
+            // Aquí asegúrate de que el DAO actualice con los nuevos datos
+            ProductoDAO.actualizar(seleccionado);
+            tablaMenu.refresh();
+        }
+    } else {
+        
+        Alert alerta = new Alert(Alert.AlertType.WARNING);
+        alerta.setTitle("Atención");
+        alerta.setHeaderText(null);
+        alerta.setContentText("Por favor, selecciona un producto de la tabla para editarlo.");
+        alerta.showAndWait();
+    }
+}
     private void cambiarPantalla(ActionEvent event, String fxmlPath, String titulo) {
         try {
             // 1. Cargar la vista desde el recurso

@@ -50,8 +50,7 @@ public class GestionarEmpleadoController {
 
     @FXML
     public void initialize() {
-        datosMaestros = EmpleadoDAO.obtenerTodos();
-        tablaEmpleados.setItems(datosMaestros);
+        refrescarTabla();
     
         // 1. Vincular columnas con los atributos de la clase Empleado
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -85,7 +84,13 @@ public class GestionarEmpleadoController {
         });
     }
 
+    private void refrescarTabla() {
+    // Volvemos a pedir los datos a la base de datos
+    datosMaestros = EmpleadoDAO.obtenerTodos();
     
+    // Los ponemos en la tabla para que se actualice la vista
+    tablaEmpleados.setItems(datosMaestros);
+}
 
     @FXML
     private void manejarEliminar() {
@@ -138,51 +143,47 @@ public class GestionarEmpleadoController {
     }
 
     @FXML
-    private void manejarAsistencia() {
-        // 1. Obtener el empleado seleccionado
-        Empleado seleccionado = tablaEmpleados.getSelectionModel().getSelectedItem();
+    private void manejarAsistencia(ActionEvent event) {
+    Empleado seleccionado = tablaEmpleados.getSelectionModel().getSelectedItem();
 
-        // 2. Verificar que haya alguien seleccionado
-        if (seleccionado == null) {
-            mostrarAlerta("Atención", "Por favor, selecciona un empleado de la tabla.", Alert.AlertType.WARNING);
-            return;
-        }
+    if (seleccionado != null) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/restaurante/fxml/RegistroAsistencia.fxml"));
+            Parent root = loader.load();
 
-        // 3. Crear la alerta de confirmación
-        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmacion.setTitle("Confirmar Asistencia");
-        confirmacion.setHeaderText("Cambio de estado para: " + seleccionado.getNombre());
-        confirmacion.setContentText("¿Estás seguro de que deseas cambiar el estado de asistencia?");
+            AsistenciaController controller = loader.getController();
+            controller.initData(seleccionado);
 
-        // 4. Esperar la respuesta del usuario
-        Optional<ButtonType> resultado = confirmacion.showAndWait();
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Asistencia - " + seleccionado.getNombre());
+            
+            // CAMBIO AQUÍ: showAndWait detiene la ejecución del código principal
+            // hasta que cierras la ventana de asistencia.
+            stage.showAndWait();
 
-        // 5. Si el usuario presiona "Aceptar"
-        if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
-            // Alternar el estado
-            if (seleccionado.getAsistencia().equalsIgnoreCase("Presente")) {
-                seleccionado.setAsistencia("Ausente");
-            } else {
-                seleccionado.setAsistencia("Presente");
-            }
+            // Cuando la ventana se cierra, ejecutamos tu método para volver a cargar la tabla
+            refrescarTabla();// O el nombre del método que uses para llenar tu tabla principal
 
-            // 6. Refrescar la tabla para que se vea el cambio de color
-            tablaEmpleados.refresh();
-
-            // 7. Mensaje de éxito
-            mostrarAlerta("Éxito", "Estado actualizado a: " + seleccionado.getAsistencia(), Alert.AlertType.INFORMATION);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
+    else {
+        mostrarAlerta("Atención", "Por favor, selecciona un empleado.", Alert.AlertType.WARNING);
+    }
+}
+      
 
     @FXML
     private void manejarAgregar() {
         try {
-            // 1. el FXML de la nueva ventana de registro
+            // el FXML de la nueva ventana de registro
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/restaurante/fxml/RegistrarEmpleado.fxml"));
             Parent root = loader.load();
 
-            // 2. Escenario para la nueva ventana
+            // Escenario para la nueva ventana
             Stage stage = new Stage();
             stage.setTitle("Saveurs Paris - Registro de Personal");
 
@@ -190,13 +191,13 @@ public class GestionarEmpleadoController {
             stage.initModality(Modality.APPLICATION_MODAL); 
             stage.setScene(new Scene(root));
 
-            // 3. Se muestra la ventana y se espera a que el usuario termine
+            // Se muestra la ventana y se espera a que el usuario termine
             stage.showAndWait();
 
             RegistrarEmpleadoController controller = loader.getController();
             Empleado nuevo = controller.getNuevoEmpleado();
 
-            // 5. Si el empleado  no dio clic en Cancelar
+            // Si el empleado  no dio clic en Cancelar
             if (nuevo != null) {
                 int idGenerado = EmpleadoDAO.insertar(nuevo);
                 

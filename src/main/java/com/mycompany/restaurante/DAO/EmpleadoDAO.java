@@ -23,30 +23,39 @@ public class EmpleadoDAO {
      * @return Una {@link ObservableList} con los objetos {@link Empleado}.
      *         Devuelve una lista vacía si ocurre un error en la consulta.
      */
-    public static ObservableList<Empleado> obtenerTodos() {
-        ObservableList<Empleado> lista = FXCollections.observableArrayList();
-        String sql = "SELECT idEmpleado, nombre, password, puesto, asistencia, telefono FROM empleados";
+    /**
+ * Devuelve todos los empleados de la BD calculando su asistencia en tiempo real.
+ */
+public static ObservableList<Empleado> obtenerTodos() {
+    ObservableList<Empleado> lista = FXCollections.observableArrayList();
+    
+    // Consulta con LEFT JOIN y CURDATE()
+    String sql = "SELECT e.idEmpleado, e.nombre, e.password, e.puesto, e.telefono, " +
+                 "IF(a.idEmpleado IS NOT NULL, 'Presente', 'Ausente') AS estado_asistencia " +
+                 "FROM empleados e " +
+                 "LEFT JOIN asistencias a ON e.idEmpleado = a.idEmpleado " +
+                 "AND a.fecha = CURDATE()";
 
-        try (Connection con = ConexionDB.getConexion();
-             Statement  st  = con.createStatement();
-             ResultSet  rs  = st.executeQuery(sql)) {
+    try (Connection con = ConexionDB.getConexion();
+         Statement st = con.createStatement();
+         ResultSet rs = st.executeQuery(sql)) {
 
-            while (rs.next()) {
-                lista.add(new Empleado(
-                    rs.getInt("idEmpleado"),
-                    rs.getString("nombre"),
-                    rs.getString("password"),
-                    rs.getString("puesto"),
-                    rs.getString("asistencia"),
-                    rs.getString("telefono")
-                ));
-            }
-
-        } catch (SQLException e) {
-            System.err.println("Error en EmpleadoDAO.obtenerTodos(): " + e.getMessage());
+        while (rs.next()) {
+            lista.add(new Empleado(
+                rs.getInt("idEmpleado"),
+                rs.getString("nombre"),
+                rs.getString("password"),
+                rs.getString("puesto"),
+                rs.getString("estado_asistencia"), 
+                rs.getString("telefono")
+            ));
         }
-        return lista;
+
+    } catch (SQLException e) {
+        System.err.println("EmpleadoDAO.obtenerTodos(): " + e.getMessage());
     }
+    return lista;
+}
 
     /**
      * Verifica las credenciales de un empleado para permitir el acceso al sistema.
