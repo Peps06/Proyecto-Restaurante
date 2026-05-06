@@ -1,0 +1,67 @@
+/* ======== TABLA GENERAL ======== */
+.table-view {
+    -fx-background-color: #F5EFE6;
+    -fx-border-color: #d4c5b0;
+    -fx-border-width: 1; /* más delgado */
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-background-insets: 0;
+}
+
+/* Fondo interno */
+.table-view .viewport {
+    -fx-background-color: transparent;
+}
+
+/* ======== ENCABEZADO ======== */
+.table-view .column-header-background {
+    -fx-background-color: #2C3B62;
+    -fx-background-radius: 10 10 0 0;
+}
+
+.table-view .column-header {
+    -fx-background-color: #2C3B62;
+    -fx-border-color: #d4c5b0;
+    -fx-border-width: 0 0 1 0;
+}
+
+/* Texto encabezado */
+.table-view .column-header .label {
+    -fx-text-fill: #d4c5b0;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER;
+}
+
+/* ======== FILAS ======== */
+.table-row-cell {
+    -fx-background-color: #F5EFE6;
+    -fx-border-color: #d4c5b0;
+    -fx-border-width: 0 0 0.5 0; /* líneas muy delgadas */
+}
+
+/* Hover */
+.table-row-cell:hover {
+    -fx-background-color: #E8DFC8;
+}
+
+/* Selección */
+.table-row-cell:selected {
+    -fx-background-color: #C9A84C;
+}
+
+/* ======== CELDAS ======== */
+.table-cell {
+    -fx-text-fill: #1A1E2E;
+    -fx-border-color: #d4c5b0;
+    -fx-border-width: 0 0.5 0 0.5;
+}
+
+/* Texto seleccionado */
+.table-row-cell:selected .table-cell {
+    -fx-text-fill: white;
+}
+
+/* ======== LÍNEAS INTERNAS ======== */
+.table-view {
+    -fx-table-cell-border-color: #d4c5b0;
+}
