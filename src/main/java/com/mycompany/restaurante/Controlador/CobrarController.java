@@ -41,10 +41,10 @@ public class CobrarController implements Initializable {
     private static final Logger LOG = Logger.getLogger(CobrarController.class.getName());
 
     //  TABLA DE PEDIDO
-    @FXML private TableView<OrdenItem>            tableVerPedido;
-    @FXML private TableColumn<OrdenItem, String>  colProducto;
+    @FXML private TableView<OrdenItem>  tableVerPedido;
+    @FXML private TableColumn<OrdenItem, String> colProducto;
     @FXML private TableColumn<OrdenItem, Integer> colCantidad;
-    @FXML private TableColumn<OrdenItem, Double>  colPrecio;
+    @FXML private TableColumn<OrdenItem, Double> colPrecio;
 
     //  LABELS DE RESUMEN
     @FXML private Label labelMesa;
@@ -111,8 +111,6 @@ public class CobrarController implements Initializable {
     public void setIdEmpleadoActual(int idEmpleado) {
         this.idEmpleadoActual = idEmpleado;
     }
-
-
 
     /**
      * Inicializa la interfaz, configura el formato de celdas de la tabla
@@ -342,9 +340,9 @@ public class CobrarController implements Initializable {
         confirmacion.setContentText("¿Desea registrar el pago y también generar una FACTURA?");
 
         ButtonType btnSoloRegistrar = new ButtonType("Solo registrar pago");
-        ButtonType btnConFactura    = new ButtonType("Registrar y Facturar");
-        ButtonType btnCancelar      = new ButtonType("Cancelar",
-                                        ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType btnConFactura = new ButtonType("Registrar y Facturar");
+        ButtonType btnCancelar = new ButtonType("Cancelar",
+                                 ButtonBar.ButtonData.CANCEL_CLOSE);
         confirmacion.getButtonTypes().setAll(btnSoloRegistrar, btnConFactura, btnCancelar);
 
         Optional<ButtonType> res = confirmacion.showAndWait();
@@ -388,7 +386,7 @@ public class CobrarController implements Initializable {
             // Refrescar interfaz tras el cobro exitoso
             cargarEstadoMesas();
             mesaSeleccionada = 0;
-            idOrdenActual    = 0;
+            idOrdenActual = 0;
             limpiarInterfazOrden();
             labelMesa.setText("—");
             return true;

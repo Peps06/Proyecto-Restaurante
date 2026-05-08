@@ -73,7 +73,7 @@
                         </Button>
                      </children>
                   </HBox>
-                  <TableView fx:id="tableMenu" focusTraversable="false" prefHeight="202.0" prefWidth="530.0" style="-fx-background-radius: 10 10 10 10; -fx-border-color: #c9a84c; -fx-border-radius: 10 10 10 10;">
+                  <TableView fx:id="tableMenu" focusTraversable="false" prefHeight="202.0" prefWidth="530.0" style="-fx-background-radius: 10 10 10 10; -fx-border-color: #c9a84c; -fx-border-radius: 10 10 10 10;" stylesheets="@../../../../css/stylesTabla.css">
                      <columns>
                         <TableColumn fx:id="ColumnaNombre" prefWidth="168.00003051757812" text="Nombre" />
                         <TableColumn fx:id="ColumnaDescripcion" prefWidth="363.20001220703125" text="Descripción" />
