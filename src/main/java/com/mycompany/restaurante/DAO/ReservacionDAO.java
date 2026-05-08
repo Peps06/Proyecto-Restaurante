@@ -119,18 +119,18 @@ public class ReservacionDAO {
     /**
      * Elimina una reservación por ID.
      */
-    public static boolean eliminar(int id) {
-        String sql = "DELETE FROM reservaciones WHERE idReservacion=?";
+    public static boolean cancelarReserva(int idReserva) {
+        String sql = "UPDATE reservaciones SET estado = 'Cancelada' WHERE idReservacion = ?";
 
-        try (Connection con = ConexionDB.getConexion();
+        try (Connection con = ConexionDB.getConexion(); // Corregido a ConexionDB.getConexion()
              PreparedStatement ps = con.prepareStatement(sql)) {
 
-            ps.setInt(1, id);
+            ps.setInt(1, idReserva);
             return ps.executeUpdate() > 0;
-
+            
         } catch (SQLException e) {
-            System.err.println("ReservacionDAO.eliminar(): " + e.getMessage());
+            System.err.println("ReservacionDAO.cancelarReserva(): " + e.getMessage());
+            return false;
         }
-        return false;
     }
 }

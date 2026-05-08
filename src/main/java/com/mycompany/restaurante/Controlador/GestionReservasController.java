@@ -21,6 +21,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Optional;
+import javafx.scene.Node;
 import javafx.stage.Modality;
 
 public class GestionReservasController {
@@ -176,22 +177,28 @@ public class GestionReservasController {
     }
 
     @FXML
-    private void manejarEliminar(ActionEvent event) {
+    private void manejarCancelar(ActionEvent event) {
         Reservacion seleccionada = tablaReservas.getSelectionModel().getSelectedItem();
+
         if (seleccionada == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Sin selección", "Por favor, selecciona una reserva para eliminar.");
+            mostrarAlerta(Alert.AlertType.WARNING, "Sin selección", "Por favor, selecciona una reserva para cancelar.");
             return;
         }
 
+        // 2. Configurar la alerta de confirmación
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Confirmar Cancelación");
-        confirm.setContentText("¿Estás seguro de eliminar la reserva de " + seleccionada.getNombreCliente() + "?");
-        
+        confirm.setHeaderText("¿Deseas cancelar esta reservación?");
+        confirm.setContentText("La reserva de " + seleccionada.getNombreCliente() + " cambiará su estado a 'Cancelada'.");
+
         Optional<ButtonType> result = confirm.showAndWait();
+
         if (result.isPresent() && result.get() == ButtonType.OK) {
-            if (ReservacionDAO.eliminar(seleccionada.getId())) {
-                cargarTabla();
-                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito", "Reserva eliminada correctamente.");
+            if (ReservacionDAO.cancelarReserva(seleccionada.getId())) {
+                cargarTabla(); 
+                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito", "La reserva ha sido cancelada correctamente.");
+            } else {
+                mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo actualizar el estado de la reserva en la base de datos.");
             }
         }
     }
@@ -249,16 +256,28 @@ public class GestionReservasController {
 
     @FXML
     private void handleCerrarSesion(ActionEvent event) {
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource("/com/mycompany/restaurante/fxml/LoginPantalla.fxml"));
-            Stage stageActual = (Stage) btnCerrarSesion.getScene().getWindow();
-            Scene nuevaEscena = new Scene(root);
-            stageActual.setScene(nuevaEscena);
-            stageActual.setTitle("Iniciar sesión - Saveurs Paris");
-            stageActual.centerOnScreen();
-            stageActual.show();
-        } catch (IOException e) {
-            e.printStackTrace();
+        // Crear la alerta de confirmación
+        Alert alerta = new Alert(Alert.AlertType.CONFIRMATION);
+        alerta.setTitle("Confirmar Salida");
+        alerta.setHeaderText("Cerrar Sesión");
+        alerta.setContentText("¿Estás seguro de que deseas salir del sistema?");
+
+        // Mostrar y esperar respuesta
+        Optional<ButtonType> resultado = alerta.showAndWait();
+
+        if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
+            try {
+                // Código para regresar al Login (ejemplo)
+                Parent root = FXMLLoader.load(getClass().getResource("/com/mycompany/restaurante/fxml/LoginPantalla.fxml"));
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                stage.setScene(new Scene(root));
+                stage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            // El usuario canceló, no se hace nada y se queda en la ventana
+            alerta.close();
         }
     }
 

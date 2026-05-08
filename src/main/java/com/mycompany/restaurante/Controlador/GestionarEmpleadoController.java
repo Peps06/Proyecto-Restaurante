@@ -19,6 +19,7 @@ import javafx.stage.Stage;
 import javafx.stage.Modality;
 import java.io.IOException;
 import javafx.event.ActionEvent;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
 
@@ -311,6 +312,28 @@ public class GestionarEmpleadoController {
 
     @FXML
     private void handleCerrarSesion(ActionEvent event) {
-        cambiarPantalla(event, "/com/mycompany/restaurante/fxml/LoginPantalla.fxml", "Iniciar sesión");
+        // Crear la alerta de confirmación
+        Alert alerta = new Alert(Alert.AlertType.CONFIRMATION);
+        alerta.setTitle("Confirmar Salida");
+        alerta.setHeaderText("Cerrar Sesión");
+        alerta.setContentText("¿Estás seguro de que deseas salir del sistema?");
+
+        // Mostrar y esperar respuesta
+        Optional<ButtonType> resultado = alerta.showAndWait();
+
+        if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
+            try {
+                // Código para regresar al Login (ejemplo)
+                Parent root = FXMLLoader.load(getClass().getResource("/com/mycompany/restaurante/fxml/LoginPantalla.fxml"));
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                stage.setScene(new Scene(root));
+                stage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            // El usuario canceló, no se hace nada y se queda en la ventana
+            alerta.close();
+        }
     }
 }

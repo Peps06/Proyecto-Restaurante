@@ -3,6 +3,7 @@ package com.mycompany.restaurante.Controlador;
 
 import com.mycompany.restaurante.DAO.ProductoDAO;
 import com.mycompany.restaurante.Modelo.Producto;
+import java.io.IOException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -15,6 +16,7 @@ import javafx.stage.Stage;
 import java.util.Optional;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.text.Text;
@@ -218,23 +220,28 @@ public class RegistrarPedidoController {
 
     @FXML
     private void handleCerrarSesion(ActionEvent event) {
-        try {
-            // 1. Cargar directamente la pantalla de Login
-            Parent root = FXMLLoader.load(getClass().getResource("/com/mycompany/restaurante/fxml/LoginPantalla.fxml"));
+        // Crear la alerta de confirmación
+        Alert alerta = new Alert(Alert.AlertType.CONFIRMATION);
+        alerta.setTitle("Confirmar Salida");
+        alerta.setHeaderText("Cerrar Sesión");
+        alerta.setContentText("¿Estás seguro de que deseas salir del sistema?");
 
-            // 2. Obtener la ventana actual usando el evento del clic
-            javafx.scene.Node nodoOrigen = (javafx.scene.Node) event.getSource();
-            Stage stageActual = (Stage) nodoOrigen.getScene().getWindow();
+        // Mostrar y esperar respuesta
+        Optional<ButtonType> resultado = alerta.showAndWait();
 
-            // 3. Cambiar la escena
-            Scene nuevaEscena = new Scene(root);
-            stageActual.setScene(nuevaEscena);
-            stageActual.setTitle("Iniciar sesión - Saveurs Paris");
-            stageActual.centerOnScreen();
-            stageActual.show();
-
-        } catch (java.io.IOException e) {
-            e.printStackTrace();
+        if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
+            try {
+                // Código para regresar al Login (ejemplo)
+                Parent root = FXMLLoader.load(getClass().getResource("/com/mycompany/restaurante/fxml/LoginPantalla.fxml"));
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                stage.setScene(new Scene(root));
+                stage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            // El usuario canceló, no se hace nada y se queda en la ventana
+            alerta.close();
         }
     }
     

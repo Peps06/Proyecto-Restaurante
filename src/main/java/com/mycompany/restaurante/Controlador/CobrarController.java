@@ -27,6 +27,7 @@ import java.sql.Statement;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
+import javafx.scene.Node;
 
 /**
  * Controlador principal para la gestión de cobros y monitoreo de mesas.
@@ -454,15 +455,29 @@ public class CobrarController implements Initializable {
      */
     @FXML
     private void handleCerrarSesion(ActionEvent event) {
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource(
-                "/com/mycompany/restaurante/fxml/LoginPantalla.fxml"
-            ));
-            Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Iniciar sesión - Saveurs Paris");
-            stage.show();
-        } catch (IOException e) { e.printStackTrace(); }
+        // Crear la alerta de confirmación
+        Alert alerta = new Alert(Alert.AlertType.CONFIRMATION);
+        alerta.setTitle("Confirmar Salida");
+        alerta.setHeaderText("Cerrar Sesión");
+        alerta.setContentText("¿Estás seguro de que deseas salir del sistema?");
+
+        // Mostrar y esperar respuesta
+        Optional<ButtonType> resultado = alerta.showAndWait();
+
+        if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
+            try {
+                // Código para regresar al Login (ejemplo)
+                Parent root = FXMLLoader.load(getClass().getResource("/com/mycompany/restaurante/fxml/LoginPantalla.fxml"));
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                stage.setScene(new Scene(root));
+                stage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            // El usuario canceló, no se hace nada y se queda en la ventana
+            alerta.close();
+        }
     }
 
     @FXML private void handleCobrarMesa(ActionEvent event) { /* Pantalla actual */ }
