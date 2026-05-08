@@ -110,7 +110,7 @@
             <Insets left="20.0" right="20.0" />
          </VBox.margin>
       </HBox>
-      <TableView fx:id="tablaAsistencias" prefHeight="221.0" prefWidth="400.0">
+      <TableView fx:id="tablaAsistencias" prefHeight="221.0" prefWidth="400.0" stylesheets="@../../../../css/stylesTabla.css">
          <columns>
             <TableColumn fx:id="colFecha" prefWidth="100.0" text="Fecha" />
             <TableColumn fx:id="colEntrada" prefWidth="100.0" text="Entrada" />

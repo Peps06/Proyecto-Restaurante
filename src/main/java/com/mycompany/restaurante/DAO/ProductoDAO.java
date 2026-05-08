@@ -2,6 +2,7 @@ package com.mycompany.restaurante.DAO;
 
 import com.mycompany.restaurante.Modelo.ConexionDB;
 import com.mycompany.restaurante.Modelo.Producto;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
