@@ -4,6 +4,7 @@ import com.mycompany.restaurante.DAO.InsumoDAO;
 import com.mycompany.restaurante.Modelo.Insumo;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -260,6 +261,19 @@ public class GestionAlmacenController {
 
     @FXML
     private void handleCerrarSesion(ActionEvent event) {
-        cambiarPantalla(event, "/com/mycompany/restaurante/fxml/LoginPantalla.fxml", "Iniciar sesión");
+        Alert alerta = new Alert(Alert.AlertType.CONFIRMATION);
+        alerta.setTitle("Confirmar Salida");
+        alerta.setHeaderText("Cerrar Sesión");
+        alerta.setContentText("¿Estás seguro de que deseas salir del sistema?");
+
+        // Mostrar y esperar respuesta
+        Optional<ButtonType> resultado = alerta.showAndWait();
+
+        if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
+            cambiarPantalla(event, "/com/mycompany/restaurante/fxml/LoginPantalla.fxml", "Iniciar sesión");
+        } else {
+            // El usuario canceló, no se hace nada y se queda en la ventana
+            alerta.close();
+        }   
     }
 }

@@ -27,7 +27,7 @@ public class ConexionDB {
         + "&socketTimeout=30000"; // 30 s para esperar respuesta
 
     private static final String USER = "root";
-    private static final String PASSWORD = "832411";
+    private static final String PASSWORD = "Pe951LInDr0:)";
 
     static {
         try {
@@ -38,7 +38,7 @@ public class ConexionDB {
     }
 
     /**
-     * Devuelve una conexión NUEVA cada vez.
+     * Devuelve una conexión nueva cada vez.
      */
     public static Connection getConexion() throws SQLException {
         Connection con = DriverManager.getConnection(URL, USER, PASSWORD);

@@ -60,7 +60,7 @@ public class LoginController {
                     cargarPantalla("/com/mycompany/restaurante/fxml/GestionarEmpleado.fxml", "Panel de Administración");
                     break;
                 case "Chef":
-                    cargarPantalla("/fxml/PantallaCocina.fxml", "Panel de Cocina");
+                    cargarPantalla("/com/mycompany/restaurante/fxml/PedidosActuales.fxml", "Panel de Cocina");
                     break;
                 case "Cajero":
                     cargarPantalla("/com/mycompany/restaurante/fxml/CobrarPantalla.fxml", "Panel de Caja");
