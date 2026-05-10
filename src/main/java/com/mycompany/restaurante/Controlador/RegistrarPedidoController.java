@@ -3,6 +3,7 @@ package com.mycompany.restaurante.Controlador;
 
 import com.mycompany.restaurante.DAO.ProductoDAO;
 import com.mycompany.restaurante.Modelo.Producto;
+
 import java.io.IOException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -24,7 +25,7 @@ import javafx.scene.text.Text;
 /**
  *
  * @author Dana, Citlaly
- * @version 2 (bd)
+ * @version 3 (detalles de pedido)
  */
 
 public class RegistrarPedidoController {
@@ -86,8 +87,12 @@ public class RegistrarPedidoController {
 
             {
                 container.setAlignment(Pos.CENTER);
-                btnMenos.setStyle("-fx-background-color: #8b1a1a; -fx-text-fill: white; -fx-cursor: hand;");
-                btnMas.setStyle("-fx-background-color: #8b1a1a; -fx-text-fill: white; -fx-cursor: hand;");
+                btnMenos.setStyle("-fx-background-color: #8b1a1a;"
+                                  + "-fx-text-fill: white;"
+                                  + "-fx-cursor: hand;");
+                btnMas.setStyle("-fx-background-color: #8b1a1a;"
+                                + "-fx-text-fill: white;"
+                                + "-fx-cursor: hand;");
                 
                 btnMenos.setOnAction(e -> {
                     Producto p = getTableView().getItems().get(getIndex());
@@ -127,7 +132,8 @@ public class RegistrarPedidoController {
     // Metodo para recibir la mesa
     public void setMesaSeleccionada(int numMesa) {
         this.idMesaReal = numMesa;
-        System.out.println("Mesa seleccionada en el controlador de pedidos: " + numMesa);
+        System.out.println("Mesa seleccionada en el controlador de pedidos: "
+                            + numMesa);
     }
 
     // --- MÉTODOS DE ACCIÓN ---
@@ -156,7 +162,8 @@ public class RegistrarPedidoController {
         for (Producto p : masterData) {
             int cantidad = p.getCantidadPedida();
             if (cantidad > 0) {
-                resumen.append("- ").append(p.getNombre()).append(" (x").append(cantidad).append(")\n");
+                resumen.append("- ").append(p.getNombre()).append(" (x")
+                        .append(cantidad).append(")\n");
                 hayProductos = true;
             }
         }
@@ -166,7 +173,8 @@ public class RegistrarPedidoController {
             Alert alertError = new Alert(Alert.AlertType.ERROR);
             alertError.setTitle("Pedido Vacío");
             alertError.setHeaderText(null);
-            alertError.setContentText("No has seleccionado ningún producto. Usa los botones + para añadir elementos.");
+            alertError.setContentText("No has seleccionado ningún producto."
+                                + "Usa los botones + para añadir elementos.");
             alertError.showAndWait();
             return;
         }
@@ -183,8 +191,11 @@ public class RegistrarPedidoController {
             // --- 4. Se manda el pedido a DAO ---
             int idEmpleadoTemporal = 3; // El ID de Dana
             
-            // Llamamos a tu función. Le pasamos masterData completo, tu DAO ya filtra los que tienen cantidad > 0
-            int idGenerado = com.mycompany.restaurante.DAO.PedidoDAO.insertarOrdenCompleta(idMesaReal, idEmpleadoTemporal, masterData);
+            String notasDelMesero = txtDescripcion.getText();
+            
+            int idGenerado = com.mycompany.restaurante.DAO.PedidoDAO
+                .insertarOrdenCompleta(idMesaReal, idEmpleadoTemporal,
+                                       masterData, notasDelMesero);
 
             if (idGenerado != -1) {
                 // Éxito: Limpiamos la pantalla
@@ -195,14 +206,16 @@ public class RegistrarPedidoController {
                 Alert alertExito = new Alert(Alert.AlertType.INFORMATION);
                 alertExito.setTitle("Confirmado");
                 alertExito.setHeaderText(null);
-                alertExito.setContentText("Pedido #" + idGenerado + " enviado a cocina y mesa marcada como ocupada.");
+                alertExito.setContentText("Pedido #" + idGenerado +
+                            " enviado a cocina y mesa marcada como ocupada.");
                 alertExito.showAndWait();
                 
             } else {
                 Alert alertFallo = new Alert(Alert.AlertType.ERROR);
                 alertFallo.setTitle("Error");
                 alertFallo.setHeaderText(null);
-                alertFallo.setContentText("Ocurrió un problema al guardar la orden en la base de datos.");
+                alertFallo.setContentText("Ocurrió un problema al guardar la"
+                                            + "orden en la base de datos.");
                 alertFallo.showAndWait();
             }
             
@@ -232,7 +245,8 @@ public class RegistrarPedidoController {
         if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
             try {
                 // Código para regresar al Login (ejemplo)
-                Parent root = FXMLLoader.load(getClass().getResource("/com/mycompany/restaurante/fxml/LoginPantalla.fxml"));
+                Parent root = FXMLLoader.load(getClass().getResource(
+                        "/com/mycompany/restaurante/fxml/LoginPantalla.fxml"));
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 stage.setScene(new Scene(root));
                 stage.show();

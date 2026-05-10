@@ -1,11 +1,15 @@
 package com.mycompany.restaurante.DAO;
 
 import com.mycompany.restaurante.Modelo.ConexionDB;
+import com.mycompany.restaurante.Modelo.OrdenCocina;
 import com.mycompany.restaurante.Modelo.OrdenItem;
 import com.mycompany.restaurante.Modelo.Producto;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
@@ -17,7 +21,7 @@ import javafx.collections.ObservableList;
  * la atomicidad de las operaciones mediante transacciones.
  * 
  * @author Citlaly
- * @version 1.0
+ * @version 2.0
  */
 public class PedidoDAO {
 
@@ -33,11 +37,12 @@ public class PedidoDAO {
      * @param idMesa ID de la mesa física asignada.
      * @param idEmpleado ID del mesero que toma el pedido.
      * @param items Lista de productos seleccionados.
+     * @param detalles Texto libre del mesero (puede ser null o vacío).
      * @return El idOrden generado por la base de datos, o -1 en caso de error.
      */
-    public static int insertarOrdenCompleta(int idMesa, int idEmpleado, List<Producto> items) {
+    public static int insertarOrdenCompleta(int idMesa, int idEmpleado, List<Producto> items, String detalles) {
 
-        String sqlOrden = "INSERT INTO ordenes (idMesa, idEmpleado) VALUES (?,?)";
+        String sqlOrden = "INSERT INTO ordenes (idMesa, idEmpleado, detalles) VALUES (?,?,?)";
         String sqlDetalle = "INSERT INTO detalle_orden (idOrden, idProducto, cantidad, precioUnit) VALUES (?,?,?,?)";
         String sqlMesa = "UPDATE mesas SET estado='Ocupada' WHERE idMesa=?";
 
@@ -47,46 +52,68 @@ public class PedidoDAO {
 
             try {
                 // 1. INSERTAR CABECERA DE LA ORDEN
-                int idOrden;
-                try (PreparedStatement psOrden = con.prepareStatement(sqlOrden, Statement.RETURN_GENERATED_KEYS)) {
+                                int idOrden;
+                try (PreparedStatement psOrden = con.prepareStatement(
+                        sqlOrden, Statement.RETURN_GENERATED_KEYS)) {
+ 
                     psOrden.setInt(1, idMesa);
                     psOrden.setInt(2, idEmpleado);
+ 
+                    // Se guarda en null si el texto está vacío
+                    if (detalles != null && !detalles.isBlank()) {
+                        psOrden.setString(3, detalles.trim());
+                    } else {
+                        psOrden.setNull(3, Types.VARCHAR);
+                    }
+ 
                     psOrden.executeUpdate();
-
+                    LOG.info("PedidoDAO: INSERT ordenes ejecutado.");
+ 
                     try (ResultSet keys = psOrden.getGeneratedKeys()) {
-                        if (!keys.next()) throw new SQLException("Error: No se pudo recuperar el ID de la nueva orden.");
+                        if (!keys.next()) {
+                            throw new SQLException("No se recuperó el ID de la orden.");
+                        }
                         idOrden = keys.getInt(1);
                     }
                 }
-                LOG.info("PedidoDAO: Cabecera creada exitosamente. ID: " + idOrden);
+                LOG.info("PedidoDAO: Cabecera creada. idOrden=" + idOrden);
+
 
                 // 2. INSERTAR DETALLES
-                try (PreparedStatement psDetalle = con.prepareStatement(sqlDetalle)) {
+                                try (PreparedStatement psDetalle = con.prepareStatement(sqlDetalle)) {
                     for (Producto p : items) {
                         int cant = p.getCantidadPedida();
                         if (cant <= 0) continue;
-
-                        int idProducto = p.getCantidadPedida(); 
-                        
+ 
+                        int idProducto = p.getId();
+                        System.out.println("[PedidoDAO] Insertando detalle: "
+                            + "idOrden=" + idOrden
+                            + " idProducto=" + idProducto
+                            + " cant=" + cant
+                            + " precio=" + p.getPrecio());
+ 
                         psDetalle.setInt(1, idOrden);
                         psDetalle.setInt(2, idProducto);
                         psDetalle.setInt(3, cant);
                         psDetalle.setDouble(4, p.getPrecio());
-                        psDetalle.addBatch(); 
+                        psDetalle.addBatch();
                     }
                     psDetalle.executeBatch();
                 }
+                LOG.info("PedidoDAO: Detalles insertados en detalle_orden.");
+
 
                 // 3. ACTUALIZAR ESTADO DE LA MESA
                 try (PreparedStatement psMesa = con.prepareStatement(sqlMesa)) {
                     psMesa.setInt(1, idMesa);
                     psMesa.executeUpdate();
                 }
-
-                // Si todo fue bien, se guardan los cambios permanentemente
+                LOG.info("PedidoDAO: Mesa " + idMesa + " marcada como Ocupada.");
+ 
                 con.commit();
-                LOG.info("PedidoDAO: Transacción completada con éxito. Orden: " + idOrden);
+                LOG.info("PedidoDAO: Transacción completada. Orden=" + idOrden);
                 return idOrden;
+
 
             } catch (SQLException e) {
                 // Si algo falla, se revierte todos los cambios para evitar datos huérfanos
@@ -108,7 +135,8 @@ public class PedidoDAO {
      * @return El idOrden si existe una cuenta abierta, 0 en caso contrario.
      */
     public static int obtenerOrdenAbiertaPorMesa(int idMesa) {
-        String sql = "SELECT idOrden FROM ordenes WHERE idMesa=? AND estado='Abierta' LIMIT 1";
+        String sql = "SELECT idOrden FROM ordenes "
+                   + "WHERE idMesa=? AND estado='Abierta' LIMIT 1";
         try (Connection con = ConexionDB.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, idMesa);
@@ -116,7 +144,8 @@ public class PedidoDAO {
                 if (rs.next()) return rs.getInt("idOrden");
             }
         } catch (SQLException e) {
-            LOG.log(Level.SEVERE, "PedidoDAO: Error al buscar orden abierta para mesa " + idMesa, e);
+            LOG.log(Level.SEVERE,
+                "PedidoDAO: Error buscando orden abierta para mesa " + idMesa, e);
         }
         return 0;
     }
@@ -126,15 +155,15 @@ public class PedidoDAO {
      * Realiza un JOIN con la tabla de productos para obtener los nombres descriptivos.
      * 
      * @param idOrden ID de la orden a consultar.
-     * @return ObservableList de OrdenItem, ideal para vincular directamente a una TableView de JavaFX.
+     * @return ObservableList de OrdenItem listos para vincular a TableView.
      */
     public static ObservableList<OrdenItem> obtenerDetalleOrden(int idOrden) {
         ObservableList<OrdenItem> lista = FXCollections.observableArrayList();
         String sql = """
             SELECT p.nombre, d.cantidad, d.precioUnit
-            FROM detalle_orden d
-            JOIN productos p ON d.idProducto = p.idProductos
-            WHERE d.idOrden = ?
+            FROM   detalle_orden d
+            JOIN   productos     p ON d.idProducto = p.idProductos
+            WHERE  d.idOrden = ?
             """;
         try (Connection con = ConexionDB.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -149,8 +178,102 @@ public class PedidoDAO {
                 }
             }
         } catch (SQLException e) {
-            LOG.log(Level.SEVERE, "PedidoDAO: Error al obtener detalle de la orden #" + idOrden, e);
+            LOG.log(Level.SEVERE,
+                "PedidoDAO: Error obteniendo detalle de orden #" + idOrden, e);
         }
         return lista;
+    }
+
+    /**
+     * Consulta todas las órdenes abiertas cuya columna {@code preparacion}
+     * sea 'En espera', junto con todos sus ítems de detalle_orden.
+     *
+     * Se hace en una sola consulta con JOIN y se agrupa en Java 
+     *
+     * @return Lista de {@link OrdenCocina} ordenada por idOrden ascendente.
+     */
+    public static List<OrdenCocina> obtenerOrdenesEnEspera() {
+        List<OrdenCocina> resultado = new ArrayList<>();
+ 
+        String sql = """
+            SELECT o.idOrden,
+                   o.idMesa,
+                   o.detalles,
+                   o.preparacion,
+                   p.nombre AS nombreProducto,
+                   d.cantidad AS cantidadProducto,
+                   d.precioUnit
+            FROM ordenes o
+            JOIN detalle_orden d ON d.idOrden = o.idOrden
+            JOIN productos p ON p.idProductos = d.idProducto
+            WHERE o.estado = 'Abierta'
+            AND o.preparacion = 'En espera'
+            ORDER BY o.idOrden ASC, p.nombre ASC
+            """;
+ 
+        // LinkedHashMap para mantener el orden de inserción por idOrden
+        Map<Integer, OrdenCocina> mapa = new LinkedHashMap<>();
+ 
+        try (Connection con = ConexionDB.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+ 
+            while (rs.next()) {
+                int    idOrden  = rs.getInt("idOrden");
+                int    idMesa   = rs.getInt("idMesa");
+                String detalles = rs.getString("detalles");
+                String prep     = rs.getString("preparacion");
+ 
+                // Si la orden ya está en el mapa solo se agrega el ítem
+                OrdenCocina orden = mapa.computeIfAbsent(idOrden,
+                    id -> new OrdenCocina(id, idMesa, detalles, prep, new ArrayList<>())
+                );
+ 
+                orden.getItems().add(new OrdenItem(
+                    rs.getString("nombreProducto"),
+                    rs.getInt("cantidadProducto"),
+                    rs.getDouble("precioUnit")
+                ));
+            }
+ 
+            resultado.addAll(mapa.values());
+            LOG.info("PedidoDAO: " + resultado.size()
+                     + " órdenes en espera recuperadas.");
+ 
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE,
+                "PedidoDAO: Error al obtener órdenes en espera.", e);
+        }
+ 
+        return resultado;
+    }
+
+    /**
+     * Actualiza el campo {@code preparacion} de la orden a 'Preparado'.
+     * Solo modifica órdenes que actualmente están en 'En espera' para
+     * evitar sobrescrituras accidentales.
+     *
+     * @param idOrden ID de la orden a actualizar.
+     * @return {@code true} si la actualización afectó al menos una fila.
+     */
+    public static boolean marcarOrdenPreparada(int idOrden) {
+        String sql = "UPDATE ordenes "
+                   + "SET preparacion = 'Preparado' "
+                   + "WHERE idOrden = ? AND preparacion = 'En espera'";
+ 
+        try (Connection con = ConexionDB.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+ 
+            ps.setInt(1, idOrden);
+            int filas = ps.executeUpdate();
+            LOG.info("PedidoDAO: marcarOrdenPreparada idOrden=" + idOrden
+                     + " filas afectadas=" + filas);
+            return filas > 0;
+ 
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE,
+                "PedidoDAO: Error al marcar orden #" + idOrden + " como preparada.", e);
+            return false;
+        }
     }
 }
