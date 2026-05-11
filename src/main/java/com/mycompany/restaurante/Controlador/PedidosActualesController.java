@@ -30,23 +30,13 @@ import javafx.stage.Stage;
  * En lugar de usar un TableView, construye dinámicamente un GridPane
  * de 2 columnas donde cada celda es una tarjeta PedidoCelda.fxml.
  *
- * Flujo:
- *  1. initialize() → cargarTarjetas()
- *  2. cargarTarjetas() consulta PedidoDAO.obtenerOrdenesEnEspera()
- *     y llena el GridPane con una tarjeta por orden.
- *  3. Cada tarjeta recibe un callback onListoCallback que, al dispararse,
- *     llama de nuevo a cargarTarjetas() para refrescar la vista.
- *
  * @author Citlaly
  * @version 2.0 (GridPane dinámico)
  */
 public class PedidosActualesController implements Initializable {
 
-    // ── FXML ─────────────────────────────────────────────────────────
-    // El TableView original se reemplaza por un GridPane dentro de un
-    // ScrollPane. Ver PedidosActuales.fxml actualizado.
-    @FXML private GridPane  gridPedidos;
-    @FXML private Label     cantidadPedidos;   // "X Pendientes" en la cabecera
+    @FXML private GridPane gridPedidos;
+    @FXML private Label cantidadPedidos; // "X Pendientes" en la cabecera
 
     @FXML private Button btnPedidosActuales;
     @FXML private Button btnHistorial;
@@ -87,7 +77,7 @@ public class PedidosActualesController implements Initializable {
 
         if (ordenes.isEmpty()) {
             // Mensaje amigable cuando no hay pedidos
-            Label sinPedidos = new Label("✓  No hay pedidos pendientes en cocina.");
+            Label sinPedidos = new Label("No hay pedidos pendientes en cocina.");
             sinPedidos.setStyle("-fx-font-size: 16px; -fx-text-fill: #627096;");
             gridPedidos.add(sinPedidos, 0, 0);
             return;
@@ -103,7 +93,7 @@ public class PedidosActualesController implements Initializable {
                 gridPedidos.add(tarjeta, col, row);
 
                 col++;
-                if (col == 2) {   // saltar a la siguiente fila al llegar a col 2
+                if (col == 4) {   // saltar a la siguiente fila al llegar a col 2
                     col = 0;
                     row++;
                 }
