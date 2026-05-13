@@ -6,6 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.sql.*;
+import java.time.LocalDate;
 
 /**
  * Acceso a datos para la tabla 
@@ -117,12 +118,12 @@ public class ReservacionDAO {
     }
 
     /**
-     * Elimina una reservación por ID.
+     * Cancela una reservación por ID.
      */
     public static boolean cancelarReserva(int idReserva) {
         String sql = "UPDATE reservaciones SET estado = 'Cancelada' WHERE idReservacion = ?";
 
-        try (Connection con = ConexionDB.getConexion(); // Corregido a ConexionDB.getConexion()
+        try (Connection con = ConexionDB.getConexion(); 
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, idReserva);
@@ -132,5 +133,40 @@ public class ReservacionDAO {
             System.err.println("ReservacionDAO.cancelarReserva(): " + e.getMessage());
             return false;
         }
+    }
+    
+    /**
+     * Valida la disponibilidad una reservación.
+     */
+    public static boolean validarDisponibilidad(int idMesa, LocalDate fecha, String hora, int idReservaIgnorar) {
+        // Busca cuántas reservas se empalman con un margen de +/- 3 horas
+        String sql = "SELECT COUNT(*) FROM reservaciones "
+                   + "WHERE idMesa = ? AND fecha = ? "
+                   + "AND estado IN ('Pendiente', 'Confirmada') "
+                   + "AND idReservacion != ? "
+                   + "AND hora BETWEEN SUBTIME(?, '02:59:00') AND ADDTIME(?, '02:59:00')";
+
+        try (Connection con = ConexionDB.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idMesa);
+            ps.setDate(2, java.sql.Date.valueOf(fecha));
+            ps.setInt(3, idReservaIgnorar); 
+            
+            // Asegura que el formato de hora no marque error al convertir
+            String horaFormateada = hora + (hora.length() == 5 ? ":00" : "");
+            ps.setTime(4, java.sql.Time.valueOf(horaFormateada));
+            ps.setTime(5, java.sql.Time.valueOf(horaFormateada));
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    int conflictos = rs.getInt(1);
+                    return conflictos == 0; 
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("ReservacionDAO.validarDisponibilidad(): " + e.getMessage());
+        }
+        return false; 
     }
 }

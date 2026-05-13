@@ -5,6 +5,7 @@ package com.mycompany.restaurante.Controlador;
  * @author Dana
  */
 
+import com.mycompany.restaurante.DAO.MesasDAO;
 import com.mycompany.restaurante.DAO.ReservacionDAO;
 import com.mycompany.restaurante.Modelo.Reservacion;
 import javafx.collections.FXCollections;
@@ -43,14 +44,23 @@ public class GestionReservasController {
     @FXML private TableColumn<Reservacion, String> colTelefono;
     @FXML private TableColumn<Reservacion, Integer> colNumPersonas;
     @FXML private TableColumn<Reservacion, String> colEstado;
+    @FXML private TableColumn<Reservacion, Integer> colMesa;
 
     @FXML private Button btnAgregar;
     @FXML private Button btnEditar;
     @FXML private Button btnEliminar;
     @FXML private Button btnEstado; 
+    
+    private static final String ESTILO_BTN_ACTIVO =
+        "-fx-background-color: #2c3b62; -fx-text-fill: #d4c5b0; -fx-background-radius: 10 10 10 10;" +
+        "-fx-border-radius: 10 10 10 10;";
+    private static final String ESTILO_BTN_INACTIVO =
+        "-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" +
+        "-fx-border-radius: 10 10 10 10; -fx-text-fill: #d4c5b0;";
 
     private ObservableList<Reservacion> masterData = FXCollections.observableArrayList();
     private FilteredList<Reservacion> filteredData;
+    private final MesasDAO mesasDAO = new MesasDAO();
 
     @FXML
     public void initialize() {
@@ -62,11 +72,21 @@ public class GestionReservasController {
         colTelefono.setCellValueFactory(new PropertyValueFactory<>("telefono"));
         colNumPersonas.setCellValueFactory(new PropertyValueFactory<>("numeroPersonas"));
         colEstado.setCellValueFactory(new PropertyValueFactory<>("estado"));
+        colMesa.setCellValueFactory(new PropertyValueFactory<>("idMesa"));
+        
+        btnReservas.setStyle(ESTILO_BTN_ACTIVO);
 
         // 2. Cargar los datos desde la Base de Datos usando el método estático
         cargarTabla();
     }
 
+    @FXML
+    private void handleReserva(ActionEvent event) {
+        btnMesas.setStyle(ESTILO_BTN_INACTIVO);
+        btnReservas.setStyle(ESTILO_BTN_ACTIVO);
+        btnListaEsp.setStyle(ESTILO_BTN_INACTIVO);
+    }
+    
     /**
      * Carga o recarga los datos desde la BD a la tabla.
      */
@@ -120,6 +140,7 @@ public class GestionReservasController {
                     return;
                 }
                 nueva.setId(idGenerado);
+                mesasDAO.actualizarEstadoMesa(nueva.getIdMesa(), "Reservada");
 
                 masterData.add(nueva);
                 tablaReservas.refresh();
@@ -159,14 +180,22 @@ public class GestionReservasController {
             Reservacion editada = controller.getReserva();
 
             if (editada != null) {
-                // Actualizar los datos en la tabla (y memoria)
+                // Actualizar los datos en la tabla 
+                int idMesaAntigua = seleccionada.getIdMesa();
                 seleccionada.setNombreCliente(editada.getNombreCliente());
                 seleccionada.setTelefono(editada.getTelefono());
                 seleccionada.setFecha(editada.getFecha());
                 seleccionada.setHora(editada.getHora());
                 seleccionada.setNumeroPersonas(editada.getNumeroPersonas());
+                seleccionada.setIdMesa(editada.getIdMesa());
 
+                if (idMesaAntigua != editada.getIdMesa()) {
+                    mesasDAO.actualizarEstadoMesa(idMesaAntigua, "Libre");
+                }
+                mesasDAO.actualizarEstadoMesa(editada.getIdMesa(), "Reservada");
+                
                 ReservacionDAO.actualizar(seleccionada);
+                
                 tablaReservas.refresh();
                 mostrarAlerta(Alert.AlertType.WARNING,"Éxito", "Datos actualizados correctamente.");
             }
@@ -185,6 +214,14 @@ public class GestionReservasController {
             return;
         }
 
+        // --- NUEVA VALIDACIÓN: Verificar si ya está cancelada o completada ---
+        String estadoActual = seleccionada.getEstado();
+        if (estadoActual.equalsIgnoreCase("Cancelada") || estadoActual.equalsIgnoreCase("Completada")) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Acción no permitida", 
+                "No puedes cancelar esta reserva porque actualmente se encuentra: " + estadoActual + ".");
+            return; // Cortamos la ejecución aquí para que no abra la ventana de confirmación
+        }
+
         // 2. Configurar la alerta de confirmación
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Confirmar Cancelación");
@@ -195,8 +232,11 @@ public class GestionReservasController {
 
         if (result.isPresent() && result.get() == ButtonType.OK) {
             if (ReservacionDAO.cancelarReserva(seleccionada.getId())) {
+                
+                mesasDAO.actualizarEstadoMesa(seleccionada.getIdMesa(), "Libre");
+
                 cargarTabla(); 
-                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito", "La reserva ha sido cancelada correctamente.");
+                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito", "La reserva ha sido cancelada correctamente y la mesa está libre.");
             } else {
                 mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo actualizar el estado de la reserva en la base de datos.");
             }
@@ -211,11 +251,18 @@ public class GestionReservasController {
             return;
         }
 
+        if (seleccionada.getEstado().equalsIgnoreCase("Cancelada")) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Acción no permitida", "No puedes marcar llegada en una reserva cancelada.");
+            return;
+        }
+
         seleccionada.setEstado("Completada");
         
         if (ReservacionDAO.actualizar(seleccionada)) {
+            mesasDAO.actualizarEstadoMesa(seleccionada.getIdMesa(), "Ocupada");
+
             cargarTabla();
-            mostrarAlerta(Alert.AlertType.INFORMATION, "Cliente en restaurante", "El cliente " + seleccionada.getNombreCliente() + " ha sido marcado como Llegó. Ya puedes asignarle su mesa en el sistema de órdenes.");
+            mostrarAlerta(Alert.AlertType.INFORMATION, "Cliente en restaurante", "El cliente " + seleccionada.getNombreCliente() + " ha sido marcado como Llegó. Su mesa ahora aparece como Ocupada.");
         } else {
             mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo actualizar el estado en la base de datos.");
         }
@@ -239,13 +286,12 @@ public class GestionReservasController {
     
     @FXML
     private void handleReservas(ActionEvent event) {
-        cargarTabla();
+        cambiarPantalla(event, "/com/mycompany/restaurante/fxml/GestionReservas.fxml", "Gestionar Reservas");
     }
 
     @FXML
     private void handleMesas(ActionEvent event) {
-        System.out.println("Navegando a Gestión de Mesas...");
-        // cargarPantalla("/com/mycompany/restaurante/fxml/PantallaMesas.fxml");
+        cambiarPantalla(event, "/com/mycompany/restaurante/fxml/DisponibilidadRecepcionista.fxml", "Disponibilidad Mesas");
     }
 
     @FXML

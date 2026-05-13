@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="470.0" prefWidth="717.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.restaurante.Controlador.DisponibilidadRecepcionistaController">
+   <top>
+      <HBox alignment="CENTER_LEFT" prefHeight="70.0" style="-fx-background-color: #2c3b62;">
+         <children>
+            <ImageView fitHeight="50.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../../img/tipoAzul.png" />
+               </image>
+               <HBox.margin>
+                  <Insets left="35.0" right="20.0" />
+               </HBox.margin>
+            </ImageView>
+            <Region HBox.hgrow="ALWAYS" />
+            <Label alignment="CENTER" text="Recepcionista" textFill="#f5efe6">
+               <font>
+                  <Font name="Franklin Gothic Heavy" size="30.0" />
+               </font>
+            </Label>
+            <Region HBox.hgrow="ALWAYS" />
+            <Label alignment="CENTER_RIGHT" text="Turno Nocturno" textFill="#2c3b62">
+               <font>
+                  <Font name="Franklin Gothic Medium Italic" size="13.0" />
+               </font>
+               <HBox.margin>
+                  <Insets right="35.0" />
+               </HBox.margin>
+            </Label>
+         </children>
+      </HBox>
+   </top>
+   <left>
+      <VBox prefWidth="220.0" style="-fx-background-color: #1a1e2e;" BorderPane.alignment="TOP_CENTER">
+         <children>
+            <VBox spacing="12.0" VBox.vgrow="ALWAYS">
+               <VBox.margin>
+                  <Insets left="20.0" right="20.0" top="25.0" />
+               </VBox.margin>
+               <children>
+                  <Region />
+                  <Button fx:id="btnMesas" mnemonicParsing="false" onAction="#handleMesas" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Mesas" textFill="#d4c5b0">
+                     <font>
+                        <Font name="Candara Bold" size="19.0" />
+                     </font>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+                  <Button fx:id="btnReservas" mnemonicParsing="false" onAction="#handleReservas" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Reservas" textFill="#d4c5b0">
+                     <font>
+                        <Font name="Candara Bold" size="19.0" />
+                     </font>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+                  <Button fx:id="btnListaEsp" mnemonicParsing="false" onAction="#handleListaEsp" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Lista de espera" textFill="#d4c5b0">
+                     <font>
+                        <Font name="Candara Bold" size="19.0" />
+                     </font>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+               </children>
+            </VBox>
+            <VBox>
+               <VBox.margin>
+                  <Insets bottom="25.0" left="20.0" right="20.0" top="15.0" />
+               </VBox.margin>
+               <children>
+                  <Button fx:id="btnCerrarSesion" cancelButton="true" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#handleCerrarSesion" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Cerrar Sesión" textFill="#d4c5b0">
+                     <font>
+                        <Font name="Candara Bold" size="19.0" />
+                     </font>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+               </children>
+            </VBox>
+            <VBox spacing="12.0" />
+         </children>
+      </VBox>
+   </left>
+   <center>
+      <VBox style="-fx-background-color: #f5efe6;" BorderPane.alignment="CENTER">
+         <children>
+            <HBox alignment="CENTER_LEFT" prefHeight="60.0" style="-fx-background-color: #f5efe6;">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+               <children>
+                  <Label text="Disponibilidad de Mesas" textFill="#1a1e2e">
+                     <font>
+                        <Font name="Candara" size="23.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets left="20.0" />
+                     </HBox.margin>
+                  </Label>
+                  <Region HBox.hgrow="ALWAYS" />
+                  <Label style="-fx-text-fill: #8b6914; -fx-font-style: italic;">
+                     <font>
+                        <Font name="Candara" size="16.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets right="20.0" />
+                     </HBox.margin>
+                  </Label>
+               </children>
+            </HBox>
+            <Separator style="-fx-background-color: #c9a84c;" />
+            <HBox>
+               <children>
+                  <Pane prefHeight="305.0" HBox.hgrow="ALWAYS">
+                     <HBox.margin>
+                        <Insets right="20.0" />
+                     </HBox.margin>
+                     <children>
+                        <BorderPane prefHeight="305.0">
+                           <center>
+                              <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="225.0" prefWidth="300.0" BorderPane.alignment="CENTER">
+                                 <columnConstraints>
+                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="10.0" prefWidth="75.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="10.0" prefWidth="75.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="10.0" prefWidth="75.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="10.0" prefWidth="75.0" />
+                                 </columnConstraints>
+                                 <rowConstraints>
+                                    <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="75.0" vgrow="SOMETIMES" />
+                                    <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="75.0" vgrow="SOMETIMES" />
+                                    <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="75.0" vgrow="SOMETIMES" />
+                                 </rowConstraints>
+                                 <opaqueInsets>
+                                    <Insets />
+                                 </opaqueInsets>
+                                 <children>
+                                    <Button fx:id="btnMesa1" layoutX="35.0" layoutY="98.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" text="1">
+                                       <font>
+                                          <Font name="Arial" size="16.0" />
+                                       </font>
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor>
+                                    </Button>
+                                    <Button fx:id="btnMesa5" layoutX="260.0" layoutY="23.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" text="5" GridPane.rowIndex="1">
+                                       <font>
+                                          <Font name="Arial" size="16.0" />
+                                       </font>
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor>
+                                    </Button>
+                                    <Button fx:id="btnMesa9" layoutX="260.0" layoutY="98.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" text="9" GridPane.rowIndex="2">
+                                       <font>
+                                          <Font name="Arial" size="16.0" />
+                                       </font>
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor>
+                                    </Button>
+                                    <Button fx:id="btnMesa2" layoutX="35.0" layoutY="23.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" text="2" GridPane.columnIndex="1">
+                                       <font>
+                                          <Font name="Arial" size="16.0" />
+                                       </font>
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor>
+                                    </Button>
+                                    <Button fx:id="btnMesa6" layoutX="35.0" layoutY="98.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" text="6" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                       <font>
+                                          <Font name="Arial" size="16.0" />
+                                       </font>
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor>
+                                    </Button>
+                                    <Button fx:id="btnMesa10" layoutX="35.0" layoutY="173.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" text="10" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                       <font>
+                                          <Font name="Arial" size="16.0" />
+                                       </font>
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor>
+                                    </Button>
+                                    <Button fx:id="btnMesa3" layoutX="110.0" layoutY="23.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;" text="3" GridPane.columnIndex="2">
+                                       <font>
+                                          <Font name="Arial" size="16.0" />
+                                       </font>
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor>
+                                    </Button>
+                                    <Button fx:id="btnMesa7" layoutX="110.0" layoutY="98.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" text="7" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                       <font>
+                                          <Font name="Arial" size="16.0" />
+                                       </font>
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor>
+                                    </Button>
+                                    <Button fx:id="btnMesa11" layoutX="110.0" layoutY="173.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" text="11" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                                       <font>
+                                          <Font name="Arial" size="16.0" />
+                                       </font>
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor>
+                                    </Button>
+                                    <Button fx:id="btnMesa4" layoutX="185.0" layoutY="23.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" text="4" GridPane.columnIndex="3">
+                                       <font>
+                                          <Font name="Arial" size="16.0" />
+                                       </font>
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor>
+                                    </Button>
+                                    <Button fx:id="btnMesa8" layoutX="185.0" layoutY="98.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" text="8" GridPane.columnIndex="3" GridPane.rowIndex="1">
+                                       <font>
+                                          <Font name="Arial" size="16.0" />
+                                       </font>
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor>
+                                    </Button>
+                                    <Button fx:id="btnMesa12" layoutX="185.0" layoutY="173.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" text="12" GridPane.columnIndex="3" GridPane.rowIndex="2">
+                                       <font>
+                                          <Font name="Arial" size="16.0" />
+                                       </font>
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor>
+                                    </Button>
+                                 </children>
+                              </GridPane>
+                           </center>
+                           <right>
+                              <VBox prefHeight="200.0" prefWidth="220.0" BorderPane.alignment="CENTER">
+                                 <children>
+                                    <Region prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                                    <HBox prefHeight="25.0" prefWidth="200.0" spacing="10.0">
+                                       <children>
+                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#627096" height="25.0" stroke="TRANSPARENT" strokeType="INSIDE" width="25.0" />
+                                          <Label prefHeight="25.0" text="Libre">
+                                             <font>
+                                                <Font name="Candara" size="18.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </HBox>
+                                    <Region layoutX="10.0" layoutY="10.0" minHeight="-Infinity" prefHeight="30.0" prefWidth="200.0" />
+                                    <HBox layoutX="10.0" layoutY="142.0" prefHeight="25.0" prefWidth="200.0" spacing="10.0">
+                                       <children>
+                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#8a3636" height="25.0" stroke="TRANSPARENT" strokeType="INSIDE" width="25.0" />
+                                          <Label prefHeight="25.0" text="Ocupada">
+                                             <font>
+                                                <Font name="Candara" size="18.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </HBox>
+                                    <Region layoutX="10.0" layoutY="168.0" minHeight="-Infinity" prefHeight="30.0" prefWidth="200.0" />
+                                    <HBox prefHeight="25.0" prefWidth="200.0" spacing="10.0">
+                                       <children>
+                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#c9a84c" height="25.0" stroke="TRANSPARENT" strokeType="INSIDE" width="25.0" />
+                                          <Label prefHeight="25.0" text="Reservada">
+                                             <font>
+                                                <Font name="Candara" size="18.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </HBox>
+                                    <Region layoutX="10.0" layoutY="220.0" prefHeight="200.0" prefWidth="200.0" />
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                                 </padding>
+                              </VBox>
+                           </right>
+                        </BorderPane>
+                     </children>
+                  </Pane>
+               </children>
+               <padding>
+                  <Insets left="20.0" right="20.0" top="20.0" />
+               </padding>
+            </HBox>
+         </children>
+      </VBox>
+   </center>
+</BorderPane>
