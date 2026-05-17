@@ -83,7 +83,7 @@ public class PedidosActualesController implements Initializable {
             return;
         }
 
-        // 4. Insertar tarjetas en el grid — 2 columnas
+        // 4. Insertar tarjetas en el grid — 4 columnas
         int col = 0;
         int row = 0;
 
@@ -93,7 +93,7 @@ public class PedidosActualesController implements Initializable {
                 gridPedidos.add(tarjeta, col, row);
 
                 col++;
-                if (col == 4) {   // saltar a la siguiente fila al llegar a col 2
+                if (col == 4) {   // saltar a la siguiente fila al llegar a col 4
                     col = 0;
                     row++;
                 }
