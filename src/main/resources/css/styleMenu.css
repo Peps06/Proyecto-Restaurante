@@ -1,0 +1,15 @@
+/* Estilo para el contenedor de la imagen (Efecto Polaroid) */
+.marco-polaroid {
+    -fx-background-color: #ffffff; /* Color del papel fotográfico */
+    
+    /* El secreto del Polaroid: Arriba, Derecha, Abajo (más grueso), Izquierda */
+    -fx-padding: 10 10 10 10; 
+    
+}
+
+/*Que la foto se levante un poco cuando pasas el mouse */
+.marco-polaroid:hover {
+    -fx-translate-y: -5px; /* Sube la foto 5 pixeles */
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 20, 0, 5, 8); /* Sombra más grande */
+    -fx-cursor: hand;
+}

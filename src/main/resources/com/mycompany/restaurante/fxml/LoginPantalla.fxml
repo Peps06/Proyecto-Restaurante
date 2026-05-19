@@ -67,6 +67,14 @@
                               <Insets top="20.0" />
                            </VBox.margin>
                         </Button>
+                        <Button fx:id="btnMenu" defaultButton="true" layoutX="140.0" layoutY="332.0" mnemonicParsing="false" onAction="#handleMenu" prefHeight="42.0" prefWidth="140.0" style="-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" text="Menú" textFill="#d4c5b0">
+                           <font>
+                              <Font name="Candara Bold" size="19.0" />
+                           </font>
+                           <effect>
+                              <DropShadow />
+                           </effect>
+                        </Button>
                      </children>
                      <padding>
                         <Insets left="80.0" right="80.0" />
