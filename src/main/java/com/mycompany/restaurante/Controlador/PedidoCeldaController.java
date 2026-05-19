@@ -44,6 +44,7 @@ public class PedidoCeldaController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        tablaItems.setStyle("-fx-background-color: transparent;");
         // Vincular columnas con las propiedades de OrdenItem
         // "cantidad" → OrdenItem.getCantidad()
         // "producto" → OrdenItem.getProducto()
@@ -60,11 +61,65 @@ public class PedidoCeldaController implements Initializable {
                     setText(null);
                 } else {
                     setText(String.valueOf(item));
-                    setStyle("-fx-alignment: CENTER; "
-                           + "-fx-font-weight: bold; "
-                           + "-fx-text-fill: #2c3b62;");
+                    setStyle(
+                        "-fx-alignment: CENTER;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-text-fill: #2c3b62;" +
+                        "-fx-background-color: transparent;" +
+                        "-fx-border-color: transparent transparent #E8DB6C transparent;" +
+                        "-fx-border-width: 0 0 1 0;"
+                    );
                 }
             }
+        });
+
+        // Estilo para celdas de PLATO
+        columnaPlato.setCellFactory(col -> new TableCell<OrdenItem, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null);
+                    setText(null);
+                    setStyle("-fx-background-color: transparent;");
+                } else {
+                    setText(item);
+                    setStyle(
+                        "-fx-background-color: transparent;" +
+                        "-fx-border-color: transparent transparent #E8DB6C transparent;" +
+                        "-fx-border-width: 0 0 1 0;" +
+                        "-fx-text-fill: #2c3b62;"
+                    );
+                }
+            }
+        });
+
+        // Ocultar líneas de separación nativas de JavaFX
+        tablaItems.setRowFactory(tv -> {
+            TableRow<OrdenItem> row = new TableRow<>();
+            row.setStyle("-fx-background-color: transparent;");
+            return row;
+        });
+        
+        // Estilo del encabezado de columnas
+        tablaItems.widthProperty().addListener((obs, oldVal, newVal) -> {
+            // Fondo del encabezado transparente
+            tablaItems.lookupAll(".column-header").forEach(node -> {
+                node.setStyle("-fx-background-color: transparent;");
+            });
+
+            // También el contenedor general del encabezado
+            tablaItems.lookupAll(".column-header-background").forEach(node -> {
+                node.setStyle("-fx-background-color: transparent;");
+            });
+
+            // Color de las letras
+            tablaItems.lookupAll(".column-header .label").forEach(node -> {
+                node.setStyle(
+                    "-fx-text-fill: #463A2B;" +
+                    "-fx-font-weight: bold;"
+                );
+            });
         });
     }
 
