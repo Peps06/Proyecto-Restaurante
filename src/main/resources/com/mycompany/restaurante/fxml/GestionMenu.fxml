@@ -161,7 +161,7 @@
                               </Button>
                            </children>
                         </HBox>
-                        <TableView fx:id="tablaMenu" cacheShape="false" centerShape="false" focusTraversable="false" prefHeight="422.0" prefWidth="540.0" scaleShape="false" style="-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;" VBox.vgrow="ALWAYS">
+                        <TableView fx:id="tablaMenu" cacheShape="false" centerShape="false" focusTraversable="false" prefHeight="422.0" prefWidth="540.0" scaleShape="false" style="-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;" stylesheets="@../../../../css/stylesTabla.css" VBox.vgrow="ALWAYS">
                            <columns>
                               <TableColumn fx:id="colNombre" prefWidth="140.0" resizable="false" text="Nombre del producto" />
                               <TableColumn fx:id="colTipo" prefWidth="90.0" resizable="false" text="Tipo" />

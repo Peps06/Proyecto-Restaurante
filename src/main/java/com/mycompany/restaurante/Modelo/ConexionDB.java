@@ -38,7 +38,7 @@ public class ConexionDB {
     }
 
     /**
-     * Devuelve una conexión NUEVA cada vez.
+     * Devuelve una conexión nueva cada vez.
      */
     public static Connection getConexion() throws SQLException {
         Connection con = DriverManager.getConnection(URL, USER, PASSWORD);

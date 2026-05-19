@@ -167,7 +167,7 @@
                                     </Button>
                                  </children>
                               </HBox>
-                              <TableView fx:id="tablaAlmacen" focusTraversable="false" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="540.0" style="-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;" VBox.vgrow="ALWAYS">
+                              <TableView fx:id="tablaAlmacen" focusTraversable="false" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="540.0" style="-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;" stylesheets="@../../../../css/stylesTabla.css" VBox.vgrow="ALWAYS">
                                  <columns>
                                     <TableColumn fx:id="colId" minWidth="-Infinity" prefWidth="50.0" text="ID" />
                                     <TableColumn fx:id="colProducto" minWidth="-Infinity" prefWidth="120.0" text="Producto" />

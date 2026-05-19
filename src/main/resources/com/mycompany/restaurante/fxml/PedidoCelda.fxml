@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<!--
+    PedidoCelda.fxml
+    Tarjeta visual de una sola orden para la pantalla de cocina.
+    Se instancia dinámicamente desde PedidosActualesController por cada
+    orden en estado 'En espera'. El controlador asignado es
+    PedidoCeldaController, que recibe un OrdenCocina mediante initData().
+-->
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="320.0" prefWidth="280.0" style="-fx-background-color: #F5EFE6; -fx-border-color: #C9A84C; -fx-border-width: 0.5; -fx-border-radius: 10; -fx-background-radius: 10;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.restaurante.Controlador.PedidoCeldaController">
+
+    <!-- ── CABECERA: fondo azul oscuro con mesa e id de orden ───── -->
+    <top>
+        <VBox maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="70.0" prefWidth="400.0" spacing="5.0" style="-fx-background-color: #2c3b62;                      -fx-background-radius: 10 10 0 0;" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </padding>
+            <children>
+                <!-- "Mesa X" -->
+                <Label fx:id="idMesa" alignment="CENTER" maxWidth="-Infinity" prefWidth="360.0" textFill="#e9e3db">
+                    <font>
+                        <Font name="Candara Bold" size="26.0" />
+                    </font>
+                </Label>
+                <!-- "#ord-XXX" -->
+                <Label fx:id="idOrden" alignment="CENTER" prefWidth="360.0" textFill="#C9A84C">
+                    <font>
+                        <Font name="Candara Italic" size="13.0" />
+                    </font>
+                </Label>
+            </children>
+        </VBox>
+    </top>
+
+    <!-- ── CENTRO: tabla con cantidad y nombre del plato ──────── -->
+    <center>
+        <VBox prefWidth="400.0" BorderPane.alignment="CENTER">
+            <BorderPane.margin>
+                <Insets bottom="5.0" left="20.0" right="20.0" top="10.0" />
+            </BorderPane.margin>
+            <children>
+                <TableView fx:id="tablaItems" focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="190.0" prefWidth="240.0" style="-fx-background-color: transparent;" stylesheets="@../../../../css/stylesTabla.css">
+                    <columns>
+                        <!-- Columna "Cant." — ancho fijo pequeño -->
+                        <TableColumn fx:id="columnaCantidad" prefWidth="40.0" resizable="false" sortable="false" text="Cant." />
+                        <!-- Columna "Plato" — ocupa el resto -->
+                        <TableColumn fx:id="columnaPlato" prefWidth="190.0" resizable="false" sortable="false" text="Plato" />
+                    </columns>
+                    <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                    </columnResizePolicy>
+                </TableView>
+            </children>
+        </VBox>
+    </center>
+
+    <!-- ── PIE: botones Marcar Listo y Ver ───────────────────── -->
+    <bottom>
+        <HBox prefHeight="52.0" prefWidth="310.0" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets bottom="15.0" left="20.0" right="20.0" top="10.0" />
+            </padding>
+            <children>
+                <!-- Espaciador izquierdo -->
+                <Region prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+
+                <!-- Botón principal: cambia preparacion → 'Preparado' -->
+                <Button fx:id="btnListo" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handlePedidoListo" prefHeight="32.0" prefWidth="155.0" style="-fx-background-color: #8b1a1a;                                -fx-border-radius: 10;                                -fx-background-radius: 10;                                -fx-text-fill: #d4c5b0;" text="Marcar Listo">
+                    <font>
+                        <Font name="Candara Bold" size="15.0" />
+                    </font>
+                </Button>
+            <Region layoutX="30.0" layoutY="20.0" prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+
+                <!-- Botón secundario: muestra popup con ordenes.detalles -->
+                <Button fx:id="btnVerDetalles" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleDetallesPedido" prefHeight="32.0" prefWidth="65.0" style="-fx-background-color: #2c3b62;                                -fx-border-radius: 10;                                -fx-background-radius: 10;                                -fx-text-fill: #d4c5b0;" text="Ver">
+                    <font>
+                        <Font name="Candara Bold" size="15.0" />
+                    </font>
+                </Button>
+
+                <!-- Espaciador derecho -->
+                <Region prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+            </children>
+        </HBox>
+    </bottom>
+
+</BorderPane>

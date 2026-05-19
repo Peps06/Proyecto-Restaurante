@@ -19,6 +19,7 @@ import javafx.stage.Stage;
 import javafx.stage.Modality;
 import java.io.IOException;
 import javafx.event.ActionEvent;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
 
@@ -314,5 +315,21 @@ public class GestionarEmpleadoController {
     @FXML private void handleEmpleados(ActionEvent event) { cambiarPantalla(event, "/com/mycompany/restaurante/fxml/GestionarEmpleado.fxml", "Gestionar Empleado"); }
     @FXML private void handleMenu(ActionEvent event) { cambiarPantalla(event, "/com/mycompany/restaurante/fxml/GestionMenu.fxml", "Gestionar Menu"); }
     @FXML private void handleAlmacen(ActionEvent event) { cambiarPantalla(event, "/com/mycompany/restaurante/fxml/GestionAlmacen.fxml", "Gestionar Almacen"); }
-    @FXML private void handleCerrarSesion(ActionEvent event) { cambiarPantalla(event, "/com/mycompany/restaurante/fxml/LoginPantalla.fxml", "Iniciar sesión"); }
+    @FXML
+    private void handleCerrarSesion(ActionEvent event) {
+        // 1. Creamos la alerta de confirmación para los empleados
+        Alert alerta = new Alert(Alert.AlertType.CONFIRMATION);
+        alerta.setTitle("Confirmar Salida");
+        alerta.setHeaderText("Cerrar Sesión");
+        alerta.setContentText("¿Estás seguro de que deseas salir del sistema de empleados?");
+
+        // 2. Mostramos la ventana y esperamos a que el usuario elija
+        Optional<ButtonType> resultado = alerta.showAndWait();
+
+        // 3. Si presiona OK, lo mandamos directo al Login usando tu método del controlador
+        if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
+            cambiarPantalla(event, "/com/mycompany/restaurante/fxml/LoginPantalla.fxml", "Iniciar sesión");
+        }
+        // Si cancela, no entra al IF, la alerta se destruye sola y el usuario se queda en la gestión de empleados
+    }
 }
