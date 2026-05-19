@@ -23,20 +23,26 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
 
 /**
- * Controlador para la gestión de empleados en el sistema Saveurs Paris.
- * @author Rubi
+ * Esta clase es el "cerebro" de la pantalla de Gestión de Empleados. 
+ * Aquí controlo todo lo que pasa en la tabla: desde ver quién vino a trabajar hoy, 
+ * hasta agregar, editar o despedir (eliminar) a alguien del equipo.
+ * * @author Rubi
+ * @version 2.0
  */
 public class GestionarEmpleadoController {
 
-    @FXML private TextField txtBusqueda;
-    @FXML private TableView<Empleado> tablaEmpleados;
+    // Componentes de la interfaz (FXML)
+    @FXML private TextField txtBusqueda; // Cuadro para buscar empleados por nombre o ID
+    @FXML private TableView<Empleado> tablaEmpleados; // La tabla principal donde se ve la lista
     
+    // Columnas de la tabla
     @FXML private TableColumn<Empleado, Integer> colId;
     @FXML private TableColumn<Empleado, String> colNombre;
     @FXML private TableColumn<Empleado, String> colPuesto;
     @FXML private TableColumn<Empleado, String> colAsistencia;
     @FXML private TableColumn<Empleado, String> colTelefono;
     
+    // Botones del menú lateral
     @FXML private Button btnCerrarSesion;
     @FXML private Button btnEmpleados;
     @FXML private Button btnMenu;
@@ -44,23 +50,29 @@ public class GestionarEmpleadoController {
     @FXML private Button btnReportes;
     @FXML private Button btnHistorial;
 
+    /**
+     * Lista maestra que guarda a todos los empleados que traemos de la base de datos.
+     */
     private ObservableList<Empleado> datosMaestros = FXCollections.observableArrayList();
 
+    /**
+     * Este método se ejecuta solito cuando se abre la pantalla.
+     * Aquí configuro qué dato va en qué columna
+     */
     @FXML
     public void initialize() {
         refrescarTabla();
     
-        // 1. Vincular columnas con los atributos de la clase Empleado
+        // 1. Vinculamos cada columna con los datos que tiene el objeto Empleado
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         colPuesto.setCellValueFactory(new PropertyValueFactory<>("puesto"));
         colAsistencia.setCellValueFactory(new PropertyValueFactory<>("asistencia"));
         colTelefono.setCellValueFactory(new PropertyValueFactory<>("telefono"));
 
-        
+        // 2. Colores para la asistencia
         colAsistencia.setCellFactory(column -> {
             return new TableCell<Empleado, String>() {
-
                 @Override
                 protected void updateItem(String item, boolean empty) {
                     super.updateItem(item, empty);
@@ -70,11 +82,17 @@ public class GestionarEmpleadoController {
                         setStyle("");
                     } else {
                         setText(item);
-                        
+                        setStyle(""); // Limpiamos estilos para que no se hereden al hacer scroll
+
+                        // Verde si está presente, Gris si ya terminó, Rojo si no vino
                         if (item.equalsIgnoreCase("Presente")) {
-                            setStyle("-fx-text-fill: green; -fx-font-weight: bold;");
-                        } else {
-                            setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
+                            setStyle("-fx-text-fill: #27ae60; -fx-font-weight: bold;"); 
+                        } 
+                        else if (item.equalsIgnoreCase("Completado")) {
+                            setStyle("-fx-text-fill: #7f8c8d; -fx-font-weight: normal;"); 
+                        } 
+                        else if (item.equalsIgnoreCase("Ausente")) {
+                            setStyle("-fx-text-fill: #e74c3c; -fx-font-weight: bold;"); 
                         }
                     }
                 }
@@ -82,14 +100,20 @@ public class GestionarEmpleadoController {
         });
     }
 
+    /**
+     * Este método limpia la tabla y vuelve a pedirle toda la información 
+     * actualizada a la base de datos. Útil después de agregar o editar.
+     */
     private void refrescarTabla() {
-    // Volvemos a pedir los datos a la base de datos
-    datosMaestros = EmpleadoDAO.obtenerTodos();
-    
-    // Los ponemos en la tabla para que se actualice la vista
-    tablaEmpleados.setItems(datosMaestros);
-}
+        datosMaestros.clear();
+        datosMaestros = EmpleadoDAO.obtenerTodos();
+        tablaEmpleados.setItems(datosMaestros);
+    }
 
+    /**
+     * Borra al empleado seleccionado de la tabla y de la base de datos.
+     * Siempre pide una confirmación antes para no borrar a nadie por error.
+     */
     @FXML
     private void manejarEliminar() {
         Empleado seleccionado = tablaEmpleados.getSelectionModel().getSelectedItem();
@@ -114,11 +138,14 @@ public class GestionarEmpleadoController {
         }
     }
 
+    /**
+     * Filtra la tabla según lo que el usuario escriba en el cuadro de búsqueda.
+     * Se puede buscar por nombre, puesto o ID.
+     */
     @FXML
     private void manejarBusqueda() {
         String textoBusqueda = txtBusqueda.getText().toLowerCase().trim();
 
-        // Filtra por ID, Nombre o Puesto
         ObservableList<Empleado> filtrados = datosMaestros.filtered(empleado -> 
             String.valueOf(empleado.getId()).contains(textoBusqueda) || 
             empleado.getNombre().toLowerCase().contains(textoBusqueda) ||
@@ -134,92 +161,84 @@ public class GestionarEmpleadoController {
         txtBusqueda.clear();
     }
     
+    /**
+     * Limpia la búsqueda actual y vuelve a mostrar a todos los empleados.
+     */
     @FXML
     private void handleMostrarTabla(){
         tablaEmpleados.setItems(datosMaestros);
         txtBusqueda.clear();
     }
 
+    /**
+     * Abre la ventana para registrar la entrada o salida del empleado seleccionado.
+     * Bloquea la ventana principal hasta que se cierre el registro de asistencia.
+     */
     @FXML
     private void manejarAsistencia(ActionEvent event) {
-    Empleado seleccionado = tablaEmpleados.getSelectionModel().getSelectedItem();
+        Empleado seleccionado = tablaEmpleados.getSelectionModel().getSelectedItem();
 
-    if (seleccionado != null) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/restaurante/fxml/RegistroAsistencia.fxml"));
-            Parent root = loader.load();
+        if (seleccionado != null) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/restaurante/fxml/RegistroAsistencia.fxml"));
+                Parent root = loader.load();
 
-            AsistenciaController controller = loader.getController();
-            controller.initData(seleccionado);
+                AsistenciaController controller = loader.getController();
+                controller.initData(seleccionado);
 
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Asistencia - " + seleccionado.getNombre());
-            
-            // CAMBIO AQUÍ: showAndWait detiene la ejecución del código principal
-            // hasta que cierras la ventana de asistencia.
-            stage.showAndWait();
+                Stage stage = new Stage();
+                stage.setScene(new Scene(root));
+                stage.setTitle("Asistencia - " + seleccionado.getNombre());
+                stage.initModality(Modality.APPLICATION_MODAL);
+                stage.showAndWait();
 
-            // Cuando la ventana se cierra, ejecutamos tu método para volver a cargar la tabla
-            refrescarTabla();// O el nombre del método que uses para llenar tu tabla principal
+                refrescarTabla(); // Recargamos datos para ver el cambio de estado (Presente/Completado)
 
-        } catch (IOException e) {
-            e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            mostrarAlerta("Atención", "Por favor, selecciona un empleado.", Alert.AlertType.WARNING);
         }
     }
-    else {
-        mostrarAlerta("Atención", "Por favor, selecciona un empleado.", Alert.AlertType.WARNING);
-    }
-}
-      
 
+    /**
+     * Abre un formulario vacío para registrar a un nuevo trabajador.
+     * Si se guarda con éxito, lo añade a la tabla de inmediato.
+     */
     @FXML
     private void manejarAgregar() {
         try {
-            // el FXML de la nueva ventana de registro
-
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/restaurante/fxml/RegistrarEmpleado.fxml"));
             Parent root = loader.load();
 
-            // Escenario para la nueva ventana
             Stage stage = new Stage();
             stage.setTitle("Saveurs Paris - Registro de Personal");
-
-            // No se puede interactuar con la tabla hasta cerrar el registro
             stage.initModality(Modality.APPLICATION_MODAL); 
             stage.setScene(new Scene(root));
-
-            // Se muestra la ventana y se espera a que el usuario termine
             stage.showAndWait();
 
             RegistrarEmpleadoController controller = loader.getController();
             Empleado nuevo = controller.getNuevoEmpleado();
 
-            // Si el empleado  no dio clic en Cancelar
             if (nuevo != null) {
                 int idGenerado = EmpleadoDAO.insertar(nuevo);
-                
-                if (idGenerado == -1) {
-                    mostrarAlerta("Error", "No se pudo guardar en la base de datos.", Alert.AlertType.ERROR);
-                    return;
+                if (idGenerado != -1) {
+                    nuevo.setId(idGenerado);
+                    datosMaestros.add(nuevo);
+                    tablaEmpleados.refresh();
+                    mostrarAlerta("Éxito", "Empleado " + nuevo.getNombre() + " registrado correctamente.", Alert.AlertType.INFORMATION);
                 }
-                nuevo.setId(idGenerado);
-
-                // Se agrega a la lista "MAestra"
-                datosMaestros.add(nuevo);
-
-                // Refrescamos la tabla para que aparezca de inmediato
-                tablaEmpleados.refresh();
-
-                mostrarAlerta("Éxito", "Empleado " + nuevo.getNombre() + " registrado correctamente.", Alert.AlertType.INFORMATION);
             }
-
         } catch (IOException e) {
-            mostrarAlerta("Error de Sistema", "No se pudo cargar la ventana de registro: " + e.getMessage(), Alert.AlertType.ERROR);
-            e.printStackTrace(); // Esto te ayuda a ver el error en la consola de NetBeans
+            mostrarAlerta("Error", "No se pudo cargar la ventana de registro.", Alert.AlertType.ERROR);
         }
     }
 
+    /**
+     * Toma al empleado seleccionado y abre el formulario lleno con su información 
+     * para que podamos cambiar sus datos (nombre, puesto, teléfono).
+     */
     @FXML
     private void manejarEditar() {
         Empleado seleccionado = tablaEmpleados.getSelectionModel().getSelectedItem();
@@ -233,10 +252,7 @@ public class GestionarEmpleadoController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/restaurante/fxml/RegistrarEmpleado.fxml"));
             Parent root = loader.load();
 
-            // 1. Obtener el controlador de la ventana de registro
             RegistrarEmpleadoController controller = loader.getController();
-
-            // 2. Pasar los datos del empleado seleccionado al formulario
             controller.cargarDatos(seleccionado);
 
             Stage stage = new Stage();
@@ -245,25 +261,25 @@ public class GestionarEmpleadoController {
             stage.setScene(new Scene(root));
             stage.showAndWait();
 
-            // 3. Al cerrar la ventana, se verifica si hubo cambios
             Empleado editado = controller.getNuevoEmpleado();
 
             if (editado != null) {
-                // Se actualizan los datos del objeto seleccionado originalmente
                 seleccionado.setNombre(editado.getNombre());
                 seleccionado.setPuesto(editado.getPuesto());
                 seleccionado.setTelefono(editado.getTelefono());
 
-                // Se refreca la tabla para ver los cambios
                 tablaEmpleados.refresh();
-                mostrarAlerta("Éxito", "Datos actualizados correctamente.", Alert.AlertType.INFORMATION);
                 EmpleadoDAO.actualizar(seleccionado);
+                mostrarAlerta("Éxito", "Datos actualizados correctamente.", Alert.AlertType.INFORMATION);
             }
         } catch (IOException e) {
             mostrarAlerta("Error", "No se pudo abrir la ventana de edición.", Alert.AlertType.ERROR);
         }
     }
 
+    /**
+     * Método auxiliar para mostrar ventanitas de aviso (Éxito, Error o Advertencia).
+     */
     private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
         Alert alerta = new Alert(tipo);
         alerta.setTitle(titulo);
@@ -272,16 +288,16 @@ public class GestionarEmpleadoController {
         alerta.showAndWait();
     }
     
+    /**
+     * Este método nos ayuda a movernos entre las diferentes pantallas del sistema 
+     * (Menú, Almacén, etc.) cerrando la actual y abriendo la nueva.
+     */
     private void cambiarPantalla(ActionEvent event, String fxmlPath, String titulo) {
         try {
-            // 1. Cargar la vista desde el recurso
             Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
-
-            // 2. Obtener el Stage (ventana) actual
             javafx.scene.Node nodoOrigen = (javafx.scene.Node) event.getSource();
             Stage stageActual = (Stage) nodoOrigen.getScene().getWindow();
 
-            // 3. Configurar la nueva escena y mostrarla
             Scene nuevaEscena = new Scene(root);
             stageActual.setScene(nuevaEscena);
             stageActual.setTitle(titulo + " - Saveurs Paris");
@@ -294,23 +310,9 @@ public class GestionarEmpleadoController {
         }
     }
     
-    @FXML
-    private void handleEmpleados(ActionEvent event) {
-        cambiarPantalla(event, "/com/mycompany/restaurante/fxml/GestionarEmpleado.fxml", "Gestionar Empleado");
-    }
-
-    @FXML
-    private void handleMenu(ActionEvent event) {
-        cambiarPantalla(event, "/com/mycompany/restaurante/fxml/GestionMenu.fxml", "Gestionar Menu");
-    }
-
-    @FXML
-    private void handleAlmacen(ActionEvent event) {
-        cambiarPantalla(event, "/com/mycompany/restaurante/fxml/GestionAlmacen.fxml", "Gestionar Almacen");
-    }
-
-    @FXML
-    private void handleCerrarSesion(ActionEvent event) {
-        cambiarPantalla(event, "/com/mycompany/restaurante/fxml/LoginPantalla.fxml", "Iniciar sesión");
-    }
+    //Handlers para la navegación del menú lateral
+    @FXML private void handleEmpleados(ActionEvent event) { cambiarPantalla(event, "/com/mycompany/restaurante/fxml/GestionarEmpleado.fxml", "Gestionar Empleado"); }
+    @FXML private void handleMenu(ActionEvent event) { cambiarPantalla(event, "/com/mycompany/restaurante/fxml/GestionMenu.fxml", "Gestionar Menu"); }
+    @FXML private void handleAlmacen(ActionEvent event) { cambiarPantalla(event, "/com/mycompany/restaurante/fxml/GestionAlmacen.fxml", "Gestionar Almacen"); }
+    @FXML private void handleCerrarSesion(ActionEvent event) { cambiarPantalla(event, "/com/mycompany/restaurante/fxml/LoginPantalla.fxml", "Iniciar sesión"); }
 }

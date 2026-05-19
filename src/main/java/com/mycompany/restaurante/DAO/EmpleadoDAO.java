@@ -30,11 +30,12 @@ public static ObservableList<Empleado> obtenerTodos() {
     ObservableList<Empleado> lista = FXCollections.observableArrayList();
     
     // Consulta con LEFT JOIN y CURDATE()
+    // Consulta mejorada: Traemos el estado real de la tabla asistencias
     String sql = "SELECT e.idEmpleado, e.nombre, e.password, e.puesto, e.telefono, " +
-                 "IF(a.idEmpleado IS NOT NULL, 'Presente', 'Ausente') AS estado_asistencia " +
-                 "FROM empleados e " +
-                 "LEFT JOIN asistencias a ON e.idEmpleado = a.idEmpleado " +
-                 "AND a.fecha = CURDATE()";
+             "COALESCE(a.estado, 'Ausente') AS estado_asistencia " + // <--- CAMBIO AQUÍ
+             "FROM empleados e " +
+             "LEFT JOIN asistencias a ON e.idEmpleado = a.idEmpleado " +
+             "AND a.fecha = CURDATE()";
 
     try (Connection con = ConexionDB.getConexion();
          Statement st = con.createStatement();
