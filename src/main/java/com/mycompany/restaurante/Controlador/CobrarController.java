@@ -35,7 +35,7 @@ import javafx.scene.Node;
  * y procesar pagos en efectivo o tarjeta.
  *
  * @author Citlaly
- * @version 2.0 (pago real con BD)
+ * @version 2.1 (Valida el estado de la orden)
  */
 public class CobrarController implements Initializable {
 
@@ -104,6 +104,10 @@ public class CobrarController implements Initializable {
     private static final String ESTILO_BTN_INACTIVO =
         "-fx-background-color: #8b1a1a; -fx-text-fill: #d4c5b0;" +
         "-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;";
+    private static final String ESTILO_MESA_NO_COBRABLE =
+        "-fx-background-color: #6f5410; -fx-border-color: #6f5410; -fx-text-fill: #d4c5b0;" +
+        "-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;";
+
 
     /**
      * Define el empleado que está operando la caja.
@@ -171,35 +175,59 @@ public class CobrarController implements Initializable {
     private void seleccionarMesa(int numMesa, Button[] mesas) {
         mesaSeleccionada = numMesa;
 
-        // Resetear colores base y luego resaltar la mesa elegida
+        // Resetear colores base y resaltar la mesa elegida
         cargarEstadoMesas();
         Button botonActual = mesas[numMesa - 1];
         botonActual.setStyle(botonActual.getStyle() + ESTILO_BTN_ACTIVO);
-
+ 
         // Buscar orden abierta en la BD
         idOrdenActual = PedidoDAO.obtenerOrdenAbiertaPorMesa(numMesa);
         labelMesa.setText("Mesa " + numMesa);
-
+ 
+        // Sin orden abierta → limpiar y salir
         if (idOrdenActual == 0) {
             limpiarInterfazOrden();
             return;
         }
-
-        // Cargar y mostrar el detalle de la orden activa
+ 
+        // Verificar estado de preparación
+        String preparacion = PedidoDAO.obtenerPreparacionOrden(idOrdenActual);
+ 
+        if (!"Entregado".equals(preparacion)) {
+            // La orden todavía no fue entregada: no se puede cobrar
+            botonActual.setStyle(ESTILO_MESA_NO_COBRABLE);
+            limpiarInterfazOrden();
+ 
+            // Texto descriptivo del estado actual para el aviso
+            String estadoTexto = switch (preparacion) {
+                case "En espera" -> "en espera de preparación";
+                case "Preparado" -> "preparada pero aún no entregada";
+                default -> "en estado: " + preparacion;
+            };
+ 
+            mostrarAlerta(Alert.AlertType.INFORMATION,
+                "Mesa " + numMesa + " no disponible para cobro",
+                "El pedido de esta mesa está " + estadoTexto + ".\n\n" +
+                "Solo se puede cobrar cuando el mesero haya marcado el pedido como 'Entregado'."
+            );
+            return;
+        }
+ 
+        // Orden entregada → cargar y mostrar el detalle
         labelIdOrden.setText("Orden #" + idOrdenActual + " · " + java.time.LocalDate.now());
         ObservableList<OrdenItem> orden = PedidoDAO.obtenerDetalleOrden(idOrdenActual);
         tableVerPedido.setItems(orden);
-
+ 
         // Cálculos financieros
         subtotal = orden.stream().mapToDouble(OrdenItem::getSubtotalItem).sum();
         iva = subtotal * TASA_IVA;
         total = subtotal + iva;
-
+ 
         // Actualizar visualización
         labelSubtotal.setText("$" + String.format("%.2f", subtotal));
         labelIVA.setText("$" + String.format("%.2f", iva));
         labelTotal.setText("$" + String.format("%.2f", total));
-
+ 
         // Resetear controles de pago
         spinnerMonto.getValueFactory().setValue(0.0);
         spinnerMonto.setDisable(false);
@@ -208,6 +236,7 @@ public class CobrarController implements Initializable {
         btnTarjeta.setStyle(ESTILO_BTN_INACTIVO);
         labelCambio.setText("$0.00");
     }
+
 
     /**
      * Limpia los campos de texto cuando no hay una orden activa.
@@ -230,32 +259,53 @@ public class CobrarController implements Initializable {
      */
     private void cargarEstadoMesas() {
         Button[] mesas = obtenerArregloMesas();
-
-        // Pintar todas las mesas como libres
+ 
+        // 1. Pintar todas las mesas como libres
         try (Connection con = ConexionDB.getConexion();
-             Statement st = con.createStatement();
-             ResultSet rs = st.executeQuery("SELECT idMesa FROM mesas")) {
+             Statement st  = con.createStatement();
+             ResultSet rs  = st.executeQuery("SELECT idMesa FROM mesas")) {
             while (rs.next()) {
                 int idx = rs.getInt("idMesa") - 1;
-                if (idx >= 0 && idx < mesas.length) mesas[idx].setStyle(ESTILO_MESA_LIBRE);
+                if (idx >= 0 && idx < mesas.length) {
+                    mesas[idx].setStyle(ESTILO_MESA_LIBRE);
+                }
             }
-        } catch (SQLException e) { e.printStackTrace(); }
-
-        // Pintar en rojo las mesas ocupadas
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+ 
+        // 2. Colorear mesas con órdenes abiertas según su estado de preparación
+        String sqlOrdenes =
+            "SELECT idMesa, preparacion FROM ordenes WHERE estado = 'Abierta'";
+ 
         try (Connection con = ConexionDB.getConexion();
-             Statement st = con.createStatement();
-             ResultSet rs = st.executeQuery(
-                 "SELECT idMesa, estado FROM ordenes WHERE estado = 'Abierta'")) {
+             Statement st  = con.createStatement();
+             ResultSet rs  = st.executeQuery(sqlOrdenes)) {
+ 
             while (rs.next()) {
-                int idx = rs.getInt("idMesa") - 1;
-                if (idx >= 0 && idx < mesas.length) mesas[idx].setStyle(ESTILO_MESA_ACTIVA);
+                int    idx         = rs.getInt("idMesa") - 1;
+                String preparacion = rs.getString("preparacion");
+ 
+                if (idx >= 0 && idx < mesas.length) {
+                    // Entregado → color normal de ocupada (cobrable)
+                    // Cualquier otro estado → color no-cobrable
+                    if ("Entregado".equals(preparacion)) {
+                        mesas[idx].setStyle(ESTILO_MESA_ACTIVA);
+                    } else {
+                        mesas[idx].setStyle(ESTILO_MESA_NO_COBRABLE);
+                    }
+                }
             }
-            // Mantener resaltado de la mesa actualmente seleccionada
+ 
+            // 3. Mantener el resaltado de selección sobre la mesa actualmente activa
             if (mesaSeleccionada != 0) {
                 Button btn = mesas[mesaSeleccionada - 1];
                 btn.setStyle(btn.getStyle() + ESTILO_BTN_ACTIVO);
             }
-        } catch (SQLException e) { e.printStackTrace(); }
+ 
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

@@ -267,8 +267,18 @@
                                     </HBox>
                                     <HBox layoutX="30.0" layoutY="30.0" prefHeight="25.0" prefWidth="200.0" spacing="10.0">
                                        <children>
+                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#6f5410" height="25.0" stroke="#00000000" strokeType="INSIDE" width="25.0" />
+                                          <Label prefHeight="25.0" text="En cocina">
+                                             <font>
+                                                <Font name="Candara" size="18.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </HBox>
+                                    <HBox layoutX="30.0" layoutY="76.0" prefHeight="25.0" prefWidth="200.0" spacing="10.0">
+                                       <children>
                                           <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#8a3636" height="25.0" stroke="#00000000" strokeType="INSIDE" width="25.0" />
-                                          <Label prefHeight="25.0" text="Ocupada">
+                                          <Label prefHeight="25.0" text="Libre para cobrar">
                                              <font>
                                                 <Font name="Candara" size="18.0" />
                                              </font>
