@@ -77,6 +77,11 @@ public class LoginController {
             mostrarAlerta(Alert.AlertType.ERROR, "Error de autenticación", "Usuario o contraseña incorrectos.");
         }
     }
+    
+    @FXML
+    private void handleMenu(ActionEvent event) {
+        cargarPantalla("/com/mycompany/restaurante/fxml/Menu.fxml", "Panel de Mesero");
+    }
 
     /**
      * Método genérico para cambiar de pantalla
@@ -114,6 +119,8 @@ public class LoginController {
         }
     }
 
+    
+    
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
         Alert alerta = new Alert(tipo);
         alerta.setTitle(titulo);
