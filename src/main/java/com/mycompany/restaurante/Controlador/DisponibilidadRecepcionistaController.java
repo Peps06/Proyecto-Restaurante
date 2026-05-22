@@ -105,7 +105,6 @@ public class DisponibilidadRecepcionistaController implements Initializable {
     }
 
 
-    // CONTROLADORES DE BOTONES
     @FXML
     private void handleDisponibilidad(ActionEvent event) {
         btnMesas.setStyle(ESTILO_BTN_ACTIVO);
@@ -162,8 +161,7 @@ public class DisponibilidadRecepcionistaController implements Initializable {
 
     @FXML
     private void handleListaEsp(ActionEvent event) {
-        System.out.println("Lista de espera");
-        // cambiarPantalla(event, "/com/mycompany/restaurante/fxml/GestionAlmacen.fxml", "Gestionar Almacen");
+        cambiarPantalla(event, "/com/mycompany/restaurante/fxml/ListaDeEspera.fxml", "Lista de espera");
     }
 
     @FXML

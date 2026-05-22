@@ -113,7 +113,7 @@ public class GestionReservasController {
         // Resetea el filtro para mostrar todas las reservaciones
         filteredData.setPredicate(p -> true);
         txtBusqueda.clear();
-        cargarTabla(); // Refresca por si hubo cambios en la BD
+        cargarTabla();
     }
 
     @FXML
@@ -128,7 +128,6 @@ public class GestionReservasController {
             stage.setScene(new Scene(root));
             stage.showAndWait();
 
-            // Al cerrarse la ventana, recuperamos la reserva generada
             RegistrarReservaController controller = loader.getController();
             Reservacion nueva = controller.getReserva();
 
@@ -214,7 +213,6 @@ public class GestionReservasController {
             return;
         }
 
-        // --- NUEVA VALIDACIÓN: Verificar si ya está cancelada o completada ---
         String estadoActual = seleccionada.getEstado();
         if (estadoActual.equalsIgnoreCase("Cancelada") || estadoActual.equalsIgnoreCase("Completada")) {
             mostrarAlerta(Alert.AlertType.WARNING, "Acción no permitida", 
@@ -296,8 +294,7 @@ public class GestionReservasController {
 
     @FXML
     private void handleListaEsp(ActionEvent event) {
-        System.out.println("Navegando a Lista de Espera...");
-        // cargarPantalla("/com/mycompany/restaurante/fxml/ListaEspera.fxml");
+        cambiarPantalla(event, "/com/mycompany/restaurante/fxml/ListaDeEspera.fxml", "Lista de espera");
     }
 
     @FXML
@@ -308,12 +305,11 @@ public class GestionReservasController {
         alerta.setHeaderText("Cerrar Sesión");
         alerta.setContentText("¿Estás seguro de que deseas salir del sistema?");
 
-        // Mostrar y esperar respuesta
         Optional<ButtonType> resultado = alerta.showAndWait();
 
         if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
             try {
-                // Código para regresar al Login (ejemplo)
+                // Código para regresar al Login 
                 Parent root = FXMLLoader.load(getClass().getResource("/com/mycompany/restaurante/fxml/LoginPantalla.fxml"));
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 stage.setScene(new Scene(root));
