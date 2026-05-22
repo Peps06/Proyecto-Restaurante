@@ -59,6 +59,9 @@ public class RegistrarReservaController {
     private static final String ESTILO_MESA_SELECCIONADA = 
         "-fx-background-color: #C9A84C; -fx-border-color: #C9A84C; -fx-text-fill: #0a132b;" +
         "-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;";
+    
+    private static final String ESTILO_ERROR  =
+        "-fx-background-color: #FFF0F0; -fx-border-color: #cc0000; -fx-border-width: 2; -fx-border-radius: 5 5 5 5;";
 
     @FXML
     public void initialize() {
@@ -187,12 +190,33 @@ public class RegistrarReservaController {
 
     @FXML
     private void handleGuardar(ActionEvent event) {
-        // 1. Validar campos vacíos
-        if (txtNombre.getText().trim().isEmpty() || txtFecha.getValue() == null || 
-            txtHora.getText().trim().isEmpty() || txtTelefono.getText().trim().isEmpty() || 
-            txtNoPersonas.getText().trim().isEmpty()) {
-            
-            mostrarAlerta(Alert.AlertType.WARNING, "Campos vacíos", "Por favor, llena todos los datos.");
+        // 1. Validar que no haya campos vacíos
+        if (txtNombre.getText().trim().isEmpty()){
+            marcarError(txtNombre);
+            mostrarAlerta(Alert.AlertType.ERROR,"Todos los campos son obligatorios",
+                    "El campo 'Nombre' no puede estar vacio.");
+            return;
+        }
+        
+        if (txtNoPersonas.getText().trim().isEmpty()){
+            marcarError(txtNoPersonas);
+            mostrarAlerta(Alert.AlertType.ERROR,"Todos los campos son obligatorios",
+                    "El campo 'Contraseña' no puede estar vacio.");
+            return;
+        }
+        
+        if (txtTelefono.getText().trim().isEmpty()){
+            marcarError(txtTelefono);
+            mostrarAlerta(Alert.AlertType.ERROR,"Todos los campos son obligatorios",
+                    "El campo 'Teléfono' no puede estar vacio.");
+            return;
+        }
+        
+        String tel = txtTelefono.getText().trim();
+        
+        if (!tel.matches("\\d{10}")) {
+            marcarError(txtTelefono);
+            mostrarAlerta(Alert.AlertType.ERROR,"Error en teléfono", "El teléfono debe contener exactamente 10 dígitos numéricos.");
             return;
         }
         
@@ -249,5 +273,10 @@ public class RegistrarReservaController {
         alerta.setHeaderText(null);
         alerta.setContentText(mensaje);
         alerta.showAndWait();
+    }
+    
+    private void marcarError(TextField campo) {
+        campo.setStyle(ESTILO_ERROR);
+        campo.requestFocus();
     }
 }

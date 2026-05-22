@@ -24,6 +24,9 @@ public class RegistrarEsperaController {
     @FXML private TextField txtNoPersonas;
     @FXML private Button btnGuardar;
     @FXML private Button btnCancelar;
+    
+    private static final String ESTILO_ERROR  =
+        "-fx-background-color: #FFF0F0; -fx-border-color: #cc0000; -fx-border-width: 2; -fx-border-radius: 5 5 5 5;";
 
     @FXML
     public void initialize() {
@@ -33,11 +36,32 @@ public class RegistrarEsperaController {
     @FXML
     private void handleGuardar(ActionEvent event) {
         // 1. Validar que no haya campos vacíos
-        if (txtNombre.getText().trim().isEmpty() || 
-            txtTelefono.getText().trim().isEmpty() || 
-            txtNoPersonas.getText().trim().isEmpty()) {
-            
-            mostrarAlerta(Alert.AlertType.WARNING, "Campos incompletos", "Por favor, llena todos los datos del cliente.");
+        if (txtNombre.getText().trim().isEmpty()){
+            marcarError(txtNombre);
+            mostrarAlerta(Alert.AlertType.ERROR,"Todos los campos son obligatorios",
+                    "El campo 'Nombre' no puede estar vacio.");
+            return;
+        }
+        
+        if (txtNoPersonas.getText().trim().isEmpty()){
+            marcarError(txtNoPersonas);
+            mostrarAlerta(Alert.AlertType.ERROR,"Todos los campos son obligatorios",
+                    "El campo 'Número de personas' no puede estar vacio.");
+            return;
+        }
+        
+        if (txtTelefono.getText().trim().isEmpty()){
+            marcarError(txtTelefono);
+            mostrarAlerta(Alert.AlertType.ERROR,"Todos los campos son obligatorios",
+                    "El campo 'Teléfono' no puede estar vacio.");
+            return;
+        }
+        
+        String tel = txtTelefono.getText().trim();
+        
+        if (!tel.matches("\\d{10}")) {
+            marcarError(txtTelefono);
+            mostrarAlerta(Alert.AlertType.ERROR,"Error en teléfono", "El teléfono debe contener exactamente 10 dígitos numéricos.");
             return;
         }
 
@@ -47,17 +71,23 @@ public class RegistrarEsperaController {
             String telefono = txtTelefono.getText().trim();
             int numPersonas = Integer.parseInt(txtNoPersonas.getText().trim());
 
-            // 3. Crear el objeto temporal
-            ClienteEspera nuevoCliente = new ClienteEspera(nombre, telefono, numPersonas);
+            // 3. Verificamos si estamos en Modo Agregar o Modo Editar
+            if (esperaOriginal == null) {
+                
+                ClienteEspera nuevoCliente = new ClienteEspera(nombre, telefono, numPersonas);
+                boolean exito = ListaEsperaDAO.insertar(nuevoCliente);
 
-            // 4. Guardar en la Base de Datos
-            boolean exito = ListaEsperaDAO.insertar(nuevoCliente);
-
-            if (exito) {
-                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito", "Cliente agregado a la lista de espera.");
-                cerrarVentana();
+                if (exito) {
+                    mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito", "Cliente agregado a la lista de espera.");
+                    cerrarVentana();
+                } else {
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo guardar en la base de datos.");
+                }
+                
             } else {
-                mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo guardar en la base de datos.");
+                esperaResultado = new ClienteEspera(nombre, telefono, numPersonas);
+                cerrarVentana();
+                
             }
 
         } catch (NumberFormatException e) {
@@ -68,6 +98,30 @@ public class RegistrarEsperaController {
     @FXML
     private void handleCancelar(ActionEvent event) {
         cerrarVentana();
+    }
+    
+    
+    private ClienteEspera esperaOriginal = null;
+    private ClienteEspera esperaResultado = null;
+    /**
+     * Se llama desde la ventana principal cuando le damos a "Editar".
+     * Precarga los datos en los campos de texto.
+     */
+    public void cargarDatos(ClienteEspera espera) {
+        this.esperaOriginal = espera;
+        
+        lblTitulo.setText("Editar cliente en espera"); 
+        
+        txtNombre.setText(espera.getNombreCliente());
+        txtTelefono.setText(espera.getTelefono());
+        txtNoPersonas.setText(String.valueOf(espera.getNumeroPersonas()));
+    }
+
+    /**
+     * Devuelve la reserva al controlador principal (null si el usuario canceló)
+     */
+    public ClienteEspera getEspera() {
+        return esperaResultado;
     }
 
     private void cerrarVentana() {
@@ -81,5 +135,10 @@ public class RegistrarEsperaController {
         alerta.setHeaderText(null);
         alerta.setContentText(mensaje);
         alerta.showAndWait();
+    }
+    
+    private void marcarError(TextField campo) {
+        campo.setStyle(ESTILO_ERROR);
+        campo.requestFocus();
     }
 }

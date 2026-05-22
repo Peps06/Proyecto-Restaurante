@@ -5,15 +5,18 @@ import com.mycompany.restaurante.Modelo.ClienteEspera;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -38,7 +41,7 @@ public class ListaEsperaController {
     @FXML private Button btnAsignar;
 
     // Tabla y columnas 
-    @FXML private TableView<ClienteEspera> tablaReservas;
+    @FXML private TableView<ClienteEspera> tablaListaEspera;
     @FXML private TableColumn<ClienteEspera, Integer> colId;
     @FXML private TableColumn<ClienteEspera, String> colNombre;
     @FXML private TableColumn<ClienteEspera, String> colTelefono;
@@ -68,7 +71,7 @@ public class ListaEsperaController {
 
     private void cargarDatosTabla() {
         ObservableList<ClienteEspera> lista = ListaEsperaDAO.obtenerEsperando();
-        tablaReservas.setItems(lista);
+        tablaListaEspera.setItems(lista);
     }
 
     @FXML
@@ -98,7 +101,46 @@ public class ListaEsperaController {
 
     @FXML
     private void manejarEditar(ActionEvent event) {
-        System.out.println("Botón Editar presionado");
+        ClienteEspera seleccionada = tablaListaEspera.getSelectionModel().getSelectedItem();
+        
+        if (seleccionada == null) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Sin selección", "Por favor, selecciona una reserva de la tabla para editarla.");
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/restaurante/fxml/RegistrarEspera.fxml"));
+            Parent root = loader.load();
+
+            // Pasar los datos antes de abrir la ventana
+            RegistrarEsperaController controller = loader.getController();
+            controller.cargarDatos(seleccionada);
+
+            Stage stage = new Stage();
+            stage.setTitle("Editar Reserva - Saveurs Paris");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+
+            // Recuperar la reserva editada
+            ClienteEspera editada = controller.getEspera();
+
+            if (editada != null) {
+                // Actualizar los datos en la tabla 
+                seleccionada.setNombreCliente(editada.getNombreCliente());
+                seleccionada.setTelefono(editada.getTelefono());
+                seleccionada.setNumeroPersonas(editada.getNumeroPersonas());
+
+                
+                ListaEsperaDAO.actualizar(seleccionada);
+                
+                tablaListaEspera.refresh();
+                mostrarAlerta(Alert.AlertType.WARNING,"Éxito", "Datos actualizados correctamente.");
+            }
+        } catch (IOException e) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo abrir la ventana de edición.");
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -137,7 +179,28 @@ public class ListaEsperaController {
 
     @FXML
     private void handleCerrarSesion(ActionEvent event) {
-        cambiarPantalla(event, "/com/mycompany/restaurante/fxml/LoginPantalla.fxml", "Iniciar Sesión");
+        // Crear la alerta de confirmación
+        Alert alerta = new Alert(Alert.AlertType.CONFIRMATION);
+        alerta.setTitle("Confirmar Salida");
+        alerta.setHeaderText("Cerrar Sesión");
+        alerta.setContentText("¿Estás seguro de que deseas salir del sistema?");
+
+        Optional<ButtonType> resultado = alerta.showAndWait();
+
+        if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
+            try {
+                // Código para regresar al Login 
+                Parent root = FXMLLoader.load(getClass().getResource("/com/mycompany/restaurante/fxml/LoginPantalla.fxml"));
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                stage.setScene(new Scene(root));
+                stage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            // El usuario canceló, no se hace nada y se queda en la ventana
+            alerta.close();
+        }
     }
 
     private void cambiarPantalla(ActionEvent event, String rutaFxml, String titulo) {
