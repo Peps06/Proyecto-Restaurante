@@ -34,17 +34,17 @@ public class PedidoDAO {
      * 2. Inserta los productos en el detalle_orden (vía Batch).
      * 3. Actualiza el estado de la mesa a 'Ocupada'.
      *
-     * @param idMesa     ID de la mesa física asignada.
+     * @param idMesa ID de la mesa física asignada.
      * @param idEmpleado ID del mesero que toma el pedido.
-     * @param items      Lista de productos seleccionados.
-     * @param detalles   Texto libre del mesero (puede ser null o vacío).
+     * @param items Lista de productos seleccionados.
+     * @param detalles Texto libre del mesero (puede ser null o vacío).
      * @return El idOrden generado por la base de datos, o -1 en caso de error.
      */
     public static int insertarOrdenCompleta(int idMesa, int idEmpleado, List<Producto> items, String detalles) {
 
-        String sqlOrden   = "INSERT INTO ordenes (idMesa, idEmpleado, detalles) VALUES (?,?,?)";
+        String sqlOrden = "INSERT INTO ordenes (idMesa, idEmpleado, detalles) VALUES (?,?,?)";
         String sqlDetalle = "INSERT INTO detalle_orden (idOrden, idProducto, cantidad, precioUnit) VALUES (?,?,?,?)";
-        String sqlMesa    = "UPDATE mesas SET estado='Ocupada' WHERE idMesa=?";
+        String sqlMesa = "UPDATE mesas SET estado='Ocupada' WHERE idMesa=?";
 
         try (Connection con = ConexionDB.getConexion()) {
             con.setAutoCommit(false);
@@ -112,7 +112,9 @@ public class PedidoDAO {
 
             } catch (SQLException e) {
                 con.rollback();
-                LOG.log(Level.SEVERE, "PedidoDAO: Error en la transacción. Se realizó Rollback. Mesa: " + idMesa, e);
+                LOG.log(Level.SEVERE,
+                        "PedidoDAO: Error en la transacción. Se realizó Rollback. Mesa: "
+                        + idMesa, e);
                 throw e;
             }
 
@@ -180,9 +182,9 @@ public class PedidoDAO {
         ObservableList<OrdenItem> lista = FXCollections.observableArrayList();
         String sql = """
             SELECT p.nombre, d.cantidad, d.precioUnit
-            FROM   detalle_orden d
-            JOIN   productos     p ON d.idProducto = p.idProductos
-            WHERE  d.idOrden = ?
+            FROM detalle_orden d
+            JOIN productos p ON d.idProducto = p.idProductos
+            WHERE d.idOrden = ?
             """;
         try (Connection con = ConexionDB.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {

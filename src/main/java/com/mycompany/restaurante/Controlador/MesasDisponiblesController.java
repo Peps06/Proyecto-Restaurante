@@ -1,6 +1,7 @@
 package com.mycompany.restaurante.Controlador;
 
 import com.mycompany.restaurante.DAO.MesasDAO;
+import com.mycompany.restaurante.DAO.PedidoDAO;
 import com.mycompany.restaurante.Modelo.Mesa;
 
 import java.io.IOException;
@@ -24,94 +25,107 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 /**
- * Controlador de la pantalla principal de gestión de mesas.
- * Permite visualizar el mapa de mesas del restaurante, identificar su estado
- * (Libre, Ocupada, Reservada) mediante colores y navegar hacia la toma de pedidos.
- * 
+ * Controlador de la pantalla principal de gestión de mesas para el Mesero.
+ * Permite visualizar el mapa de mesas del restaurante identificando su estado
+ * mediante tres colores distintos, y navegar hacia la toma de pedidos.
+ *
+ * Estados visuales:
+ *   Azul   (#627096) → Libre: sin cliente asignado.
+ *   Café   (#6A500F) → Ocupada sin orden: el recepcionista asignó al cliente
+ *                       pero el mesero aún no ha registrado el pedido.
+ *   Rojo   (#8A3636) → Ocupada con orden: ya existe una orden abierta en BD.
+ *
  * @author Citlaly
- * @version 1.0
+ * @version 2.0
  */
 public class MesasDisponiblesController implements Initializable {
-    
+
     private static final Logger LOG = Logger.getLogger(MesasDisponiblesController.class.getName());
-    
-    // BOTONES DE MESAS (1 AL 12)
-    @FXML private Button btnMesa1, btnMesa2, btnMesa3, btnMesa4;
-    @FXML private Button btnMesa5, btnMesa6, btnMesa7, btnMesa8;
-    @FXML private Button btnMesa9, btnMesa10, btnMesa11, btnMesa12;
-    
-    // BOTONES
+
+    @FXML private Button btnMesa1,  btnMesa2,  btnMesa3,  btnMesa4;
+    @FXML private Button btnMesa5,  btnMesa6,  btnMesa7,  btnMesa8;
+    @FXML private Button btnMesa9,  btnMesa10, btnMesa11, btnMesa12;
+
     @FXML private Button btnDisponibilidad;
     @FXML private Button btnRealizarPedido;
     @FXML private Button btnGestionar;
     @FXML private Button btnCerrarSesion;
 
-   
-    // ESTILOS CSS 
     private static final String ESTILO_MESA_LIBRE =
         "-fx-background-color: #627096; -fx-border-color: #627096; -fx-text-fill: #d4c5b0;" +
-        "-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;" +
-        "-fx-text-fill: #0a132b;";
-    private static final String ESTILO_MESA_OCUPADA =
+        "-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;";
+
+    /** Ocupada pero sin orden registrada por el mesero aún. */
+    private static final String ESTILO_MESA_SIN_ORDEN =
+        "-fx-background-color: #6A500F; -fx-border-color: #6A500F; -fx-text-fill: #d4c5b0;" +
+        "-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;";
+
+    /** Ocupada con orden abierta en BD. */
+    private static final String ESTILO_MESA_CON_ORDEN =
         "-fx-background-color: #8a3636; -fx-border-color: #8a3636; -fx-text-fill: #d4c5b0;" +
-        "-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;" +
-        "-fx-text-fill: #0a132b;";
+        "-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;";
+
     private static final String ESTILO_MESA_RESERVADA =
         "-fx-background-color: #C9A84C; -fx-border-color: #C9A84C; -fx-text-fill: #d4c5b0;" +
-        "-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;" +
-        "-fx-text-fill: #0a132b;";
+        "-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;";
+
     private static final String ESTILO_BTN_ACTIVO =
         "-fx-background-color: #2c3b62; -fx-text-fill: #d4c5b0; -fx-background-radius: 10 10 10 10;" +
         "-fx-border-radius: 10 10 10 10;";
+
     private static final String ESTILO_BTN_INACTIVO =
         "-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" +
         "-fx-border-radius: 10 10 10 10; -fx-text-fill: #d4c5b0;";
-    
+
     private final MesasDAO mesasDAO = new MesasDAO();
-    
+
     private int mesaParaPedido = 0;
     private int idEmpleadoSesion;
-    
-    /**
-     * Inicializa la vista configurando el estilo del menú lateral y 
-     * sincronizando el estado visual de las mesas con la base de datos.
-     */
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Marcar "Disponibilidad" como botón activo en el sidebar
         btnDisponibilidad.setStyle(ESTILO_BTN_ACTIVO);
- 
-        // Registrar click en cada botón de mesa
         vincularBotonesMesa();
- 
-        // Pintar mesas con el color de su estado actual en BD
         cargarEstadoMesas();
     }
-    
+
     /**
-     * Consulta la base de datos y aplica el estilo visual correspondiente 
-     * a cada botón de mesa según su estado actual.
+     * Consulta la BD y pinta cada botón de mesa según su estado.
+     *
+     * Para las mesas en estado "Ocupada" se hace una consulta adicional
+     * a la tabla ordenes para determinar si ya existe una orden abierta:
+     *   - Con orden abierta  → ESTILO_MESA_CON_ORDEN  (#8A3636 rojo)
+     *   - Sin orden abierta  → ESTILO_MESA_SIN_ORDEN  (#6A500F café)
      */
     private void cargarEstadoMesas() {
         Button[] botones = obtenerArregloMesas();
         List<Mesa> mesas = mesasDAO.obtenerTodasLasMesas();
 
-        // Si la BD no responde, los botones quedan con el estilo del FXML
         for (Mesa mesa : mesas) {
-            int idx = mesa.getIdMesa() - 1;          // idMesa 1-12 → índice 0-11
+            int idx = mesa.getIdMesa() - 1;
             if (idx < 0 || idx >= botones.length) continue;
 
             switch (mesa.getEstado()) {
                 case "Libre" -> botones[idx].setStyle(ESTILO_MESA_LIBRE);
-                case "Ocupada" -> botones[idx].setStyle(ESTILO_MESA_OCUPADA);
+
+                case "Ocupada" -> {
+                    int idOrden = PedidoDAO.obtenerOrdenAbiertaPorMesa(mesa.getIdMesa());
+                    if (idOrden > 0) {
+                        botones[idx].setStyle(ESTILO_MESA_CON_ORDEN);
+                    } else {
+                        botones[idx].setStyle(ESTILO_MESA_SIN_ORDEN);
+                    }
+                }
+
                 case "Reservada" -> botones[idx].setStyle(ESTILO_MESA_RESERVADA);
+
                 default -> botones[idx].setStyle(ESTILO_MESA_LIBRE);
             }
         }
     }
 
     /**
-     * Asigna programáticamente el evento Click a cada botón del arreglo de mesas.
+     * Asigna el evento clic a cada botón de mesa.
      */
     private void vincularBotonesMesa() {
         Button[] botones = obtenerArregloMesas();
@@ -122,26 +136,28 @@ public class MesasDisponiblesController implements Initializable {
     }
 
     /**
-     * Procesa la acción al hacer clic en una mesa.
-     * Si la mesa está libre, ofrece iniciar un pedido; de lo contrario, 
-     * informa sobre su estado actual.
-     * 
-     * @param numMesa El número de mesa seleccionada.
+     * Procesa el clic en una mesa según su estado actual.
+     *
+     * Libre → ofrece registrar pedido.
+     * Ocupada → informa al mesero sobre el estado:
+     *             · Sin orden: puede tomar el pedido.
+     *             · Con orden: la orden ya fue registrada.
+     *
+     * @param numMesa Número de mesa clicada (1-12).
      */
     private void handleClickMesa(int numMesa) {
         Mesa mesa = mesasDAO.obtenerMesaPorId(numMesa);
- 
+
         if (mesa == null) {
             mostrarAlerta(Alert.AlertType.WARNING,
                 "Mesa no encontrada",
                 "No se encontró la Mesa " + numMesa + " en el sistema.");
             return;
         }
- 
+
         switch (mesa.getEstado()) {
- 
+
             case "Libre" -> {
-                //  Diálogo de confirmación para registrar pedido
                 Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
                 confirmacion.setTitle("Registrar pedido");
                 confirmacion.setHeaderText("Mesa " + numMesa + "  ·  " +
@@ -149,46 +165,62 @@ public class MesasDisponiblesController implements Initializable {
                 confirmacion.setContentText(
                     "¿Desea registrar el pedido de la Mesa #" + numMesa + "?"
                 );
- 
+
                 ButtonType btnIr      = new ButtonType("Sí, registrar pedido");
                 ButtonType btnCancelar = new ButtonType("Cancelar",
                                          javafx.scene.control.ButtonBar.ButtonData.CANCEL_CLOSE);
                 confirmacion.getButtonTypes().setAll(btnIr, btnCancelar);
- 
+
                 Optional<ButtonType> resultado = confirmacion.showAndWait();
- 
+
                 if (resultado.isPresent() && resultado.get() == btnIr) {
-                    // Guardar la mesa seleccionada para pasarla al siguiente controlador
                     mesaParaPedido = numMesa;
                     navegarARealizarPedido(numMesa);
                 }
             }
- 
+
             case "Ocupada" -> {
-                // INFORMAR QUE YA HAY UNA ORDEN ABIERTA
-                mostrarAlerta(Alert.AlertType.INFORMATION,
-                    "Mesa ocupada",
-                    "Mesa " + numMesa + " ya tiene una orden abierta.\n" +
-                    "Para gestionar el pedido usa la opción 'Gestionar pedido'."
-                );
+                int idOrden = PedidoDAO.obtenerOrdenAbiertaPorMesa(numMesa);
+
+                if (idOrden > 0) {
+                    mostrarAlerta(Alert.AlertType.INFORMATION,
+                        "Mesa con orden activa",
+                        "La Mesa " + numMesa + " ya tiene una orden registrada (#" + idOrden + ").\n" +
+                        "Para gestionar o agregar productos usa la opción 'Gestionar pedido'.");
+                } else {
+                    Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+                    confirmacion.setTitle("Mesa ocupada sin orden");
+                    confirmacion.setHeaderText("Mesa " + numMesa + " · Ocupada sin orden");
+                    confirmacion.setContentText(
+                        "El cliente ya fue asignado a esta mesa pero aún no se ha tomado el pedido.\n\n" +
+                        "¿Desea registrar el pedido ahora?"
+                    );
+
+                    ButtonType btnIr      = new ButtonType("Sí, tomar pedido");
+                    ButtonType btnCancelar = new ButtonType("Cancelar",
+                                             javafx.scene.control.ButtonBar.ButtonData.CANCEL_CLOSE);
+                    confirmacion.getButtonTypes().setAll(btnIr, btnCancelar);
+
+                    Optional<ButtonType> resultado = confirmacion.showAndWait();
+
+                    if (resultado.isPresent() && resultado.get() == btnIr) {
+                        mesaParaPedido = numMesa;
+                        navegarARealizarPedido(numMesa);
+                    }
+                }
             }
- 
-            case "Reservada" -> {
-                // INFORMAR QUE YA ESTÁ RESERVADA
-                mostrarAlerta(Alert.AlertType.INFORMATION,
-                    "Mesa reservada",
-                    "Mesa " + numMesa + " está reservada.\n" +
-                    "No se puede tomar un pedido directamente en esta mesa."
-                );
-            }
- 
+
+            case "Reservada" -> mostrarAlerta(Alert.AlertType.INFORMATION,
+                "Mesa reservada",
+                "Mesa " + numMesa + " está reservada.\n" +
+                "El recepcionista debe confirmar la llegada del cliente antes de tomar el pedido.");
+
             default -> mostrarAlerta(Alert.AlertType.WARNING,
                 "Estado desconocido",
                 "La Mesa " + numMesa + " tiene un estado no reconocido: " + mesa.getEstado());
         }
     }
 
-    // CONTROLADORES DE BOTONES
     @FXML
     private void handleDisponibilidad(ActionEvent event) {
         btnDisponibilidad.setStyle(ESTILO_BTN_ACTIVO);
@@ -211,19 +243,17 @@ public class MesasDisponiblesController implements Initializable {
 
     @FXML
     private void handleCerrarSesion(ActionEvent event) {
-        // Crear la alerta de confirmación
         Alert alerta = new Alert(Alert.AlertType.CONFIRMATION);
         alerta.setTitle("Confirmar Salida");
         alerta.setHeaderText("Cerrar Sesión");
         alerta.setContentText("¿Estás seguro de que deseas salir del sistema?");
 
-        // Mostrar y esperar respuesta
         Optional<ButtonType> resultado = alerta.showAndWait();
 
         if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
             try {
-                // Código para regresar al Login (ejemplo)
-                Parent root = FXMLLoader.load(getClass().getResource("/com/mycompany/restaurante/fxml/LoginPantalla.fxml"));
+                Parent root = FXMLLoader.load(getClass().getResource(
+                    "/com/mycompany/restaurante/fxml/LoginPantalla.fxml"));
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 stage.setScene(new Scene(root));
                 stage.show();
@@ -231,23 +261,14 @@ public class MesasDisponiblesController implements Initializable {
                 e.printStackTrace();
             }
         } else {
-            // El usuario canceló, no se hace nada y se queda en la ventana
             alerta.close();
         }
     }
-    
+
     /**
-     * Agrupa los botones individuales en un arreglo para facilitar su procesamiento iterativo.
-     */
-    private Button[] obtenerArregloMesas() {
-        return new Button[] {
-            btnMesa1, btnMesa2, btnMesa3,  btnMesa4,
-            btnMesa5, btnMesa6, btnMesa7,  btnMesa8,
-            btnMesa9, btnMesa10, btnMesa11, btnMesa12
-        };
-    }
-    /**
-     * Realiza la transición a la pantalla de pedidos, enviando el número de mesa seleccionada.
+     * Abre RegistrarPedidoPantalla.fxml de forma modal pasando el número de mesa.
+     *
+     * @param numMesa Mesa seleccionada para el pedido.
      */
     private void navegarARealizarPedido(int numMesa) {
         try {
@@ -259,13 +280,11 @@ public class MesasDisponiblesController implements Initializable {
             RegistrarPedidoController ctrl = loader.getController();
             ctrl.setMesaSeleccionada(numMesa);
 
-            Stage nuevoStage = new Stage(); 
-            
+            Stage nuevoStage = new Stage();
             nuevoStage.setScene(new Scene(root));
             nuevoStage.setTitle("Realizar Pedido · Mesa " + numMesa + " - Saveurs Paris");
-
             nuevoStage.initModality(Modality.APPLICATION_MODAL);
-            nuevoStage.initOwner(btnMesa1.getScene().getWindow()); 
+            nuevoStage.initOwner(btnMesa1.getScene().getWindow());
             nuevoStage.setResizable(false);
             nuevoStage.showAndWait();
 
@@ -279,13 +298,20 @@ public class MesasDisponiblesController implements Initializable {
                 "Verifique que RegistrarPedidoPantalla.fxml exista en la ruta correcta.");
         }
     }
-    
-    public void setIdEmpleadoSesion(int id) {
-        this.idEmpleadoSesion = id;
+
+    /**
+     * Agrupa los 12 botones de mesa en orden para iterarlos fácilmente.
+     */
+    private Button[] obtenerArregloMesas() {
+        return new Button[] {
+            btnMesa1, btnMesa2, btnMesa3,  btnMesa4,
+            btnMesa5, btnMesa6, btnMesa7,  btnMesa8,
+            btnMesa9, btnMesa10, btnMesa11, btnMesa12
+        };
     }
 
     /**
-     * Método genérico para la navegación entre escenas.
+     * Método genérico para cambiar de pantalla dentro del mismo Stage.
      */
     private void cambiarPantalla(String rutaFxml, String titulo, ActionEvent event) {
         try {
@@ -303,6 +329,10 @@ public class MesasDisponiblesController implements Initializable {
         }
     }
 
+    public void setIdEmpleadoSesion(int id) {
+        this.idEmpleadoSesion = id;
+    }
+
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String contenido) {
         Alert a = new Alert(tipo);
         a.setTitle(titulo);
@@ -310,5 +340,4 @@ public class MesasDisponiblesController implements Initializable {
         a.setContentText(contenido);
         a.showAndWait();
     }
-
 }

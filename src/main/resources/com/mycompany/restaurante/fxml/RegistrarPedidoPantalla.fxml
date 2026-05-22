@@ -77,7 +77,7 @@
                      <columns>
                         <TableColumn fx:id="ColumnaNombre" prefWidth="168.00003051757812" text="Nombre" />
                         <TableColumn fx:id="ColumnaDescripcion" prefWidth="363.20001220703125" text="Descripción" />
-                        <TableColumn fx:id="ColumnaCantidad" minWidth="6.4000244140625" prefWidth="94.39996337890625" text="Cantidad" />
+                        <TableColumn fx:id="ColumnaCantidad" minWidth="6.4000244140625" prefWidth="109.5999755859375" text="Cantidad" />
                      </columns>
                   </TableView>
                   <HBox prefHeight="50.0" prefWidth="280.0">
