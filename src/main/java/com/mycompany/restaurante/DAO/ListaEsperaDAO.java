@@ -61,6 +61,28 @@ public class ListaEsperaDAO {
             return false;
         }
     }
+    
+    /**
+     * Actualiza todos los datos de una reservación existente.
+     */
+    public static boolean actualizar(ClienteEspera r) {
+        String sql = "UPDATE reservaciones SET nombreCliente=?, telefono=?, numeroPersonas=?, estado=? WHERE idEspera=?";
+
+        try (Connection con = ConexionDB.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, r.getNombreCliente());
+            ps.setString(2, r.getTelefono());
+            ps.setInt(3, r.getNumeroPersonas());
+            ps.setString(4, r.getEstado());
+            ps.setInt(5, r.getIdEspera());
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.err.println("ReservacionDAO.actualizar(): " + e.getMessage());
+        }
+        return false;
+    }
 
     /**
      * Cambia el estado del cliente a "Asignado" o "Cancelado".
