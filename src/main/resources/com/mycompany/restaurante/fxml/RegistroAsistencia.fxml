@@ -110,12 +110,12 @@
             <Insets left="20.0" right="20.0" />
          </VBox.margin>
       </HBox>
-      <TableView fx:id="tablaAsistencias" prefHeight="221.0" prefWidth="400.0" stylesheets="@../../../../css/stylesTabla.css">
+      <TableView fx:id="tablaAsistencias" prefHeight="221.0" prefWidth="390.0" stylesheets="@../../../../css/stylesTabla.css">
          <columns>
-            <TableColumn fx:id="colFecha" prefWidth="100.0" text="Fecha" />
-            <TableColumn fx:id="colEntrada" prefWidth="100.0" text="Entrada" />
-            <TableColumn fx:id="colSalida" prefWidth="100.0" text="Salida" />
-            <TableColumn fx:id="colEstado" prefWidth="100.0" text="Estado" />
+            <TableColumn fx:id="colFecha" prefWidth="97.5" text="Fecha" />
+            <TableColumn fx:id="colEntrada" prefWidth="97.5" text="Entrada" />
+            <TableColumn fx:id="colSalida" prefWidth="97.5" text="Salida" />
+            <TableColumn fx:id="colEstado" prefWidth="97.5" text="Estado" />
          </columns>
          <VBox.margin>
             <Insets left="20.0" right="20.0" />

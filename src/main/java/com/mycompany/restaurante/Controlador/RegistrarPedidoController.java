@@ -1,10 +1,17 @@
 package com.mycompany.restaurante.Controlador;
 
-
 import com.mycompany.restaurante.DAO.ProductoDAO;
 import com.mycompany.restaurante.Modelo.Producto;
 
 import java.io.IOException;
+import java.util.Optional;
+
+import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.text.Text;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -14,13 +21,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-import java.util.Optional;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.text.Text;
 
 /**
  *
@@ -188,16 +188,29 @@ public class RegistrarPedidoController {
         Optional<ButtonType> result = alertConf.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             
-            // --- 4. Se manda el pedido a DAO ---
-            int idEmpleadoTemporal = 3; // El ID de Dana
+            // Verificar si la mesa ya cuenta con una orden activa / abierta
+            int idOrdenExistente = com.mycompany.restaurante.DAO.PedidoDAO.obtenerOrdenAbiertaPorMesa(idMesaReal);
             
-            String notasDelMesero = txtDescripcion.getText();
-            
-            int idGenerado = com.mycompany.restaurante.DAO.PedidoDAO
-                .insertarOrdenCompleta(idMesaReal, idEmpleadoTemporal,
-                                       masterData, notasDelMesero);
+            boolean exito;
+            int idParaMostrar;
 
-            if (idGenerado != -1) {
+            if (idOrdenExistente > 0) {
+                // CAMINO A: La mesa ya tiene orden, añadimos los nuevos platillos al ID existente
+                exito = com.mycompany.restaurante.DAO.PedidoDAO.añadirPlatillosAOrden(idOrdenExistente, masterData);
+                idParaMostrar = idOrdenExistente;
+            } else {
+                // CAMINO B: Mesa vacía/libre, se registra una orden completa desde cero
+                int idEmpleadoTemporal = 3; // El ID de Dana
+                String notasDelMesero = txtDescripcion.getText();
+                
+                idParaMostrar = com.mycompany.restaurante.DAO.PedidoDAO.insertarOrdenCompleta(
+                        idMesaReal, idEmpleadoTemporal, masterData, notasDelMesero
+                );
+                exito = (idParaMostrar != -1);
+            }
+
+            // --- Manejo de la interfaz gráfica post-operación ---
+            if (exito) {
                 // Éxito: Limpiamos la pantalla
                 masterData.forEach(p -> p.setCantidadPedida(0));
                 tableMenu.refresh();
@@ -206,16 +219,23 @@ public class RegistrarPedidoController {
                 Alert alertExito = new Alert(Alert.AlertType.INFORMATION);
                 alertExito.setTitle("Confirmado");
                 alertExito.setHeaderText(null);
-                alertExito.setContentText("Pedido #" + idGenerado +
-                            " enviado a cocina y mesa marcada como ocupada.");
-                alertExito.showAndWait();
                 
+                if (idOrdenExistente > 0) {
+                    alertExito.setContentText(
+                            "Nuevos platillos agregados exitosamente a la Orden #"
+                            + idParaMostrar);
+                } else {
+                    alertExito.setContentText("Pedido #" + idParaMostrar +
+                            " enviado a cocina y mesa marcada como ocupada.");
+                }
+                
+                alertExito.showAndWait();
+                cerrarVentana();
             } else {
                 Alert alertFallo = new Alert(Alert.AlertType.ERROR);
                 alertFallo.setTitle("Error");
                 alertFallo.setHeaderText(null);
-                alertFallo.setContentText("Ocurrió un problema al guardar la"
-                                            + "orden en la base de datos.");
+                alertFallo.setContentText("Ocurrió un problema al procesar la solicitud en la base de datos.");
                 alertFallo.showAndWait();
             }
             

@@ -41,11 +41,8 @@
                   <TableView fx:id="tablaItems" blendMode="MULTIPLY" focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="170.0" prefWidth="240.0" style="-fx-background-color: transparent; -fx-border-color: transparent;">
                      <columns>
                         <TableColumn fx:id="columnaCantidad" prefWidth="40.0" resizable="false" sortable="false" text="Cant." />
-                        <TableColumn fx:id="columnaPlato" prefWidth="190.0" resizable="false" sortable="false" text="Plato" />
+                        <TableColumn fx:id="columnaPlato" prefWidth="200.0" resizable="false" sortable="false" text="Plato" />
                      </columns>
-                     <columnResizePolicy>
-                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                     </columnResizePolicy>
                      <VBox.margin>
                         <Insets left="10.0" />
                      </VBox.margin>

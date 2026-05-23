@@ -56,7 +56,6 @@
                   <Insets left="20.0" right="20.0" top="25.0" />
                </VBox.margin>
                <children>
-                  <Region />
                   <Button fx:id="btnMesas" mnemonicParsing="false" onAction="#handleMesas" prefHeight="42.0" prefWidth="180.0" style="-fx-background-color: #2c3b62; -fx-background-radius: 10 10 10 10;" text="Mesas" textFill="#d4c5b0">
                      <font>
                         <Font name="Candara Bold" size="19.0" />
@@ -112,7 +111,7 @@
                <children>
                   <Label text="Disponibilidad de Mesas" textFill="#1a1e2e">
                      <font>
-                        <Font name="Candara" size="23.0" />
+                        <Font name="Candara Bold" size="25.0" />
                      </font>
                      <HBox.margin>
                         <Insets left="20.0" />

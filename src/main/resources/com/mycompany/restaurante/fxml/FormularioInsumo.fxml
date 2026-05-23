@@ -10,14 +10,17 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="420.0" prefWidth="350.0" spacing="15.0" style="-fx-background-color: #F5EFE6;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.restaurante.Controlador.FormularioInsumoController">
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="360.0" prefWidth="350.0" spacing="15.0" style="-fx-background-color: #F5EFE6;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.restaurante.Controlador.FormularioInsumoController">
    <children>
       <VBox prefHeight="80.0" prefWidth="350.0" style="-fx-background-color: #2C3B62;">
          <children>
-            <Label fx:id="lblTitulo" alignment="CENTER" prefHeight="50.0" prefWidth="350.0" text="Registro de Insumo" textAlignment="CENTER" textFill="#fffdfd">
+            <Label fx:id="lblTitulo" alignment="CENTER" prefHeight="50.0" prefWidth="350.0" text="Registro de Insumo" textAlignment="CENTER" textFill="#fffdfd" VBox.vgrow="ALWAYS">
                <font>
                   <Font name="System Bold" size="23.0" />
                </font>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
             </Label>
          </children>
          <opaqueInsets>
@@ -27,7 +30,7 @@
             <Insets />
          </VBox.margin>
          <padding>
-            <Insets top="10.0" />
+            <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
          </padding>
       </VBox>
       <VBox prefHeight="118.0" prefWidth="350.0" spacing="5.0">
@@ -67,13 +70,10 @@
             <ComboBox fx:id="cbCategoria" prefWidth="300.0" promptText="Seleccione una categoría" style="-fx-background-color: #F7F4ED; -fx-border-color: #1A1E2E; -fx-border-radius: 5 5 5 5;" />
          </children>
          <padding>
-            <Insets bottom="15.0" left="30.0" right="30.0" />
+            <Insets left="30.0" right="30.0" />
          </padding>
       </VBox>
-      <HBox alignment="CENTER_RIGHT" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="98.0" prefWidth="243.0" spacing="15.0">
-         <padding>
-            <Insets bottom="15.0" left="30.0" right="30.0" top="5.0" />
-         </padding>
+      <HBox alignment="CENTER_RIGHT" maxHeight="-Infinity" maxWidth="-Infinity" spacing="15.0">
          <children>
             <Button fx:id="btnGuardar" defaultButton="true" maxHeight="-Infinity" maxWidth="-Infinity" onAction="#guardar" prefHeight="27.0" prefWidth="87.0" style="-fx-background-color: #8b1a1a; -fx-text-fill: #d4c5b0; -fx-background-radius: 10 10 10 10;" text="Guardar">
                <cursor>
@@ -92,6 +92,9 @@
                </font>
             </Button>
          </children>
+         <padding>
+            <Insets bottom="10.0" />
+         </padding>
       </HBox>
    </children>
 </VBox>

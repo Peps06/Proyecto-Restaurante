@@ -120,12 +120,12 @@
                      <children>
                         <VBox prefHeight="325.0" prefWidth="580.0" spacing="20.0">
                            <children>
-                              <TableView fx:id="tablaReservas" focusTraversable="false" prefHeight="238.0" prefWidth="540.0" style="-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;" stylesheets="@../../../../css/stylesTabla.css">
+                              <TableView fx:id="tablaReservas" focusTraversable="false" prefHeight="238.0" prefWidth="540.0" style="-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;" stylesheets="@../../../../css/stylesTabla.css" VBox.vgrow="ALWAYS">
                                  <columns>
                                     <TableColumn fx:id="colId" prefWidth="40.0" text="ID" />
-                                    <TableColumn fx:id="colNombre" prefWidth="130.0" text="Nombre" />
-                                    <TableColumn fx:id="colTelefono" prefWidth="130.0" text="Telefono" />
-                                    <TableColumn fx:id="colNumPersonas" text="Num.&#10;personas&#10;" />
+                                    <TableColumn fx:id="colNombre" prefWidth="160.0" text="Nombre" />
+                                    <TableColumn fx:id="colTelefono" prefWidth="100.0" text="Telefono" />
+                                    <TableColumn fx:id="colNumPersonas" text="N° pers." />
                                     <TableColumn fx:id="colLlegada" text="Llegada" />
                                     <TableColumn fx:id="colEstado" text="Estado&#10;" />
                                  </columns>

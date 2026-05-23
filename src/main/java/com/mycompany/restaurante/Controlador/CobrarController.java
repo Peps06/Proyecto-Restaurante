@@ -42,7 +42,7 @@ public class CobrarController implements Initializable {
     private static final Logger LOG = Logger.getLogger(CobrarController.class.getName());
 
     //  TABLA DE PEDIDO
-    @FXML private TableView<OrdenItem>  tableVerPedido;
+    @FXML private TableView<OrdenItem> tableVerPedido;
     @FXML private TableColumn<OrdenItem, String> colProducto;
     @FXML private TableColumn<OrdenItem, Integer> colCantidad;
     @FXML private TableColumn<OrdenItem, Double> colPrecio;
@@ -93,20 +93,37 @@ public class CobrarController implements Initializable {
 
     //  ESTILOS CSS
     private static final String ESTILO_MESA_LIBRE =
-        "-fx-background-color: #627096; -fx-border-color: #627096; -fx-text-fill: #d4c5b0;" +
-        "-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;";
+        "-fx-background-color: #627096;" +
+        "-fx-border-color: #627096;" +
+        "-fx-text-fill: #d4c5b0;" +
+        "-fx-background-radius: 10 10 10 10;" +
+        "-fx-border-radius: 10 10 10 10;";
+    
     private static final String ESTILO_MESA_ACTIVA =
-        "-fx-background-color: #8a3636; -fx-border-color: #8a3636; -fx-text-fill: #d4c5b0;" +
-        "-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;";
+        "-fx-background-color: #8a3636;" +
+        "-fx-border-color: #8a3636;" +
+        "-fx-text-fill: #d4c5b0;" +
+        "-fx-background-radius: 10 10 10 10;" +
+        "-fx-border-radius: 10 10 10 10;";
+    
     private static final String ESTILO_BTN_ACTIVO =
-        "-fx-background-color: #2c3b62; -fx-text-fill: #d4c5b0;" +
-        "-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;";
+        "-fx-background-color: #2c3b62;" +
+        "-fx-text-fill: #d4c5b0;" +
+        "-fx-background-radius: 10 10 10 10;" +
+        "-fx-border-radius: 10 10 10 10;";
+    
     private static final String ESTILO_BTN_INACTIVO =
-        "-fx-background-color: #8b1a1a; -fx-text-fill: #d4c5b0;" +
-        "-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;";
+        "-fx-background-color: #8b1a1a;" +
+        "-fx-text-fill: #d4c5b0;" +
+        "-fx-background-radius: 10 10 10 10;" +
+        "-fx-border-radius: 10 10 10 10;";
+    
     private static final String ESTILO_MESA_NO_COBRABLE =
-        "-fx-background-color: #6f5410; -fx-border-color: #6f5410; -fx-text-fill: #d4c5b0;" +
-        "-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;";
+        "-fx-background-color: #6f5410;" +
+        "-fx-border-color: #6f5410;" +
+        "-fx-text-fill: #d4c5b0;" +
+        "-fx-background-radius: 10 10 10 10;" +
+        "-fx-border-radius: 10 10 10 10;";
 
 
     /**
@@ -250,7 +267,7 @@ public class CobrarController implements Initializable {
         labelCambio.setText("$0.00");
         subtotal = iva = total = 0.0;
         idOrdenActual = 0;
-        LOG.warning("[CobrarController] Mesa " + mesaSeleccionada + " no tiene orden abierta.");
+        LOG.warning(() -> "[CobrarController] Mesa " + mesaSeleccionada + " no tiene orden abierta.");
     }
 
     /**

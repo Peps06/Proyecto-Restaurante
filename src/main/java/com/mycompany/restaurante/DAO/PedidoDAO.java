@@ -123,6 +123,59 @@ public class PedidoDAO {
             return -1;
         }
     }
+    
+    /**
+    * Añade productos adicionales a una orden existente utilizando Batch.
+    * 
+    * @param idOrden ID de la orden abierta.
+    * @param items Lista de productos donde se filtrarán los que tengan cantidad > 0.
+    * @return true si la inserción fue exitosa, false en caso contrario.
+    */
+   public static boolean añadirPlatillosAOrden(int idOrden, List<Producto> items) {
+       String sqlDetalle = "INSERT INTO detalle_orden ("+
+                                "idOrden, idProducto, cantidad, precioUnit"+
+                            ") VALUES (?,?,?,?)";
+
+       try (Connection con = ConexionDB.getConexion()) {
+           con.setAutoCommit(false);
+
+           try (PreparedStatement psDetalle = con.prepareStatement(sqlDetalle)) {
+               boolean hayDetalles = false;
+
+               for (Producto p : items) {
+                   int cant = p.getCantidadPedida();
+                   if (cant <= 0) continue;
+
+                   psDetalle.setInt(1, idOrden);
+                   psDetalle.setInt(2, p.getId());
+                   psDetalle.setInt(3, cant);
+                   psDetalle.setDouble(4, p.getPrecio());
+                   psDetalle.addBatch();
+                   hayDetalles = true;
+               }
+
+               if (hayDetalles) {
+                   psDetalle.executeBatch();
+               }
+
+               con.commit();
+               LOG.info("PedidoDAO: Platillos adicionales agregados a la orden #"
+                       + idOrden);
+               return true;
+
+           } catch (SQLException e) {
+               con.rollback();
+               LOG.log(Level.SEVERE,
+                       "PedidoDAO: Error al añadir platillos a la orden #" +
+                        idOrden + ". Rollback ejecutado.", e);
+               throw e;
+           }
+       } catch (SQLException e) {
+           LOG.log(Level.SEVERE,
+                   "PedidoDAO: Error de conexión al añadir platillos.", e);
+           return false;
+       }
+   }
 
     /**
      * Consulta si existe una orden con estado 'Abierta' vinculada a una mesa específica.
