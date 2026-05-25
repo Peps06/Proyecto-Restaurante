@@ -122,16 +122,19 @@
                            <children>
                               <TableView fx:id="tablaListaEspera" focusTraversable="false" prefHeight="238.0" prefWidth="540.0" style="-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;" stylesheets="@../../../../css/stylesTabla.css">
                                  <columns>
-                                    <TableColumn fx:id="colId" prefWidth="45.0" text="ID" />
-                                    <TableColumn fx:id="colNombre" prefWidth="130.0" text="Nombre" />
-                                    <TableColumn fx:id="colTelefono" prefWidth="130.0" text="Telefono" />
-                                    <TableColumn fx:id="colNumPersonas" text="Num.&#10;personas&#10;" />
-                                    <TableColumn fx:id="colLlegada" prefWidth="85.0" text="Llegada" />
-                                    <TableColumn fx:id="colEstado" prefWidth="85.0" text="Estado&#10;" />
+                                    <TableColumn fx:id="colId" prefWidth="40.0" resizable="false" text="ID" />
+                                    <TableColumn fx:id="colNombre" prefWidth="145.0" resizable="false" text="Nombre" />
+                                    <TableColumn fx:id="colTelefono" prefWidth="100.0" resizable="false" text="Telefono" />
+                                    <TableColumn fx:id="colNumPersonas" prefWidth="82.5" resizable="false" text="N° Personas" />
+                                    <TableColumn fx:id="colLlegada" prefWidth="82.5" resizable="false" text="Llegada" />
+                                    <TableColumn fx:id="colEstado" prefWidth="83.0" resizable="false" text="Estado&#10;" />
                                  </columns>
                                  <cursor>
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
+                                 <columnResizePolicy>
+                                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                                 </columnResizePolicy>
                               </TableView>
                               <HBox prefHeight="27.0" prefWidth="466.0">
                                  <children>

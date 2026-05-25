@@ -305,12 +305,15 @@
                         <Separator layoutX="10.0" layoutY="294.0" maxHeight="1.0" minHeight="1.0" prefHeight="1.0" style="-fx-background-color: #c9a84c; -fx-border-width: .5;" />
                         <TableView fx:id="tablaVerPedido" focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="100.0" prefHeight="200.0" prefWidth="240.0" stylesheets="@../../../../css/stylesTabla.css" VBox.vgrow="ALWAYS">
                            <columns>
-                              <TableColumn fx:id="colCantidad" editable="false" prefWidth="44.79998779296875" sortable="false" text="Cant." />
-                              <TableColumn fx:id="colProducto" editable="false" prefWidth="191.9998779296875" sortable="false" text="Producto" />
+                              <TableColumn fx:id="colCantidad" editable="false" prefWidth="45.0" resizable="false" sortable="false" text="Cant." />
+                              <TableColumn fx:id="colProducto" editable="false" prefWidth="190.0" resizable="false" sortable="false" text="Producto" />
                            </columns>
                            <VBox.margin>
                               <Insets bottom="5.0" top="5.0" />
                            </VBox.margin>
+                           <columnResizePolicy>
+                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                           </columnResizePolicy>
                         </TableView>
                         <Separator layoutX="10.0" layoutY="245.0" maxHeight="1.0" minHeight="1.0" prefHeight="1.0" style="-fx-background-color: #c9a84c; -fx-border-width: .5;" />
                         <HBox maxHeight="-Infinity" maxWidth="-Infinity" spacing="15.0">

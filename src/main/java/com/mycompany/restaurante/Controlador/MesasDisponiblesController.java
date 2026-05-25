@@ -92,13 +92,6 @@ public class MesasDisponiblesController implements Initializable {
         "-fx-background-radius: 10 10 10 10;" +
         "-fx-border-radius: 10 10 10 10;";
 
-    private static final String ESTILO_MESA_RESERVADA =
-        "-fx-background-color: #C9A84C;" +
-        "-fx-border-color: #C9A84C;" +
-        "-fx-text-fill: #d4c5b0;" +
-        "-fx-background-radius: 10 10 10 10;" +
-        "-fx-border-radius: 10 10 10 10;";
-
     private static final String ESTILO_BTN_ACTIVO =
         "-fx-background-color: #2c3b62;" +
         "-fx-text-fill: #d4c5b0;" +
@@ -153,7 +146,7 @@ public class MesasDisponiblesController implements Initializable {
                     }
                 }
 
-                case "Reservada" -> botones[idx].setStyle(ESTILO_MESA_RESERVADA);
+                case "Reservada" -> botones[idx].setStyle(ESTILO_MESA_LIBRE);
 
                 default -> botones[idx].setStyle(ESTILO_MESA_LIBRE);
             }

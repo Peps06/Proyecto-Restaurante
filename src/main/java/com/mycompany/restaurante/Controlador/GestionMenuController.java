@@ -217,7 +217,7 @@ public class GestionMenuController {
 
             confirmacion.showAndWait().ifPresent(respuesta -> {
                 if (respuesta == ButtonType.OK) {
-                    ProductoDAO.eliminar(seleccionado.getCantidadPedida()); 
+                    ProductoDAO.eliminar(seleccionado.getId()); 
                     refrescarTabla();
 
                     Alert exito = new Alert(Alert.AlertType.INFORMATION);

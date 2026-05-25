@@ -2,6 +2,7 @@ package com.mycompany.restaurante.Controlador;
 
 import com.mycompany.restaurante.DAO.EmpleadoDAO;
 import com.mycompany.restaurante.Modelo.Empleado;
+
 import java.io.IOException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

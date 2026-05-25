@@ -110,13 +110,16 @@
             <Insets left="20.0" right="20.0" />
          </VBox.margin>
       </HBox>
-      <TableView fx:id="tablaAsistencias" prefHeight="221.0" prefWidth="390.0" stylesheets="@../../../../css/stylesTabla.css">
+      <TableView fx:id="tablaAsistencias" prefHeight="221.0" prefWidth="390.0" stylesheets="@../../../../css/stylesTabla.css" VBox.vgrow="ALWAYS">
          <columns>
-            <TableColumn fx:id="colFecha" prefWidth="97.5" text="Fecha" />
-            <TableColumn fx:id="colEntrada" prefWidth="97.5" text="Entrada" />
-            <TableColumn fx:id="colSalida" prefWidth="97.5" text="Salida" />
-            <TableColumn fx:id="colEstado" prefWidth="97.5" text="Estado" />
+            <TableColumn fx:id="colFecha" prefWidth="96.0" resizable="false" text="Fecha" />
+            <TableColumn fx:id="colEntrada" prefWidth="96.0" resizable="false" text="Entrada" />
+            <TableColumn fx:id="colSalida" prefWidth="97.0" resizable="false" text="Salida" />
+            <TableColumn fx:id="colEstado" prefWidth="96.0" resizable="false" text="Estado" />
          </columns>
+         <columnResizePolicy>
+             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
          <VBox.margin>
             <Insets left="20.0" right="20.0" />
          </VBox.margin>

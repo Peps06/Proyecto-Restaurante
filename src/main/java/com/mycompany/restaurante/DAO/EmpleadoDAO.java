@@ -32,7 +32,7 @@ public static ObservableList<Empleado> obtenerTodos() {
     // Consulta con LEFT JOIN y CURDATE()
     // Consulta mejorada: Traemos el estado real de la tabla asistencias
     String sql = "SELECT e.idEmpleado, e.nombre, e.password, e.puesto, e.telefono, " +
-             "COALESCE(a.estado, 'Ausente') AS estado_asistencia " + // <--- CAMBIO AQUÍ
+             "COALESCE(a.estado, 'Ausente') AS estado_asistencia " +
              "FROM empleados e " +
              "LEFT JOIN asistencias a ON e.idEmpleado = a.idEmpleado " +
              "AND a.fecha = CURDATE()";
@@ -62,7 +62,7 @@ public static ObservableList<Empleado> obtenerTodos() {
      * Verifica las credenciales de un empleado para permitir el acceso al sistema.
      * Utiliza una búsqueda insensible a mayúsculas para el nombre.
      * 
-     * @param nombre   Nombre del empleado ingresado en el login.
+     * @param nombre Nombre del empleado ingresado en el login.
      * @param password Contraseña asociada a la cuenta.
      * @return El puesto del empleado (ej. "Administrador", "Mesero") si los datos 
      *         son correctos; {@code null} si las credenciales no coinciden.

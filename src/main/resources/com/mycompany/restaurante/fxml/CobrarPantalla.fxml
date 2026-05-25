@@ -318,9 +318,9 @@
                               <Separator layoutX="10.0" layoutY="294.0" maxHeight="1.0" minHeight="1.0" prefHeight="1.0" style="-fx-background-color: #c9a84c; -fx-border-width: .5;" />
                               <TableView fx:id="tableVerPedido" focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="100.0" prefHeight="200.0" prefWidth="240.0" stylesheets="@../../../../css/stylesTabla.css" VBox.vgrow="ALWAYS">
                                 <columns>
-                                  <TableColumn fx:id="colProducto" editable="false" prefWidth="105.0" sortable="false" text="Producto" />
-                                  <TableColumn fx:id="colCantidad" editable="false" prefWidth="55.0" sortable="false" text="Cant." />
-                                    <TableColumn fx:id="colPrecio" editable="false" sortable="false" text="Precio" />
+                                  <TableColumn fx:id="colProducto" editable="false" prefWidth="105.0" resizable="false" sortable="false" text="Producto" />
+                                  <TableColumn fx:id="colCantidad" editable="false" prefWidth="50.0" resizable="false" sortable="false" text="Cant." />
+                                    <TableColumn fx:id="colPrecio" editable="false" resizable="false" sortable="false" text="Precio" />
                                 </columns>
                                  <columnResizePolicy>
                                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

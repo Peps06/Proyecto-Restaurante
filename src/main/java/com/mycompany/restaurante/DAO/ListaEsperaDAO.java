@@ -66,7 +66,7 @@ public class ListaEsperaDAO {
      * Actualiza todos los datos de una reservación existente.
      */
     public static boolean actualizar(ClienteEspera r) {
-        String sql = "UPDATE reservaciones SET nombreCliente=?, telefono=?, numeroPersonas=?, estado=? WHERE idEspera=?";
+        String sql = "UPDATE lista_espera SET nombreCliente=?, telefono=?, numeroPersonas=?, estado=? WHERE idEspera=?";
 
         try (Connection con = ConexionDB.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
