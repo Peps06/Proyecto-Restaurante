@@ -76,9 +76,7 @@ public class DisponibilidadRecepcionistaController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Marcar "Disponibilidad" como botón activo en el sidebar
         btnMesas.setStyle(ESTILO_BTN_ACTIVO);
-        // Pintar mesas con el color de su estado actual en BD
         cargarEstadoMesas();
     }
     
@@ -90,9 +88,8 @@ public class DisponibilidadRecepcionistaController implements Initializable {
         Button[] botones = obtenerArregloMesas();
         List<Mesa> mesas = mesasDAO.obtenerTodasLasMesas();
 
-        // Si la BD no responde, los botones quedan con el estilo del FXML
         for (Mesa mesa : mesas) {
-            int idx = mesa.getIdMesa() - 1;          // idMesa 1-12 → índice 0-11
+            int idx = mesa.getIdMesa() - 1;    
             if (idx < 0 || idx >= botones.length) continue;
 
             switch (mesa.getEstado()) {
@@ -123,6 +120,37 @@ public class DisponibilidadRecepcionistaController implements Initializable {
             btnMesa5, btnMesa6, btnMesa7,  btnMesa8,
             btnMesa9, btnMesa10, btnMesa11, btnMesa12
         };
+    }
+    
+    @FXML
+    private void manejarClicMesa(ActionEvent event) {
+        Button btnClickeado = (Button) event.getSource();
+        int numMesa = Integer.parseInt(btnClickeado.getText());
+        String estiloActual = btnClickeado.getStyle();
+
+        if (estiloActual.equals(ESTILO_MESA_LIBRE)) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/restaurante/fxml/AsignarMesa.fxml"));
+                Parent root = loader.load();
+
+                AsignarMesaController controller = loader.getController();
+                controller.setDatosDesdeMapa(numMesa);
+
+                Stage stage = new Stage();
+                stage.setTitle("Asignar Mesa " + numMesa);
+                stage.initModality(Modality.APPLICATION_MODAL);
+                stage.setScene(new Scene(root));
+                stage.showAndWait();
+                
+                cargarEstadoMesas();
+
+            } catch (IOException e) {
+                mostrarAlerta(Alert.AlertType.ERROR, "Error", "Falta crear AsignarMesa.fxml");
+                e.printStackTrace();
+            }
+        } else {
+            mostrarAlerta(Alert.AlertType.INFORMATION, "Mesa no disponible", "La mesa " + numMesa + " ya está ocupada o reservada.");
+        }
     }
 
     /**

@@ -154,7 +154,7 @@
                                     <Insets />
                                  </opaqueInsets>
                                  <children>
-                                    <Button fx:id="btnMesa1" layoutX="35.0" layoutY="98.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" text="1">
+                                    <Button fx:id="btnMesa1" layoutX="35.0" layoutY="98.0" mnemonicParsing="false" onAction="#manejarClicMesa" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" text="1">
                                        <font>
                                           <Font name="Arial" size="16.0" />
                                        </font>
@@ -162,7 +162,7 @@
                                           <Cursor fx:constant="HAND" />
                                        </cursor>
                                     </Button>
-                                    <Button fx:id="btnMesa5" layoutX="260.0" layoutY="23.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" text="5" GridPane.rowIndex="1">
+                                    <Button fx:id="btnMesa5" layoutX="260.0" layoutY="23.0" mnemonicParsing="false" onAction="#manejarClicMesa" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" text="5" GridPane.rowIndex="1">
                                        <font>
                                           <Font name="Arial" size="16.0" />
                                        </font>
@@ -170,7 +170,7 @@
                                           <Cursor fx:constant="HAND" />
                                        </cursor>
                                     </Button>
-                                    <Button fx:id="btnMesa9" layoutX="260.0" layoutY="98.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" text="9" GridPane.rowIndex="2">
+                                    <Button fx:id="btnMesa9" layoutX="260.0" layoutY="98.0" mnemonicParsing="false" onAction="#manejarClicMesa" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" text="9" GridPane.rowIndex="2">
                                        <font>
                                           <Font name="Arial" size="16.0" />
                                        </font>
@@ -178,7 +178,7 @@
                                           <Cursor fx:constant="HAND" />
                                        </cursor>
                                     </Button>
-                                    <Button fx:id="btnMesa2" layoutX="35.0" layoutY="23.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" text="2" GridPane.columnIndex="1">
+                                    <Button fx:id="btnMesa2" layoutX="35.0" layoutY="23.0" mnemonicParsing="false" onAction="#manejarClicMesa" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" text="2" GridPane.columnIndex="1">
                                        <font>
                                           <Font name="Arial" size="16.0" />
                                        </font>
@@ -186,7 +186,7 @@
                                           <Cursor fx:constant="HAND" />
                                        </cursor>
                                     </Button>
-                                    <Button fx:id="btnMesa6" layoutX="35.0" layoutY="98.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" text="6" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                    <Button fx:id="btnMesa6" layoutX="35.0" layoutY="98.0" mnemonicParsing="false" onAction="#manejarClicMesa" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" text="6" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                        <font>
                                           <Font name="Arial" size="16.0" />
                                        </font>
@@ -194,7 +194,7 @@
                                           <Cursor fx:constant="HAND" />
                                        </cursor>
                                     </Button>
-                                    <Button fx:id="btnMesa10" layoutX="35.0" layoutY="173.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" text="10" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                    <Button fx:id="btnMesa10" layoutX="35.0" layoutY="173.0" mnemonicParsing="false" onAction="#manejarClicMesa" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" text="10" GridPane.columnIndex="1" GridPane.rowIndex="2">
                                        <font>
                                           <Font name="Arial" size="16.0" />
                                        </font>
@@ -202,7 +202,7 @@
                                           <Cursor fx:constant="HAND" />
                                        </cursor>
                                     </Button>
-                                    <Button fx:id="btnMesa3" layoutX="110.0" layoutY="23.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;" text="3" GridPane.columnIndex="2">
+                                    <Button fx:id="btnMesa3" layoutX="110.0" layoutY="23.0" mnemonicParsing="false" onAction="#manejarClicMesa" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;" text="3" GridPane.columnIndex="2">
                                        <font>
                                           <Font name="Arial" size="16.0" />
                                        </font>
@@ -210,7 +210,7 @@
                                           <Cursor fx:constant="HAND" />
                                        </cursor>
                                     </Button>
-                                    <Button fx:id="btnMesa7" layoutX="110.0" layoutY="98.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" text="7" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                    <Button fx:id="btnMesa7" layoutX="110.0" layoutY="98.0" mnemonicParsing="false" onAction="#manejarClicMesa" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" text="7" GridPane.columnIndex="2" GridPane.rowIndex="1">
                                        <font>
                                           <Font name="Arial" size="16.0" />
                                        </font>
@@ -218,7 +218,7 @@
                                           <Cursor fx:constant="HAND" />
                                        </cursor>
                                     </Button>
-                                    <Button fx:id="btnMesa11" layoutX="110.0" layoutY="173.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" text="11" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                                    <Button fx:id="btnMesa11" layoutX="110.0" layoutY="173.0" mnemonicParsing="false" onAction="#manejarClicMesa" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" text="11" GridPane.columnIndex="2" GridPane.rowIndex="2">
                                        <font>
                                           <Font name="Arial" size="16.0" />
                                        </font>
@@ -226,7 +226,7 @@
                                           <Cursor fx:constant="HAND" />
                                        </cursor>
                                     </Button>
-                                    <Button fx:id="btnMesa4" layoutX="185.0" layoutY="23.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" text="4" GridPane.columnIndex="3">
+                                    <Button fx:id="btnMesa4" layoutX="185.0" layoutY="23.0" mnemonicParsing="false" onAction="#manejarClicMesa" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" text="4" GridPane.columnIndex="3">
                                        <font>
                                           <Font name="Arial" size="16.0" />
                                        </font>
@@ -234,7 +234,7 @@
                                           <Cursor fx:constant="HAND" />
                                        </cursor>
                                     </Button>
-                                    <Button fx:id="btnMesa8" layoutX="185.0" layoutY="98.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" text="8" GridPane.columnIndex="3" GridPane.rowIndex="1">
+                                    <Button fx:id="btnMesa8" layoutX="185.0" layoutY="98.0" mnemonicParsing="false" onAction="#manejarClicMesa" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" text="8" GridPane.columnIndex="3" GridPane.rowIndex="1">
                                        <font>
                                           <Font name="Arial" size="16.0" />
                                        </font>
@@ -242,7 +242,7 @@
                                           <Cursor fx:constant="HAND" />
                                        </cursor>
                                     </Button>
-                                    <Button fx:id="btnMesa12" layoutX="185.0" layoutY="173.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" text="12" GridPane.columnIndex="3" GridPane.rowIndex="2">
+                                    <Button fx:id="btnMesa12" layoutX="185.0" layoutY="173.0" mnemonicParsing="false" onAction="#manejarClicMesa" prefHeight="55.0" prefWidth="55.0" style="-fx-background-color: #f5efe6; -fx-border-color: #1A1E2E; -fx-border-radius: 10 10 10 10; -fx-background-radius: 10 10 10 10;" text="12" GridPane.columnIndex="3" GridPane.rowIndex="2">
                                        <font>
                                           <Font name="Arial" size="16.0" />
                                        </font>

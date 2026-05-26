@@ -150,7 +150,32 @@ public class ListaEsperaController {
 
     @FXML
     private void manejarAsignar(ActionEvent event) {
-        System.out.println("Botón Asignar presionado");
+        ClienteEspera seleccionado = tablaListaEspera.getSelectionModel().getSelectedItem();
+        
+        if (seleccionado == null) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Sin selección", "Selecciona a un cliente de la lista.");
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/restaurante/fxml/AsignarMesa.fxml"));
+            Parent root = loader.load();
+
+            AsignarMesaController controller = loader.getController();
+            controller.setDatosDesdeEspera(seleccionado);
+
+            Stage stage = new Stage();
+            stage.setTitle("Asignar Mesa");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+
+            cargarDatosTabla();
+
+        } catch (IOException e) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo abrir la ventana.");
+            e.printStackTrace();
+        }
     }
 
 
