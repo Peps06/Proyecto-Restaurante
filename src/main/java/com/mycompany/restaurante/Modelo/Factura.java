@@ -28,8 +28,8 @@ public class Factura {
     /**
      * Crea una nueva factura y genera automáticamente su folio único.
      * 
-     * @param numMesa       Identificador de la mesa que solicita la factura.
-     * @param total         Importe total a pagar.
+     * @param numMesa Identificador de la mesa que solicita la factura.
+     * @param total Importe total a pagar.
      * @param datosFiscales Objeto con la información fiscal del cliente.
      */
     public Factura(int numMesa, double total, DatosFacturacion datosFiscales) {

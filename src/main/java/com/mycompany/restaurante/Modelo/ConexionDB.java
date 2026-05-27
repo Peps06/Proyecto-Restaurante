@@ -11,7 +11,7 @@ import java.util.logging.Logger;
  * Cada llamada a getConexion() devuelve una Connection nueva e independiente.
  * Los DAO son responsables de cerrarla con try-with-resources.
  *
- * @author Citlaly
+ * @author Citlaly, Dana y Rubi
  * @version 2
  */
 public class ConexionDB {

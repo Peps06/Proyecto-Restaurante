@@ -19,7 +19,7 @@ public class OrdenItem {
      * 
      * @param producto Nombre del producto.
      * @param cantidad Cantidad de unidades.
-     * @param precio   Precio unitario del producto.
+     * @param precio Precio unitario del producto.
      */
     public OrdenItem(String producto, int cantidad, double precio) {
         this.producto = producto;
@@ -77,7 +77,6 @@ public class OrdenItem {
 
     /** 
      * Calcula el subtotal del ítem multiplicando la cantidad por el precio unitario.
-     * 
      * @return El costo total acumulado por este ítem específico.
      */
     public double getSubtotalItem() { return cantidad * precio; }

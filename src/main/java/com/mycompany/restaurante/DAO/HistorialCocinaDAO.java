@@ -31,13 +31,14 @@ public class HistorialCocinaDAO {
     private static final Logger LOG = Logger.getLogger(HistorialCocinaDAO.class.getName());
 
     //  Rango de hora de cada turno 
-    public static final String TURNO_MATUTINO   = "Matutino";
+
+    public static final String TURNO_MATUTINO = "Matutino";
     public static final String TURNO_VESPERTINO = "Vespertino";
 
     private static final String HORA_MAT_INICIO = "06:00:00";
-    private static final String HORA_MAT_FIN    = "14:59:59";
+    private static final String HORA_MAT_FIN = "14:59:59";
     private static final String HORA_VES_INICIO = "15:00:00";
-    private static final String HORA_VES_FIN    = "22:59:59";
+    private static final String HORA_VES_FIN = "22:59:59";
 
     //  SQL base
     /**

@@ -128,8 +128,8 @@ public class CobrarController implements Initializable {
 
     /**
      * Define el empleado que está operando la caja.
-     * @param idEmpleado ID único del usuario en sesión.
-     */
+     * 
+     * @param idEmpleado ID único del usuario en sesión.*/
     public void setIdEmpleadoActual(int idEmpleado) {
         this.idEmpleadoActual = idEmpleado;
     }
@@ -554,8 +554,8 @@ public class CobrarController implements Initializable {
     /**
      * Muestra un diálogo emergente estándar de alerta.
      *
-     * @param tipo      Tipo de alerta ({@code INFORMATION}, {@code WARNING}, {@code ERROR}).
-     * @param titulo    Texto del título de la ventana.
+     * @param tipo Tipo de alerta ({@code INFORMATION}, {@code WARNING}, {@code ERROR}).
+     * @param titulo Texto del título de la ventana.
      * @param contenido Mensaje principal visible para el usuario.
      */
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String contenido) {
