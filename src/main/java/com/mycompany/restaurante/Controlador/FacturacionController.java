@@ -20,7 +20,7 @@ import java.util.ResourceBundle;
  * y la persistencia de la factura a través de {@link FacturaDAO}.
  * 
  * @author Citlaly
- * @version 2.0 (Integración con Base de Datos)
+ * @version 2.0
  */
 public class FacturacionController implements Initializable {
 
@@ -64,18 +64,26 @@ public class FacturacionController implements Initializable {
 
     // ESTILOS CSS EN LÍNEA PARA VALIDACIÓN VISUAL
     private static final String ESTILO_NORMAL =
-        "-fx-background-color: #F7F4ED; -fx-border-color: #1A1E2E; -fx-border-radius: 5;";
+        "-fx-background-color: #F7F4ED;" + 
+        "-fx-border-color: #1A1E2E;" + 
+        "-fx-border-radius: 5;";
+        
     private static final String ESTILO_ERROR  =
-        "-fx-background-color: #FFF0F0; -fx-border-color: #cc0000; -fx-border-width: 2; -fx-border-radius: 5;";
+        "-fx-background-color: #FFF0F0" + 
+        "-fx-border-color: #cc0000;" + 
+        "-fx-border-width: 2;" + 
+        "-fx-border-radius: 5;";
+        
     private static final String ESTILO_COMBO_ERROR =
-        "-fx-border-color: #cc0000; -fx-border-width: 2;";
+        "-fx-border-color: #cc0000;" + 
+        "-fx-border-width: 2;";
 
     /**
      * Inicializa la pantalla configurando los catálogos de los ComboBoxes
      * y añadiendo listeners para limpiar el estilo de error al escribir.
      * 
-     * @param url
-     * @param rb
+     * @param url El localizador utilizado para resolver rutas relativas para el objeto raíz.
+     * @param rb Los recursos utilizados para localizar el objeto raíz.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -86,19 +94,47 @@ public class FacturacionController implements Initializable {
         configurarLimpiezaDeErrores();
     }
 
-    // Setters para los datos desde CobrarMesaControlador
+    /**
+     * Establece el identificador de la orden en procesamiento.
+     * 
+     * param id Identificador único de la orden.
+     */
     public void setIdOrden(int id) {
         this.idOrden = id;
     }
+    
+    /**
+     * Establece el subtotal calculado de la venta.
+     * 
+     * @param s Importe del subtotal.
+     */
     public void setSubtotal(double s) {
         this.subtotal = s;
     }
+    
+    /**
+     * Establece el IVA calculado de la venta.
+     *  
+     * @param i Importe del IVA.
+     */
     public void setIva(double i) {
         this.iva = i; 
     }
+    
+    /**
+     * Establece el monto total final de la factura.
+     *     
+     * @param total Importe total.
+     */
     public void setTotalFactura(double total) { 
         this.totalFactura = total; 
     }
+    
+    /**
+     * Establece el número de la mesa que solicita la facturación.
+     * 
+     * @param numMesa Número de mesa.
+     */
     public void setNumMesa(int numMesa) { 
         this.numMesa = numMesa; 
     }
@@ -139,6 +175,12 @@ public class FacturacionController implements Initializable {
         }
     }
 
+    /**
+     * Gestiona la acción de cancelación del proceso actual.
+     * Interrumpe la operación y procede a cerrar la vista.
+     * 
+     * @param event Evento de clic en el botón Cancelar.
+     */
     @FXML
     private void handleCancelarFactura(ActionEvent event) {
         cerrarVentana();
@@ -148,7 +190,9 @@ public class FacturacionController implements Initializable {
 
     /**
      * Coordina la validación de presencia de datos y formatos específicos.
-     * @return true si el formulario es válido.
+     * 
+     * @return {@code true} si todos los campos cumplen con las validaciones
+     * de presencia y formato; {@code false} en caso contrario.
      */
     private boolean validarCampos() {
         if (!validarPresencia(fieldNombreRazonSocial, "Nombre o Razón Social")) return false;
@@ -157,14 +201,21 @@ public class FacturacionController implements Initializable {
         if (!validarPresencia(fieldCorreo, "Correo Electrónico")) return false;
 
         // Validaciones de formato delegadas a la clase de modelo DatosFacturacion
-        if (!validarFormato(fieldRFC, DatosFacturacion.rfcValido(fieldRFC.getText().trim()), 
-            "RFC inválido", "Verifique el formato (ej. XAXX010101XXX).")) return false;
+        if (!validarFormato(fieldRFC,
+                DatosFacturacion.rfcValido(fieldRFC.getText().trim()), 
+            "RFC inválido", "Verifique el formato (ej. XAXX010101XXX)."))
+            return false;
 
-        if (!validarFormato(fieldCodigoPostal, DatosFacturacion.cpValido(fieldCodigoPostal.getText().trim()), 
-            "Código Postal inválido", "El Código Postal debe tener 5 dígitos.")) return false;
+        if (!validarFormato(fieldCodigoPostal,
+                DatosFacturacion.cpValido(fieldCodigoPostal.getText().trim()), 
+            "Código Postal inválido", "El Código Postal debe tener 5 dígitos."))
+            return false;
 
-        if (!validarFormato(fieldCorreo, DatosFacturacion.correoValido(fieldCorreo.getText().trim()), 
-            "Correo electrónico no válido", "Verifique la estructura del correo (debe incluir @ y dominio).")) return false;
+        if (!validarFormato(fieldCorreo,
+                DatosFacturacion.correoValido(fieldCorreo.getText().trim()), 
+            "Correo electrónico no válido",
+            "Verifique la estructura del correo (debe incluir @ y dominio)."))
+            return false;
 
         if (!validarCombo(comboRegimenFiscal, "Régimen Fiscal")) return false;
         if (!validarCombo(comboUsoCfdi, "Uso de CFDI")) return false;
@@ -174,13 +225,30 @@ public class FacturacionController implements Initializable {
 
     // HELPERS
 
+    /**
+     * Vincula escuchadores (listeners) a las propiedades de texto de los
+     * campos interactivos para reestablecer el estilo visual normal de forma
+     * inmediata cuando el usuario interactúe con ellos.
+     */
     private void configurarLimpiezaDeErrores() {
-        fieldNombreRazonSocial.textProperty().addListener((o, a, b) -> fieldNombreRazonSocial.setStyle(ESTILO_NORMAL));
-        fieldRFC.textProperty().addListener((o, a, b) -> fieldRFC.setStyle(ESTILO_NORMAL));
-        fieldCodigoPostal.textProperty().addListener((o, a, b) -> fieldCodigoPostal.setStyle(ESTILO_NORMAL));
-        fieldCorreo.textProperty().addListener((o, a, b) -> fieldCorreo.setStyle(ESTILO_NORMAL));
+        fieldNombreRazonSocial.textProperty().addListener((o, a, b) ->
+                fieldNombreRazonSocial.setStyle(ESTILO_NORMAL));
+        fieldRFC.textProperty().addListener((o, a, b) ->
+                fieldRFC.setStyle(ESTILO_NORMAL));
+        fieldCodigoPostal.textProperty().addListener((o, a, b) ->
+                fieldCodigoPostal.setStyle(ESTILO_NORMAL));
+        fieldCorreo.textProperty().addListener((o, a, b) ->
+                fieldCorreo.setStyle(ESTILO_NORMAL));
     }
 
+    /**
+     * Verifica que un campo de texto no se encuentre vacío o compuesto
+     * únicamente por espacios.
+     * 
+     * @param campo Componente {@link TextField} bajo evaluación.
+     * @param nombre Etiqueta identificativa del campo para el mensaje de aviso.
+     * @return {@code true} si el campo contiene texto; {@code false} si está vacío.
+     */
     private boolean validarPresencia(TextField campo, String nombre) {
         if (campo.getText().trim().isEmpty()) {
             marcarError(campo);
@@ -190,6 +258,16 @@ public class FacturacionController implements Initializable {
         return true;
     }
 
+    /**
+     * Evalúa el resultado de una validación de formato externa y gestiona
+     * la respuesta en la UI.
+     * 
+     * @param campo Componente {@link TextField} al que corresponde la validación.
+     * @param esValido Booleano que indica el estatus de la validación estructural.
+     * @param titulo Título informativo para la ventana modal de alerta.
+     * @param mensaje Detalle descriptivo del formato correcto esperado.
+     * @return El mismo estatus del parámetro {@code esValido}.
+     */
     private boolean validarFormato(TextField campo, boolean esValido, String titulo, String mensaje) {
         if (!esValido) {
             marcarError(campo);
@@ -199,6 +277,14 @@ public class FacturacionController implements Initializable {
         return true;
     }
 
+    /**
+     * Valida que un componente ComboBox tenga un elemento seleccionado de su catálogo.
+     * 
+     * @param combo Componente {@link ComboBox} a validar.
+     * @param nombre Nombre descriptivo del catálogo.
+     * @return {@code true} si tiene una opción seleccionada; {@code false}
+     * si se encuentra nulo.
+     */
     private boolean validarCombo(ComboBox<String> combo, String nombre) {
         if (combo.getValue() == null) {
             combo.setStyle(ESTILO_COMBO_ERROR);
@@ -209,11 +295,23 @@ public class FacturacionController implements Initializable {
         return true;
     }
 
+    /**
+     * Aplica el estilo visual de error a un campo de texto específico y
+     * traslada el foco de la interfaz hacia él.
+     * 
+     * @param campo El componente {@link TextField} que falló la validación.
+     */
     private void marcarError(TextField campo) {
         campo.setStyle(ESTILO_ERROR);
         campo.requestFocus();
     }
 
+    /**
+     * Despliega una alerta modal de advertencia estándar en la pantalla.
+     * 
+     * @param titulo Encabezado de la ventana de diálogo.
+     * @param mensaje Cuerpo informativo con la descripción del problema.
+     */
     private void mostrarAlertaCampo(String titulo, String mensaje) {
         Alert alerta = new Alert(Alert.AlertType.WARNING);
         alerta.setTitle(titulo);
@@ -222,6 +320,12 @@ public class FacturacionController implements Initializable {
         alerta.showAndWait();
     }
 
+    /**
+     * Muestra una ventana de diálogo de éxito con el resumen de la factura guardada.
+     * 
+     * @param factura Instancia de la factura con el folio asignado.
+     * @param datos Objeto contenedor de la información fiscal del receptor.
+     */
     private void mostrarAlertaExito(Factura factura, DatosFacturacion datos) {
         Alert exito = new Alert(Alert.AlertType.INFORMATION);
         exito.setTitle("Facturación Exitosa");
@@ -233,6 +337,11 @@ public class FacturacionController implements Initializable {
         exito.showAndWait();
     }
 
+    /**
+     * Despliega un modal de error crítico en caso de que ocurran excepciones en la capa de datos.
+     * 
+     * @param detalle Mensaje descriptivo o técnico de la excepción capturada.
+     */
     private void mostrarAlertaError(String detalle) {
         Alert error = new Alert(Alert.AlertType.ERROR);
         error.setTitle("Error de Facturación");
@@ -241,6 +350,10 @@ public class FacturacionController implements Initializable {
         error.showAndWait();
     }
 
+    /**
+     * Obtiene la escena actual a través de cualquiera de sus componentes integrados
+     * y solicita el cierre del contenedor de la ventana principal.
+     */
     private void cerrarVentana() {
         Stage stage = (Stage) btnCancelarFactura.getScene().getWindow();
         stage.close();

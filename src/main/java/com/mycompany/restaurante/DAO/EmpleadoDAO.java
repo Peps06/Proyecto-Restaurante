@@ -2,6 +2,7 @@ package com.mycompany.restaurante.DAO;
 
 import com.mycompany.restaurante.Modelo.ConexionDB;
 import com.mycompany.restaurante.Modelo.Empleado;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -17,15 +18,13 @@ import java.sql.*;
  */
 public class EmpleadoDAO {
 
-    /**
-     * Recupera todos los empleados registrados en la base de datos.
-     * 
-     * @return Una {@link ObservableList} con los objetos {@link Empleado}.
-     *         Devuelve una lista vacía si ocurre un error en la consulta.
-     */
-    /**
- * Devuelve todos los empleados de la BD calculando su asistencia en tiempo real.
- */
+/**
+ * Recupera todos los empleados registrados en la base de datos.
+ * 
+ * @return Una {@link ObservableList} con los objetos {@link Empleado}.
+ *         Devuelve una lista vacía si ocurre un error en la consulta.
+ *
+*/
 public static ObservableList<Empleado> obtenerTodos() {
     ObservableList<Empleado> lista = FXCollections.observableArrayList();
     
