@@ -36,10 +36,10 @@ import javafx.stage.Stage;
  * mediante tres colores distintos, y navegar hacia la toma de pedidos.
  *
  * Estados visuales:
- *   Azul   (#627096) → Libre: sin cliente asignado.
- *   Café   (#6A500F) → Ocupada sin orden: el recepcionista asignó al cliente
- *                       pero el mesero aún no ha registrado el pedido.
- *   Rojo   (#8A3636) → Ocupada con orden: ya existe una orden abierta en BD.
+ * Azul   (#627096) → Libre: sin cliente asignado.
+ * Café   (#6A500F) → Ocupada sin orden: el recepcionista asignó al cliente
+ * pero el mesero aún no ha registrado el pedido.
+ * Rojo   (#8A3636) → Ocupada con orden: ya existe una orden abierta en BD.
  *
  * @author Citlaly
  * @version 2.0
@@ -123,8 +123,8 @@ public class MesasDisponiblesController implements Initializable {
      *
      * Para las mesas en estado "Ocupada" se hace una consulta adicional
      * a la tabla ordenes para determinar si ya existe una orden abierta:
-     *   - Con orden abierta → ESTILO_MESA_CON_ORDEN (#8A3636 rojo)
-     *   - Sin orden abierta → ESTILO_MESA_SIN_ORDEN (#6A500F café)
+     * - Con orden abierta → ESTILO_MESA_CON_ORDEN (#8A3636 rojo)
+     * - Sin orden abierta → ESTILO_MESA_SIN_ORDEN (#6A500F café)
      */
     private void cargarEstadoMesas() {
         Button[] botones = obtenerArregloMesas();
@@ -169,8 +169,8 @@ public class MesasDisponiblesController implements Initializable {
      *
      * Libre → ofrece registrar pedido.
      * Ocupada → informa al mesero sobre el estado:
-     *             · Sin orden: puede tomar el pedido.
-     *             · Con orden: la orden ya fue registrada.
+     * · Sin orden: puede tomar el pedido.
+     * · Con orden: la orden ya fue registrada.
      *
      * @param numMesa Número de mesa clicada (1-12).
      */
@@ -216,7 +216,7 @@ public class MesasDisponiblesController implements Initializable {
 
                     ButtonType btnIr = new ButtonType("Sí, tomar pedido");
                     ButtonType btnCancelar = new ButtonType("Cancelar",
-                                             javafx.scene.control.ButtonBar.ButtonData.CANCEL_CLOSE);
+                                                             javafx.scene.control.ButtonBar.ButtonData.CANCEL_CLOSE);
                     confirmacion.getButtonTypes().setAll(btnIr, btnCancelar);
 
                     Optional<ButtonType> resultado = confirmacion.showAndWait();
@@ -243,6 +243,11 @@ public class MesasDisponiblesController implements Initializable {
         }
     }
     
+    /**
+     * Valida la mesa seleccionada y abre el entorno modal para añadir un nuevo platillo 
+     * a la comanda activa, refrescando la vista de pedidos al finalizar.
+     * @param event Evento de acción del botón disparado por el usuario.
+     */
     @FXML
     private void handleNuevoPlato(ActionEvent event) {
         LOG.info("funciona el actionEvent");
@@ -271,9 +276,66 @@ public class MesasDisponiblesController implements Initializable {
         }
     }
     
+    /**
+     * Valida la selección de mesa y platillo para proceder con la confirmación y 
+     * disminución/cancelación de una unidad del artículo seleccionado en la BD.
+     * @param event Evento de acción del botón disparado por el usuario.
+     */
     @FXML
-    private void handleCancelarPlato(ActionEvent event){
-        
+    private void handleCancelarPlato(ActionEvent event) {
+        // 1. Valida si seleccionó una mesa previamente (Igual que en handleNuevoPlato)
+        if (this.mesaParaPedido == 0) {
+            mostrarAlerta(Alert.AlertType.WARNING, 
+                "Seleccione una mesa", 
+                "Por favor, haga clic sobre una mesa antes de intentar cancelar un platillo.");
+            return;
+        }
+
+        // 2. Valida si la mesa tiene una orden activa
+        int idOrden = PedidoDAO.obtenerOrdenAbiertaPorMesa(this.mesaParaPedido);
+        if (idOrden == 0) {
+            LOG.info(() -> "Intento de cancelar platillo en Mesa " + this.mesaParaPedido + " sin orden activa.");
+            mostrarAlerta(Alert.AlertType.WARNING, 
+                "Sin orden activa", 
+                "La Mesa " + this.mesaParaPedido + " no tiene un pedido registrado del cual cancelar platillos.");
+            return;
+        }
+
+        // 3. Valida si seleccionó un platillo de la tabla de la derecha
+        OrdenItem seleccionado = tablaVerPedido.getSelectionModel().getSelectedItem();
+        if (seleccionado == null) {
+            mostrarAlerta(Alert.AlertType.WARNING, 
+                "Platillo no seleccionado", 
+                "Por favor, seleccione un platillo de la lista de la orden para cancelar.");
+            return;
+        }
+
+        // 4. Confirmación de cancelación
+        Alert confirmar = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmar.setTitle("Confirmar Cancelación");
+        confirmar.setHeaderText("Cancelar 1x " + seleccionado.getProducto());
+        confirmar.setContentText("¿Estás seguro de que deseas restar una unidad de este platillo de la orden?");
+
+        Optional<ButtonType> respuesta = confirmar.showAndWait();
+        if (respuesta.isPresent() && respuesta.get() == ButtonType.OK) {
+            
+            LOG.info(() -> "Cancelando 1 unidad de " + seleccionado.getProducto() + " de la Orden #" + idOrden);
+            
+            // 5. Llamada al DAO para hacer el UPDATE/DELETE en la base de datos
+            boolean exito = PedidoDAO.cancelarPlatillo(idOrden, seleccionado.getProducto());
+
+            if (exito) {
+                mostrarAlerta(Alert.AlertType.INFORMATION, "Cancelación Exitosa", "Se canceló una unidad del platillo correctamente.");
+                
+                // 6. Refrescar la tabla con la orden actualizada
+                ObservableList<OrdenItem> ordenActualizada = PedidoDAO.obtenerDetalleOrden(idOrden);
+                tablaVerPedido.setItems(ordenActualizada);
+            } else {
+                mostrarAlerta(Alert.AlertType.ERROR, "Error en BD", "No se pudo cancelar el platillo. Verifique si aún existe en la orden.");
+            }
+        } else {
+            LOG.info("El mesero abortó la cancelación del platillo.");
+        }
     }
 
     @FXML
@@ -284,12 +346,20 @@ public class MesasDisponiblesController implements Initializable {
         cargarEstadoMesas();
     }
 
+    /**
+     * Redirige al mesero hacia el módulo general de toma y registro de pedidos.
+     * @param event Evento de navegación lanzado por el menú lateral.
+     */
     @FXML
     private void handleRealizarPedido(ActionEvent event) {
         cambiarPantalla("/com/mycompany/restaurante/fxml/RegistrarPedidoPantalla.fxml",
                  "Realizar Pedido - Saveurs Paris", event);
     }
 
+    /**
+     * Redirige al mesero hacia el panel de visualización, tracking y edición de comandas existentes.
+     * @param event Evento de navegación lanzado por el menú lateral.
+     */
     @FXML
     private void handleGestionar(ActionEvent event) {
         cambiarPantalla("/com/mycompany/restaurante/fxml/GestionarPedidoPantalla.fxml",
@@ -389,10 +459,14 @@ public class MesasDisponiblesController implements Initializable {
             e.printStackTrace();
             mostrarAlerta(Alert.AlertType.ERROR,
                 "Error de navegación",
-                "No se pudo cargar la pantalla solicitada.");
+                "No se pudo cargar la pantalla ZIP solicitada.");
         }
     }
 
+    /**
+     * Inyecta el ID único del empleado que ha iniciado sesión para asociarlo a las operaciones.
+     * @param id Identificador numérico del empleado en sesión.
+     */
     public void setIdEmpleadoSesion(int id) {
         this.idEmpleadoSesion = id;
     }

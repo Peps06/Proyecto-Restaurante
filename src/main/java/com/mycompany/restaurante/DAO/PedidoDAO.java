@@ -176,7 +176,64 @@ public class PedidoDAO {
            return false;
        }
    }
+   
+   /**
+     * Cancela una unidad de un producto en una orden activa buscando por el nombre del platillo.
+     * Si la cantidad es mayor a 1, resta 1. Si es 1, elimina el platillo.
+     * * @param idOrden ID de la orden activa.
+     * @param nombreProducto Nombre del producto a cancelar.
+     * @return true si se canceló exitosamente, false en caso contrario.
+     */
+    public static boolean cancelarPlatillo(int idOrden, String nombreProducto) {
+        String sqlCheck = "SELECT d.idProducto, d.cantidad FROM detalle_orden d " +
+                          "JOIN productos p ON d.idProducto = p.idProductos " +
+                          "WHERE d.idOrden = ? AND p.nombre = ?";
+                          
+        String sqlUpdate = "UPDATE detalle_orden SET cantidad = cantidad - 1 WHERE idOrden = ? AND idProducto = ?";
+        String sqlDelete = "DELETE FROM detalle_orden WHERE idOrden = ? AND idProducto = ?";
 
+        try (Connection con = ConexionDB.getConexion()) {
+            con.setAutoCommit(false); 
+
+            try (PreparedStatement psCheck = con.prepareStatement(sqlCheck)) {
+                psCheck.setInt(1, idOrden);
+                psCheck.setString(2, nombreProducto);
+                
+                try (ResultSet rs = psCheck.executeQuery()) {
+                    if (rs.next()) {
+                        int idProducto = rs.getInt("idProducto");
+                        int cantidadActual = rs.getInt("cantidad");
+                        
+                        if (cantidadActual > 1) {
+                            try (PreparedStatement psUpdate = con.prepareStatement(sqlUpdate)) {
+                                psUpdate.setInt(1, idOrden);
+                                psUpdate.setInt(2, idProducto);
+                                psUpdate.executeUpdate();
+                            }
+                        } else {
+                            try (PreparedStatement psDelete = con.prepareStatement(sqlDelete)) {
+                                psDelete.setInt(1, idOrden);
+                                psDelete.setInt(2, idProducto);
+                                psDelete.executeUpdate();
+                            }
+                        }
+                        con.commit();
+                        return true;
+                    } else {
+                        con.rollback();
+                        return false; 
+                    }
+                }
+            } catch (SQLException e) {
+                con.rollback();
+                throw e;
+            }
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "PedidoDAO: Error al cancelar platillo por nombre.", e);
+            return false;
+        }
+    }
+    
     /**
      * Consulta si existe una orden con estado 'Abierta' vinculada a una mesa específica.
      *

@@ -24,23 +24,28 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 /**
- *
- * @author Dana
+ * Controlador principal para la gestión de la lista de espera dinámica en Saveurs Paris.
+ * Se encarga de mostrar los flujos de clientes en espera dentro de un TableView, 
+ * formatear los tiempos de llegada e interactuar con subventanas modales para registrar, 
+ * modificar o realizar la asignación de mesas físicas.
+ * * @author Dana
+ * @version 1.0
  */
-
-
 public class ListaEsperaController {
 
+    // BOTONES DE NAVEGACIÓN Y MENÚ LATERAL
     @FXML private Button btnMesas;
     @FXML private Button btnReservas;
     @FXML private Button btnListaEsp;
     @FXML private Button btnCerrarSesion;
+    
+    // BOTONES DE ACCIONES OPERATIVAS
     @FXML private Button btnAgregar;
     @FXML private Button btnEditar;
     @FXML private Button btnCancelar;
     @FXML private Button btnAsignar;
 
-    // Tabla y columnas 
+    // TABLA DE LISTA DE ESPERA Y SUS COLUMNAS 
     @FXML private TableView<ClienteEspera> tablaListaEspera;
     @FXML private TableColumn<ClienteEspera, Integer> colId;
     @FXML private TableColumn<ClienteEspera, String> colNombre;
@@ -49,6 +54,10 @@ public class ListaEsperaController {
     @FXML private TableColumn<ClienteEspera, String> colLlegada; 
     @FXML private TableColumn<ClienteEspera, String> colEstado;
 
+    /**
+     * Inicializa el controlador enlazando los campos del modelo con el TableView
+     * y aplicando una fábrica de celdas personalizada para formatear la hora de llegada de forma elegante.
+     */
     @FXML
     public void initialize() {
         // 1. Configurar cómo se llenan las columnas
@@ -69,11 +78,18 @@ public class ListaEsperaController {
         cargarDatosTabla();
     }
 
+    /**
+     * Consulta la base de datos a través de la capa DAO para actualizar el contenedor de elementos de la tabla.
+     */
     private void cargarDatosTabla() {
         ObservableList<ClienteEspera> lista = ListaEsperaDAO.obtenerEsperando();
         tablaListaEspera.setItems(lista);
     }
 
+    /**
+     * Inicializa y despliega la ventana modal encargada del registro de nuevos clientes en la lista de espera.
+     * @param event Evento de acción originado por el botón agregar.
+     */
     @FXML
     private void manejarAgregar(ActionEvent event) {
         try {
@@ -99,6 +115,10 @@ public class ListaEsperaController {
         }
     }
 
+    /**
+     * Recupera el cliente seleccionado del TableView e inyecta su información en el formulario modal para su edición.
+     * @param event Evento de acción originado por el botón de edición.
+     */
     @FXML
     private void manejarEditar(ActionEvent event) {
         ClienteEspera seleccionada = tablaListaEspera.getSelectionModel().getSelectedItem();
@@ -131,7 +151,6 @@ public class ListaEsperaController {
                 seleccionada.setTelefono(editada.getTelefono());
                 seleccionada.setNumeroPersonas(editada.getNumeroPersonas());
 
-                
                 ListaEsperaDAO.actualizar(seleccionada);
                 
                 tablaListaEspera.refresh();
@@ -143,11 +162,19 @@ public class ListaEsperaController {
         }
     }
 
+    /**
+     * Evento de control temporal para la gestión del botón de cancelación de esperas.
+     * @param event Evento de acción gatillado por el botón.
+     */
     @FXML
     private void manejarCancelar(ActionEvent event) {
         System.out.println("Botón Cancelar presionado");
     }
 
+    /**
+     * Extrae el comensal seleccionado de la lista y despliega el formulario modal para asignarle una mesa libre.
+     * @param event Evento de acción del botón de asignación.
+     */
     @FXML
     private void manejarAsignar(ActionEvent event) {
         ClienteEspera seleccionado = tablaListaEspera.getSelectionModel().getSelectedItem();
@@ -178,22 +205,39 @@ public class ListaEsperaController {
         }
     }
 
-
+    /**
+     * Redirige al operador del sistema hacia la pantalla de control de disponibilidad de mesas.
+     * @param event Evento de procedencia del menú.
+     */
     @FXML
     private void handleMesas(ActionEvent event) {
         cambiarPantalla(event, "/com/mycompany/restaurante/fxml/DisponibilidadRecepcionista.fxml", "Mesas - Recepción");
     }
 
+    /**
+     * Redirige al operador del sistema hacia la pantalla de administración de reservaciones generales.
+     * @param event Evento de procedencia del menú.
+     */
     @FXML
     private void handleReservas(ActionEvent event) {
         cambiarPantalla(event, "/com/mycompany/restaurante/fxml/GestionReservas.fxml", "Reservas - Recepción");
     }
 
+    /**
+     * Fuerza la recarga síncrona de los elementos comensales vigentes en el TableView.
+     * @param event Evento de acción lanzado por el botón de refrescado de lista.
+     */
     @FXML
     private void handleListaEsp(ActionEvent event) {
         cargarDatosTabla();
     }
     
+    /**
+     * Despliega un cuadro de diálogo modal e informativo estandarizado en pantalla.
+     * * @param tipo El tipo de categorización o icono de la alerta ({@code ERROR}, {@code WARNING}, etc.).
+     * @param titulo Texto para el título del marco.
+     * @param mensaje Cuerpo descriptivo explícito del aviso.
+     */
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
         Alert alerta = new Alert(tipo);
         alerta.setTitle(titulo);
@@ -202,6 +246,10 @@ public class ListaEsperaController {
         alerta.showAndWait();
     }
 
+    /**
+     * Valida mediante un diálogo de confirmación el cierre de la sesión de recepción, regresando al Login.
+     * @param event Evento de acción del botón de salida.
+     */
     @FXML
     private void handleCerrarSesion(ActionEvent event) {
         // Crear la alerta de confirmación
@@ -228,6 +276,12 @@ public class ListaEsperaController {
         }
     }
 
+    /**
+     * Centraliza las transiciones y cambios de pantalla del sistema sustituyendo la escena del Stage principal.
+     * @param event Evento origen de la navegación.
+     * @param rutaFxml Ubicación del recurso `.fxml` al que se desea navegar.
+     * @param titulo Encabezado descriptivo para la barra de la ventana.
+     */
     private void cambiarPantalla(ActionEvent event, String rutaFxml, String titulo) {
         try {
             Parent root = FXMLLoader.load(getClass().getResource(rutaFxml));

@@ -27,7 +27,8 @@ public class ProductoDAO {
      */
     public static ObservableList<Producto> obtenerTodos() {
         ObservableList<Producto> lista = FXCollections.observableArrayList();
-        String sql = "SELECT idProductos, nombre, tipo, precio, descripcion FROM productos";
+        String sql = "SELECT idProductos, nombre, tipo, precio, descripcion, "
+                + "imagen FROM productos";
 
         try (Connection con = ConexionDB.getConexion();
              Statement  st  = con.createStatement();
@@ -40,6 +41,8 @@ public class ProductoDAO {
                     rs.getDouble("precio"),
                     rs.getString("descripcion")
                 );
+                p.setImagen(rs.getString("imagen"));
+                
                 // Se guarda el id en cantidad (temporal) para poder usarlo en altas y bajas.
                 p.setId(rs.getInt("idProductos"));
                 p.setCantidadPedida(0);
@@ -60,15 +63,18 @@ public class ProductoDAO {
      *         -1 si la operación falla.
      */
     public static int insertar(Producto p) {
-        String sql = "INSERT INTO productos (nombre, tipo, precio, descripcion) VALUES (?,?,?,?)";
+        String sql = "INSERT INTO productos (nombre, tipo, precio, descripcion, "
+                + "imagen) VALUES (?,?,?,?,?)";
 
         try (Connection con = ConexionDB.getConexion();
-             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement ps = con.prepareStatement
+                                    (sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setString(1, p.getNombre());
             ps.setString(2, p.getTipo());
             ps.setDouble(3, p.getPrecio());
             ps.setString(4, p.getDescripcion());
+            ps.setString(5, p.getImagen());
             ps.executeUpdate();
 
             try (ResultSet keys = ps.getGeneratedKeys()) {
@@ -88,8 +94,8 @@ public class ProductoDAO {
      * @return {@code true} si se actualizó al menos un registro; {@code false} en caso contrario.
      */
     public static boolean actualizar(Producto p) {
-        String sql = "UPDATE productos SET nombre=?, tipo=?, precio=?, descripcion=? "
-                   + "WHERE idProductos=?";
+        String sql = "UPDATE productos SET nombre=?, tipo=?, precio=?, "
+                + "descripcion=?, imagen=? WHERE idProductos=?";
 
         try (Connection con = ConexionDB.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -98,7 +104,8 @@ public class ProductoDAO {
             ps.setString(2, p.getTipo());
             ps.setDouble(3, p.getPrecio());
             ps.setString(4, p.getDescripcion());
-            ps.setInt(5, p.getId());
+            ps.setString(5, p.getImagen());
+            ps.setInt(6, p.getId());
             return ps.executeUpdate() > 0;
 
         } catch (SQLException | NumberFormatException e) {

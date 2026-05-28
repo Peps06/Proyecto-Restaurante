@@ -24,11 +24,10 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 /**
- * Controlador de la pantalla de disponibilidad de mesas.
+ * Controlador de la pantalla de disponibilidad de mesas para la recepción.
  * Permite visualizar el mapa de mesas del restaurante, identificar su estado
  * (Libre, Ocupada, Reservada) mediante colores y navegar hacia la toma de pedidos.
- * 
- * @author Dana
+ * * @author Dana
  * @version 1.0
  */
 public class DisponibilidadRecepcionistaController implements Initializable {
@@ -40,14 +39,14 @@ public class DisponibilidadRecepcionistaController implements Initializable {
     @FXML private Button btnMesa5, btnMesa6, btnMesa7, btnMesa8;
     @FXML private Button btnMesa9, btnMesa10, btnMesa11, btnMesa12;
     
-    // BOTONES
+    // BOTONES DE NAVEGACIÓN Y MENÚ LATERAL
     @FXML private Button btnMesas;
     @FXML private Button btnReservas;
     @FXML private Button btnListaEsp;
     @FXML private Button btnCerrarSesion;
 
    
-    // ESTILOS CSS 
+    // ESTILOS CSS PARA ESTADOS VISUALES
     private static final String ESTILO_MESA_LIBRE =
         "-fx-background-color: #627096; -fx-border-color: #627096; -fx-text-fill: #d4c5b0;" +
         "-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;" +
@@ -73,6 +72,8 @@ public class DisponibilidadRecepcionistaController implements Initializable {
     /**
      * Inicializa la vista configurando el estilo del menú lateral y 
      * sincronizando el estado visual de las mesas con la base de datos.
+     * @param url Ubicación del recurso FXML utilizado.
+     * @param rb Contenedor de recursos para internacionalización.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -101,7 +102,10 @@ public class DisponibilidadRecepcionistaController implements Initializable {
         }
     }
 
-
+    /**
+     * Alterna y refresca los estilos visuales del menú y la cuadrícula al presionar el botón de disponibilidad.
+     * @param event Evento de acción del botón.
+     */
     @FXML
     private void handleDisponibilidad(ActionEvent event) {
         btnMesas.setStyle(ESTILO_BTN_ACTIVO);
@@ -113,6 +117,7 @@ public class DisponibilidadRecepcionistaController implements Initializable {
     
     /**
      * Agrupa los botones individuales en un arreglo para facilitar su procesamiento iterativo.
+     * @return Arreglo indexado con las instancias de los botones de las mesas.
      */
     private Button[] obtenerArregloMesas() {
         return new Button[] {
@@ -122,6 +127,10 @@ public class DisponibilidadRecepcionistaController implements Initializable {
         };
     }
     
+    /**
+     * Detecta la mesa seleccionada en el mapa; abre el modal de asignación si está libre o notifica su ocupación.
+     * @param event Evento de acción disparado por el botón de la mesa cliqueada.
+     */
     @FXML
     private void manejarClicMesa(ActionEvent event) {
         Button btnClickeado = (Button) event.getSource();
@@ -154,7 +163,10 @@ public class DisponibilidadRecepcionistaController implements Initializable {
     }
 
     /**
-     * Método genérico para la navegación entre escenas.
+     * Método genérico para realizar la transición y navegación fluida entre escenas del sistema.
+     * @param event Evento origen de la navegación.
+     * @param fxmlPath Ruta relativa del archivo de interfaz FXML de destino.
+     * @param titulo Texto para la barra superior de la nueva ventana.
      */
     private void cambiarPantalla(ActionEvent event, String fxmlPath, String titulo) {
         try {
@@ -177,21 +189,38 @@ public class DisponibilidadRecepcionistaController implements Initializable {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Redirige al operador hacia la pantalla de disponibilidad de mesas.
+     * @param event Evento de disparo vinculado al menú de mesas.
+     */
     @FXML
     private void handleMesas(ActionEvent event) {
         cambiarPantalla(event, "/com/mycompany/restaurante/fxml/DisponibilidadRecepcionista.fxml", "Disponibilidad Mesas");
     }
 
+    /**
+     * Redirige al operador hacia la pantalla de administración y control de reservaciones.
+     * @param event Evento de disparo vinculado al menú de reservas.
+     */
     @FXML
     private void handleReservas(ActionEvent event) {
         cambiarPantalla(event, "/com/mycompany/restaurante/fxml/GestionReservas.fxml", "Gestionar Reservas");
     }
 
+    /**
+     * Redirige al operador hacia la interfaz de control de la lista de espera dinámica.
+     * @param event Evento de disparo vinculado al menú de lista de espera.
+     */
     @FXML
     private void handleListaEsp(ActionEvent event) {
         cambiarPantalla(event, "/com/mycompany/restaurante/fxml/ListaDeEspera.fxml", "Lista de espera");
     }
 
+    /**
+     * Valida mediante una ventana de confirmación el cierre de sesión, redirigiendo al Login en caso afirmativo.
+     * @param event Evento de disparo vinculado al botón de salida.
+     */
     @FXML
     private void handleCerrarSesion(ActionEvent event) {
         // Crear la alerta de confirmación
@@ -219,6 +248,12 @@ public class DisponibilidadRecepcionistaController implements Initializable {
         }
     }
 
+    /**
+     * Crea y despliega una ventana de aviso o alerta modal en pantalla de forma genérica.
+     * @param tipo El tipo de categorización o icono del aviso ({@code ERROR}, {@code WARNING}, etc.).
+     * @param titulo Texto a colocar en el encabezado de la barra del recuadro.
+     * @param contenido Mensaje o cuerpo explícito que detalla la alerta.
+     */
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String contenido) {
         Alert a = new Alert(tipo);
         a.setTitle(titulo);
@@ -226,5 +261,4 @@ public class DisponibilidadRecepcionistaController implements Initializable {
         a.setContentText(contenido);
         a.showAndWait();
     }
-
 }

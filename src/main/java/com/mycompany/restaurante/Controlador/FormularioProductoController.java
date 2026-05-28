@@ -5,6 +5,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
+import javafx.stage.FileChooser;
+import java.io.File;
+
 /**
  * Esta clase es el controlador del formulario para los productos del menú.
  * Es una ventana "dos en uno": me sirve tanto para registrar un platillo nuevo 
@@ -22,6 +25,10 @@ public class FormularioProductoController {
     @FXML private TextField txtPrecio;     
     @FXML private ComboBox<String> cbTipo; 
     @FXML private Button btnGuardar;     
+    
+    @FXML private Button btnSubirImagen;
+    @FXML private Label lblRutaImagen;
+    private String rutaImagenSeleccionada = null;
 
     // variables de control interno
     private Producto producto;       
@@ -58,6 +65,10 @@ public class FormularioProductoController {
             txtPrecio.setText(String.valueOf(p.getPrecio()));
             cbTipo.setValue(p.getTipo());
         }
+        if (p.getImagen() != null && !p.getImagen().isEmpty()) {
+            rutaImagenSeleccionada = p.getImagen();
+            lblRutaImagen.setText("Imagen ya cargada");
+        }
     }
 
     /**
@@ -76,15 +87,67 @@ public class FormularioProductoController {
                     Double.parseDouble(txtPrecio.getText()),
                     txtDescripcion.getText()
                 );
+                producto.setImagen(rutaImagenSeleccionada);
+                int idGenerado = com.mycompany.restaurante.DAO.ProductoDAO.insertar(producto);
+                
+                if (idGenerado != -1) {
+                    producto.setId(idGenerado); 
+                    System.out.println("Producto guardado exitosamente en BD con ID: " + idGenerado);
+                } else {
+                    System.err.println("Error al intentar guardar el producto en la BD.");
+                }
             } else {
                 // Caso B: Solo actualizamos la información del producto que ya teníamos
                 producto.setNombre(txtNombre.getText());
                 producto.setDescripcion(txtDescripcion.getText());
                 producto.setPrecio(Double.parseDouble(txtPrecio.getText()));
                 producto.setTipo(cbTipo.getValue());
+                producto.setImagen(rutaImagenSeleccionada);
+                
+                boolean exito = com.mycompany.restaurante.DAO.ProductoDAO.actualizar(producto);
+                
+                if (exito) {
+                    System.out.println("Producto actualizado exitosamente en BD.");
+                } else {
+                    System.err.println("Error al intentar actualizar el producto en la BD.");
+                }
             }
             guardadoExitoso = true;
             cerrarVentana();
+        }
+    }
+    
+    /**
+     * Abre un cuadro de diálogo del sistema para buscar y seleccionar un archivo de imagen.
+     * Configura filtros de extensión para admitir solo formatos (.png, .jpg, .jpeg) e 
+     * intenta abrir directamente la carpeta de imágenes del proyecto para agilizar el proceso.
+     */
+    @FXML
+    private void handleSeleccionarImagen() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Seleccionar imagen del producto");
+        
+        // --- RUTA DIRECTA Y FIJA ---
+        String rutaDirecta = "C:\\Users\\dana0\\Documents\\Proyecto-Restaurante-main\\src\\main\\resources\\img";
+        File directorioInicial = new File(rutaDirecta);
+        
+        // Verificamos que la carpeta exista para evitar que el programa choque
+        if (directorioInicial.exists() && directorioInicial.isDirectory()) {
+            fileChooser.setInitialDirectory(directorioInicial);
+        } else {
+            System.out.println("No se encontró la ruta: " + rutaDirecta);
+        }
+        // -----------------------------
+
+        fileChooser.getExtensionFilters().addAll(
+            new FileChooser.ExtensionFilter("Imágenes", "*.png", "*.jpg", "*.jpeg")
+        );
+
+        File file = fileChooser.showOpenDialog(btnSubirImagen.getScene().getWindow());
+
+        if (file != null) {
+            rutaImagenSeleccionada = file.toURI().toString();
+            lblRutaImagen.setText(file.getName());
         }
     }
 
