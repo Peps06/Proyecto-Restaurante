@@ -1,6 +1,5 @@
 package com.mycompany.restaurante.Controlador;
 
-import com.mycompany.restaurante.DAO.PedidoDAO;
 import com.mycompany.restaurante.DAO.ProductoDAO;
 import com.mycompany.restaurante.Modelo.Producto;
 
@@ -54,13 +53,14 @@ public class RegistrarPedidoController {
     private int idMesaReal;
 
     /**
-     * Inicializa el entorno del formulario: resetea los contadores de productos a cero,
-     * vincula las propiedades del modelo con el TableView y construye las celdas dinámicas.
+     * Inicializa el entorno del formulario: resetea los contadores de productos a cero.
+     * 
+     * vincula las propiedades del modelo con el TableView y construye las celdas dinámicas
      */
     public void initialize() {
         // 1. Cargar datos
         for (Producto p : ProductoDAO.obtenerTodos()) {
-            p.setCantidadPedida(0);   // reinicia cantidad para el pedido
+            p.setCantidadPedida(0);  // reinicia cantidad para el pedido
             masterData.add(p);
         }
 
@@ -144,6 +144,7 @@ public class RegistrarPedidoController {
     
     /**
      * Inyecta el identificador físico de la mesa que solicita o modifica la comanda.
+     * 
      * @param numMesa Número correlativo de la mesa bajo atención.
      */
     public void setMesaSeleccionada(int numMesa) {
@@ -176,8 +177,10 @@ public class RegistrarPedidoController {
     }
 
     /**
-     * Procesa la confirmación de la comanda: valida la existencia de artículos, construye un desglose textual 
-     * informativo y bifurca el flujo para insertar una nueva orden o actualizar una preexistente.
+     * Procesa la confirmación de la comanda: valida la existencia de artículos
+     * construye un desglose textual.
+     * informativo y bifurca el flujo para insertar una nueva orden o actualizar
+     * una preexistente.
      */
     @FXML
     private void handleConfirmarPedido() {
@@ -215,14 +218,18 @@ public class RegistrarPedidoController {
         if (result.isPresent() && result.get() == ButtonType.OK) {
             
             // Verificar si la mesa ya cuenta con una orden activa / abierta
-            int idOrdenExistente = com.mycompany.restaurante.DAO.PedidoDAO.obtenerOrdenAbiertaPorMesa(idMesaReal);
+            int idOrdenExistente =
+                com.mycompany.restaurante.DAO.PedidoDAO.obtenerOrdenAbiertaPorMesa(
+                        idMesaReal);
             
             boolean exito;
             int idParaMostrar;
             
             if (idOrdenExistente > 0) {
                 // CAMINO A: La mesa ya tiene orden, añadimos los nuevos platillos al ID existente
-                exito = com.mycompany.restaurante.DAO.PedidoDAO.añadirPlatillosAOrden(idOrdenExistente, masterData);
+                exito =
+                    com.mycompany.restaurante.DAO.PedidoDAO.añadirPlatillosAOrden(
+                            idOrdenExistente, masterData);
                 idParaMostrar = idOrdenExistente;
             } else {
                 // CAMINO B: Mesa vacía/libre, se registra una orden completa desde cero
@@ -273,7 +280,9 @@ public class RegistrarPedidoController {
     }
     
     /**
-     * Cancela la toma de orden actual interrumpiendo el flujo sin guardar y cierra el modal.
+     * Cancela la toma de orden actual interrumpiendo el flujo sin guardar
+     * y cierra el modal.
+     * 
      * @param event Evento de acción del botón Cancelar.
      */
     @FXML
@@ -282,7 +291,9 @@ public class RegistrarPedidoController {
     }
 
     /**
-     * Valida mediante diálogo de confirmación el cierre de sesión, redirigiendo al Login en caso afirmativo.
+     * Valida mediante diálogo de confirmación el cierre de sesión,
+     * redirigiendo al Login en caso afirmativo.
+     * 
      * @param event Evento lanzado por el botón de cierre de sesión.
      */
     @FXML

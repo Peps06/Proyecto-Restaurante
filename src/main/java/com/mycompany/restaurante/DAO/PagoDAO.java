@@ -102,7 +102,7 @@ public class PagoDAO {
     /**
      * Ejecuta el INSERT en {@code pagos} usando la conexión activa.
      *
-     * @param con  Conexión activa con {@code autoCommit=false}.
+     * @param con Conexión activa con {@code autoCommit=false}.
      * @param pago Datos del pago a persistir.
      * @return El {@code idPago} generado por {@code AUTO_INCREMENT}.
      * @throws SQLException Si ocurre un error de base de datos.
