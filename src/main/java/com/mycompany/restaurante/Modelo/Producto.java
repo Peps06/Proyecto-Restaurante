@@ -4,7 +4,8 @@ package com.mycompany.restaurante.Modelo;
  * Clase que representa la entidad Producto dentro del sistema Saveurs Paris.
  * Se utiliza para gestionar la información de los alimentos, bebidas y artículos
  * del menú, controlando sus precios, tipos, descripciones y cantidades en pedidos.
- * * @author Dana
+ * 
+ * @author Dana
  * @version 1.0
  */
 public class Producto {
@@ -19,7 +20,8 @@ public class Producto {
     
     /**
      * Constructor sobrecargado para inicializar un producto enfocado en la gestión de pedidos.
-     * * @param nombre Nombre del producto.
+     * 
+     * @param nombre Nombre del producto.
      * @param descripcion Detalle o descripción del producto.
      * @param cantidadPedida Número de unidades solicitadas en el pedido.
      */
@@ -31,7 +33,8 @@ public class Producto {
 
     /**
      * Constructor completo para inicializar un producto con su información base del menú.
-     * * @param nombre Nombre comercial del producto.
+     * 
+     * @param nombre Nombre comercial del producto.
      * @param tipo Categoría del producto (ej. "Entrada", "Bebida", "Postre").
      * @param precio Costo unitario del producto.
      * @param descripcion Detalle o ingredientes del producto.

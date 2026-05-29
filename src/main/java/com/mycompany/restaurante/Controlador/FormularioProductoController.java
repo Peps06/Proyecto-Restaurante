@@ -50,7 +50,8 @@ public class FormularioProductoController {
      * Si le pasamos un producto que ya existe, el formulario se "transforma":
      * cambia el título, el texto del botón y rellena todos los campos con la 
      * información actual para que solo tengamos que modificar lo necesario.
-     * * @param p El producto seleccionado de la tabla principal.
+     * 
+     * @param p El producto seleccionado de la tabla principal.
      */
     public void setProducto(Producto p) {
         this.producto = p;
@@ -64,10 +65,10 @@ public class FormularioProductoController {
             txtDescripcion.setText(p.getDescripcion());
             txtPrecio.setText(String.valueOf(p.getPrecio()));
             cbTipo.setValue(p.getTipo());
-        }
-        if (p.getImagen() != null && !p.getImagen().isEmpty()) {
-            rutaImagenSeleccionada = p.getImagen();
-            lblRutaImagen.setText("Imagen ya cargada");
+            if (p.getImagen() != null && !p.getImagen().isEmpty()) {
+                rutaImagenSeleccionada = p.getImagen();
+                lblRutaImagen.setText("Imagen ya cargada");
+            }
         }
     }
 

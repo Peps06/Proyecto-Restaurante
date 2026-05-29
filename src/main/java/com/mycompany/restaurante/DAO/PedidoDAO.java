@@ -21,7 +21,7 @@ import javafx.collections.ObservableList;
  * la atomicidad de las operaciones mediante transacciones.
  * 
  * @author Citlaly
- * @version 2.1
+ * @version 2.2 (preparación por detalle_orden)
  */
 public class PedidoDAO {
 
@@ -40,33 +40,38 @@ public class PedidoDAO {
      * @param detalles Texto libre del mesero (puede ser null o vacío).
      * @return El idOrden generado por la base de datos, o -1 en caso de error.
      */
-    public static int insertarOrdenCompleta(int idMesa, int idEmpleado, List<Producto> items, String detalles) {
-
+     public static int insertarOrdenCompleta(int idMesa, int idEmpleado,
+                                             List<Producto> items, String detalles) {
+ 
         String sqlOrden = "INSERT INTO ordenes (idMesa, idEmpleado, detalles) VALUES (?,?,?)";
-        String sqlDetalle = "INSERT INTO detalle_orden (idOrden, idProducto, cantidad, precioUnit) VALUES (?,?,?,?)";
-        String sqlMesa = "UPDATE mesas SET estado='Ocupada' WHERE idMesa=?";
-
+        // Incluimos 'preparacion' explícitamente; el DEFAULT 'En espera' ya lo cubre
+        // pero lo ponemos para claridad y compatibilidad con versiones anteriores.
+        String sqlDetalle = "INSERT INTO detalle_orden "
+                          + "(idOrden, idProducto, cantidad, precioUnit, preparacion) "
+                          + "VALUES (?,?,?,?,'En espera')";
+        String sqlMesa    = "UPDATE mesas SET estado='Ocupada' WHERE idMesa=?";
+ 
         try (Connection con = ConexionDB.getConexion()) {
             con.setAutoCommit(false);
-
+ 
             try {
                 // 1. INSERTAR CABECERA DE LA ORDEN
                 int idOrden;
                 try (PreparedStatement psOrden = con.prepareStatement(
                         sqlOrden, Statement.RETURN_GENERATED_KEYS)) {
-
+ 
                     psOrden.setInt(1, idMesa);
                     psOrden.setInt(2, idEmpleado);
-
+ 
                     if (detalles != null && !detalles.isBlank()) {
                         psOrden.setString(3, detalles.trim());
                     } else {
                         psOrden.setNull(3, Types.VARCHAR);
                     }
-
+ 
                     psOrden.executeUpdate();
                     LOG.info("PedidoDAO: INSERT ordenes ejecutado.");
-
+ 
                     try (ResultSet keys = psOrden.getGeneratedKeys()) {
                         if (!keys.next()) {
                             throw new SQLException("No se recuperó el ID de la orden.");
@@ -75,22 +80,20 @@ public class PedidoDAO {
                     }
                 }
                 LOG.info("PedidoDAO: Cabecera creada. idOrden=" + idOrden);
-
-                // 2. INSERTAR DETALLES
+ 
+                // 2. INSERTAR DETALLES (cada platillo en espera)
                 try (PreparedStatement psDetalle = con.prepareStatement(sqlDetalle)) {
                     for (Producto p : items) {
                         int cant = p.getCantidadPedida();
                         if (cant <= 0) continue;
-
-                        int idProducto = p.getId();
-                        System.out.println("[PedidoDAO] Insertando detalle: "
-                            + "idOrden=" + idOrden
-                            + " idProducto=" + idProducto
-                            + " cant=" + cant
-                            + " precio=" + p.getPrecio());
-
+ 
+                        LOG.info("[PedidoDAO] Insertando detalle: idOrden=" + idOrden
+                               + " idProducto=" + p.getId()
+                               + " cant=" + cant
+                               + " precio=" + p.getPrecio());
+ 
                         psDetalle.setInt(1, idOrden);
-                        psDetalle.setInt(2, idProducto);
+                        psDetalle.setInt(2, p.getId());
                         psDetalle.setInt(3, cant);
                         psDetalle.setDouble(4, p.getPrecio());
                         psDetalle.addBatch();
@@ -98,130 +101,136 @@ public class PedidoDAO {
                     psDetalle.executeBatch();
                 }
                 LOG.info("PedidoDAO: Detalles insertados en detalle_orden.");
-
+ 
                 // 3. ACTUALIZAR ESTADO DE LA MESA
                 try (PreparedStatement psMesa = con.prepareStatement(sqlMesa)) {
                     psMesa.setInt(1, idMesa);
                     psMesa.executeUpdate();
                 }
                 LOG.info("PedidoDAO: Mesa " + idMesa + " marcada como Ocupada.");
-
+ 
                 con.commit();
                 LOG.info("PedidoDAO: Transacción completada. Orden=" + idOrden);
                 return idOrden;
-
+ 
             } catch (SQLException e) {
                 con.rollback();
                 LOG.log(Level.SEVERE,
-                        "PedidoDAO: Error en la transacción. Se realizó Rollback. Mesa: "
+                        "PedidoDAO: Error en la transacción. Rollback ejecutado. Mesa: "
                         + idMesa, e);
                 throw e;
             }
-
+ 
         } catch (SQLException e) {
-            LOG.log(Level.SEVERE, "PedidoDAO: Error crítico de conexión a la base de datos.", e);
+            LOG.log(Level.SEVERE, "PedidoDAO: Error crítico de conexión.", e);
             return -1;
         }
     }
-    
+
     /**
-    * Añade productos adicionales a una orden existente utilizando Batch.
-    * 
-    * @param idOrden ID de la orden abierta.
-    * @param items Lista de productos donde se filtrarán los que tengan cantidad > 0.
-    * @return true si la inserción fue exitosa, false en caso contrario.
-    */
-   public static boolean añadirPlatillosAOrden(int idOrden, List<Producto> items) {
-       String sqlDetalle = "INSERT INTO detalle_orden ("+
-                                "idOrden, idProducto, cantidad, precioUnit"+
-                            ") VALUES (?,?,?,?)";
+     * Añade platillos adicionales a una orden existente.
+     * Los nuevos registros en {@code detalle_orden} se insertan con estado
+     * 'En espera', de modo que el chef los reciba como una nueva tanda
+     * sin mezclarlos con los platillos que ya marcó como 'Preparado'.
+     *
+     * @param idOrden ID de la orden abierta a la que se añaden platillos.
+     * @param items Lista de productos; solo se insertan los de cantidad > 0.
+     * @return {@code true} si la inserción fue exitosa, {@code false} si hubo error.
+     */
+     public static boolean añadirPlatillosAOrden(int idOrden, List<Producto> items) {
+        String sqlDetalle = "INSERT INTO detalle_orden "
+                          + "(idOrden, idProducto, cantidad, precioUnit, preparacion) "
+                          + "VALUES (?,?,?,?,'En espera')";
+ 
+        try (Connection con = ConexionDB.getConexion()) {
+            con.setAutoCommit(false);
+ 
+            try (PreparedStatement psDetalle = con.prepareStatement(sqlDetalle)) {
+                boolean hayDetalles = false;
+ 
+                for (Producto p : items) {
+                    int cant = p.getCantidadPedida();
+                    if (cant <= 0) continue;
+ 
+                    psDetalle.setInt(1, idOrden);
+                    psDetalle.setInt(2, p.getId());
+                    psDetalle.setInt(3, cant);
+                    psDetalle.setDouble(4, p.getPrecio());
+                    psDetalle.addBatch();
+                    hayDetalles = true;
+                }
+ 
+                if (hayDetalles) {
+                    psDetalle.executeBatch();
+                }
+ 
+                con.commit();
+                LOG.info("PedidoDAO: Platillos adicionales agregados a la orden #" + idOrden);
+                return true;
+ 
+            } catch (SQLException e) {
+                con.rollback();
+                LOG.log(Level.SEVERE,
+                        "PedidoDAO: Error al añadir platillos a la orden #"
+                        + idOrden + ". Rollback ejecutado.", e);
+                throw e;
+            }
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "PedidoDAO: Error de conexión al añadir platillos.", e);
+            return false;
+        }
+    }
 
-       try (Connection con = ConexionDB.getConexion()) {
-           con.setAutoCommit(false);
-
-           try (PreparedStatement psDetalle = con.prepareStatement(sqlDetalle)) {
-               boolean hayDetalles = false;
-
-               for (Producto p : items) {
-                   int cant = p.getCantidadPedida();
-                   if (cant <= 0) continue;
-
-                   psDetalle.setInt(1, idOrden);
-                   psDetalle.setInt(2, p.getId());
-                   psDetalle.setInt(3, cant);
-                   psDetalle.setDouble(4, p.getPrecio());
-                   psDetalle.addBatch();
-                   hayDetalles = true;
-               }
-
-               if (hayDetalles) {
-                   psDetalle.executeBatch();
-               }
-
-               con.commit();
-               LOG.info("PedidoDAO: Platillos adicionales agregados a la orden #"
-                       + idOrden);
-               return true;
-
-           } catch (SQLException e) {
-               con.rollback();
-               LOG.log(Level.SEVERE,
-                       "PedidoDAO: Error al añadir platillos a la orden #" +
-                        idOrden + ". Rollback ejecutado.", e);
-               throw e;
-           }
-       } catch (SQLException e) {
-           LOG.log(Level.SEVERE,
-                   "PedidoDAO: Error de conexión al añadir platillos.", e);
-           return false;
-       }
-   }
-   
-   /**
-     * Cancela una unidad de un producto en una orden activa buscando por el nombre del platillo.
-     * Si la cantidad es mayor a 1, resta 1. Si es 1, elimina el platillo.
-     * * @param idOrden ID de la orden activa.
+    /**
+     * Cancela una unidad de un producto en una orden activa buscando por nombre.
+     * Si la cantidad es mayor a 1, resta 1 unidad. Si es exactamente 1, elimina
+     * el registro de {@code detalle_orden} por completo.
+     *
+     * @param idOrden ID de la orden activa.
      * @param nombreProducto Nombre del producto a cancelar.
-     * @return true si se canceló exitosamente, false en caso contrario.
+     * @return {@code true} si se canceló exitosamente, {@code false} en caso contrario.
      */
     public static boolean cancelarPlatillo(int idOrden, String nombreProducto) {
-        String sqlCheck = "SELECT d.idProducto, d.cantidad FROM detalle_orden d " +
-                          "JOIN productos p ON d.idProducto = p.idProductos " +
-                          "WHERE d.idOrden = ? AND p.nombre = ?";
-                          
-        String sqlUpdate = "UPDATE detalle_orden SET cantidad = cantidad - 1 WHERE idOrden = ? AND idProducto = ?";
-        String sqlDelete = "DELETE FROM detalle_orden WHERE idOrden = ? AND idProducto = ?";
-
+        String sqlCheck = "SELECT d.idDetalle, d.cantidad FROM detalle_orden d "
+                         + "JOIN productos p ON d.idProducto = p.idProductos "
+                         + "WHERE d.idOrden = ? AND p.nombre = ? LIMIT 1";
+        
+        String sqlUpdate = "UPDATE detalle_orden SET cantidad = cantidad - 1 "
+                         + "WHERE idDetalle = ?";
+        
+        String sqlDelete = "DELETE FROM detalle_orden WHERE idDetalle = ?";
+ 
         try (Connection con = ConexionDB.getConexion()) {
-            con.setAutoCommit(false); 
-
+            con.setAutoCommit(false);
+ 
             try (PreparedStatement psCheck = con.prepareStatement(sqlCheck)) {
                 psCheck.setInt(1, idOrden);
                 psCheck.setString(2, nombreProducto);
-                
+ 
                 try (ResultSet rs = psCheck.executeQuery()) {
                     if (rs.next()) {
-                        int idProducto = rs.getInt("idProducto");
+                        int idDetalle = rs.getInt("idDetalle");
                         int cantidadActual = rs.getInt("cantidad");
-                        
+ 
                         if (cantidadActual > 1) {
-                            try (PreparedStatement psUpdate = con.prepareStatement(sqlUpdate)) {
-                                psUpdate.setInt(1, idOrden);
-                                psUpdate.setInt(2, idProducto);
+                            try (PreparedStatement psUpdate =
+                                         con.prepareStatement(sqlUpdate)) {
+                                psUpdate.setInt(1, idDetalle);
                                 psUpdate.executeUpdate();
                             }
                         } else {
-                            try (PreparedStatement psDelete = con.prepareStatement(sqlDelete)) {
-                                psDelete.setInt(1, idOrden);
-                                psDelete.setInt(2, idProducto);
+                            try (PreparedStatement psDelete =
+                                         con.prepareStatement(sqlDelete)) {
+                                psDelete.setInt(1, idDetalle);
                                 psDelete.executeUpdate();
                             }
                         }
+ 
                         con.commit();
                         return true;
                     } else {
                         con.rollback();
-                        return false; 
+                        return false;
                     }
                 }
             } catch (SQLException e) {
@@ -235,14 +244,15 @@ public class PedidoDAO {
     }
     
     /**
-     * Consulta si existe una orden con estado 'Abierta' vinculada a una mesa específica.
+     * Verifica si existe una orden con estado 'Abierta' vinculada a una mesa.
      *
      * @param idMesa ID de la mesa a consultar.
-     * @return El idOrden si existe una cuenta abierta, 0 en caso contrario.
+     * @return El idOrden si existe una orden abierta, 0 en caso contrario.
      */
     public static int obtenerOrdenAbiertaPorMesa(int idMesa) {
         String sql = "SELECT idOrden FROM ordenes "
                    + "WHERE idMesa=? AND estado='Abierta' LIMIT 1";
+ 
         try (Connection con = ConexionDB.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, idMesa);
@@ -255,25 +265,22 @@ public class PedidoDAO {
         }
         return 0;
     }
-
+ 
     /**
-     * Consulta el campo {@code preparacion} de una orden específica.
-     * Útil para validar si una orden ya fue marcada como 'Entregado' antes
-     * de permitir el cobro en caja.
+     * Consulta el campo {@code preparacion} de la cabecera de una orden.
+     * Se usa en el módulo de cobro para validar que la orden ya fue entregada.
      *
      * @param idOrden ID de la orden a consultar.
-     * @return El valor del campo preparacion ("En espera", "Preparado" o "Entregado"),
-     *         o una cadena vacía si la orden no existe o hay un error.
+     * @return Valor del campo preparacion, o cadena vacía si hay error.
      */
     public static String obtenerPreparacionOrden(int idOrden) {
         String sql = "SELECT preparacion FROM ordenes WHERE idOrden = ?";
+ 
         try (Connection con = ConexionDB.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, idOrden);
             try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getString("preparacion");
-                }
+                if (rs.next()) return rs.getString("preparacion");
             }
         } catch (SQLException e) {
             LOG.log(Level.SEVERE,
@@ -281,21 +288,23 @@ public class PedidoDAO {
         }
         return "";
     }
-
+ 
     /**
-     * Recupera el listado de productos y cantidades asociados a una orden.
+     * Recupera el detalle completo de una orden incluyendo el precio unitario.
+     * Trae TODOS los platillos sin importar su estado de preparacion,
+     * ya que se usa para calcular el cobro y mostrar la cuenta al mesero.
      *
      * @param idOrden ID de la orden a consultar.
-     * @return ObservableList de OrdenItem listos para vincular a TableView.
+     * @return ObservableList de OrdenItem listos para vincular a un TableView.
      */
     public static ObservableList<OrdenItem> obtenerDetalleOrden(int idOrden) {
         ObservableList<OrdenItem> lista = FXCollections.observableArrayList();
-        String sql = """
-            SELECT p.nombre, d.cantidad, d.precioUnit
-            FROM detalle_orden d
-            JOIN productos p ON d.idProducto = p.idProductos
-            WHERE d.idOrden = ?
-            """;
+ 
+        String sql = "SELECT p.nombre, d.cantidad, d.precioUnit "
+                   + "FROM detalle_orden d "
+                   + "JOIN productos p ON d.idProducto = p.idProductos "
+                   + "WHERE d.idOrden = ?";
+ 
         try (Connection con = ConexionDB.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, idOrden);
@@ -316,88 +325,94 @@ public class PedidoDAO {
     }
 
     /**
-     * Consulta todas las órdenes abiertas cuya columna {@code preparacion}
-     * sea 'En espera', junto con todos sus ítems de detalle_orden.
+     * Consulta las órdenes abiertas que tienen al menos un platillo con
+     * {@code detalle_orden.preparacion = 'En espera'}.
+     * Solo se devuelven los platillos pendientes de cada orden, de modo que
+     * cuando el mesero añade platillos nuevos a una orden ya existente, el chef
+     * solo ve la nueva tanda y no los que ya marcó como 'Preparado'.
      *
      * @return Lista de {@link OrdenCocina} ordenada por idOrden ascendente.
      */
     public static List<OrdenCocina> obtenerOrdenesEnEspera() {
         List<OrdenCocina> resultado = new ArrayList<>();
-
-        String sql = """
-            SELECT o.idOrden,
-                   o.idMesa,
-                   o.detalles,
-                   o.preparacion,
-                   p.nombre AS nombreProducto,
-                   d.cantidad AS cantidadProducto,
-                   d.precioUnit
-            FROM ordenes o
-            JOIN detalle_orden d ON d.idOrden = o.idOrden
-            JOIN productos p ON p.idProductos = d.idProducto
-            WHERE o.estado = 'Abierta'
-            AND o.preparacion = 'En espera'
-            ORDER BY o.idOrden ASC, p.nombre ASC
-            """;
-
+ 
+        // Filtramos tanto la orden (Abierta) como los detalles (En espera)
+        String sql = "SELECT o.idOrden, o.idMesa, o.detalles, o.preparacion, "
+                   + "       p.nombre AS nombreProducto, "
+                   + "       d.cantidad AS cantidadProducto, "
+                   + "       d.precioUnit "
+                   + "FROM ordenes o "
+                   + "JOIN detalle_orden d ON d.idOrden = o.idOrden "
+                   + "JOIN productos p ON p.idProductos = d.idProducto "
+                   + "WHERE o.estado = 'Abierta' "
+                   + "  AND d.preparacion = 'En espera' "
+                   + "ORDER BY o.idOrden ASC, p.nombre ASC";
+ 
         Map<Integer, OrdenCocina> mapa = new LinkedHashMap<>();
-
+ 
         try (Connection con = ConexionDB.getConexion();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
-
+ 
             while (rs.next()) {
-                int    idOrden  = rs.getInt("idOrden");
-                int    idMesa   = rs.getInt("idMesa");
+                int idOrden = rs.getInt("idOrden");
+                int idMesa = rs.getInt("idMesa");
                 String detalles = rs.getString("detalles");
-                String prep     = rs.getString("preparacion");
-
+                String prep = rs.getString("preparacion");
+ 
+                // computeIfAbsent agrupa todos los platillos de la misma orden
                 OrdenCocina orden = mapa.computeIfAbsent(idOrden,
                     id -> new OrdenCocina(id, idMesa, detalles, prep, new ArrayList<>())
                 );
-
+ 
                 orden.getItems().add(new OrdenItem(
                     rs.getString("nombreProducto"),
                     rs.getInt("cantidadProducto"),
                     rs.getDouble("precioUnit")
                 ));
             }
-
+ 
             resultado.addAll(mapa.values());
             LOG.info("PedidoDAO: " + resultado.size()
-                     + " órdenes en espera recuperadas.");
-
+                     + " órdenes con platillos en espera recuperadas.");
+ 
         } catch (SQLException e) {
             LOG.log(Level.SEVERE,
                 "PedidoDAO: Error al obtener órdenes en espera.", e);
         }
-
+ 
         return resultado;
     }
 
     /**
-     * Actualiza el campo {@code preparacion} de la orden a 'Preparado'.
+     * Marca como 'Preparado' todos los platillos de una orden que actualmente
+     * estén en estado 'En espera' en {@code detalle_orden}.
      *
-     * @param idOrden ID de la orden a actualizar.
-     * @return {@code true} si la actualización afectó al menos una fila.
+     * Solo afecta a los platillos presentes en el momento del clic; los que
+     * se agreguen después conservarán el estado 'En espera' y volverán a
+     * aparecer en la pantalla del chef como una nueva tanda.
+     *
+     * @param idOrden ID de la orden cuyos detalles pendientes se marcan listos.
+     * @return {@code true} si se actualizó al menos un platillo.
      */
     public static boolean marcarOrdenPreparada(int idOrden) {
-        String sql = "UPDATE ordenes "
+        String sql = "UPDATE detalle_orden "
                    + "SET preparacion = 'Preparado' "
                    + "WHERE idOrden = ? AND preparacion = 'En espera'";
-
+ 
         try (Connection con = ConexionDB.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
-
+ 
             ps.setInt(1, idOrden);
             int filas = ps.executeUpdate();
             LOG.info("PedidoDAO: marcarOrdenPreparada idOrden=" + idOrden
                      + " filas afectadas=" + filas);
             return filas > 0;
-
+ 
         } catch (SQLException e) {
             LOG.log(Level.SEVERE,
-                "PedidoDAO: Error al marcar orden #" + idOrden + " como preparada.", e);
+                "PedidoDAO: Error al marcar platillos de la orden #"
+                + idOrden + " como preparados.", e);
             return false;
         }
     }

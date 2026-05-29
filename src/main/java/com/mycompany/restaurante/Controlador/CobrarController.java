@@ -100,8 +100,8 @@ public class CobrarController implements Initializable {
         "-fx-border-radius: 10 10 10 10;";
     
     private static final String ESTILO_MESA_ACTIVA =
-        "-fx-background-color: #8a3636;" +
-        "-fx-border-color: #8a3636;" +
+        "-fx-background-color: #407a48;" +
+        "-fx-border-color: #407a48;" +
         "-fx-text-fill: #d4c5b0;" +
         "-fx-background-radius: 10 10 10 10;" +
         "-fx-border-radius: 10 10 10 10;";
@@ -119,8 +119,8 @@ public class CobrarController implements Initializable {
         "-fx-border-radius: 10 10 10 10;";
     
     private static final String ESTILO_MESA_NO_COBRABLE =
-        "-fx-background-color: #6f5410;" +
-        "-fx-border-color: #6f5410;" +
+        "-fx-background-color: #8a3636;" +
+        "-fx-border-color: #8a3636;" +
         "-fx-text-fill: #d4c5b0;" +
         "-fx-background-radius: 10 10 10 10;" +
         "-fx-border-radius: 10 10 10 10;";
@@ -276,11 +276,11 @@ public class CobrarController implements Initializable {
      */
     private void cargarEstadoMesas() {
         Button[] mesas = obtenerArregloMesas();
- 
+
         // 1. Pintar todas las mesas como libres
         try (Connection con = ConexionDB.getConexion();
-             Statement st  = con.createStatement();
-             ResultSet rs  = st.executeQuery("SELECT idMesa FROM mesas")) {
+             Statement st = con.createStatement();
+             ResultSet rs = st.executeQuery("SELECT idMesa FROM mesas")) {
             while (rs.next()) {
                 int idx = rs.getInt("idMesa") - 1;
                 if (idx >= 0 && idx < mesas.length) {
@@ -290,19 +290,21 @@ public class CobrarController implements Initializable {
         } catch (SQLException e) {
             e.printStackTrace();
         }
- 
-        // 2. Colorear mesas con órdenes abiertas según su estado de preparación
-        String sqlOrdenes =
-            "SELECT idMesa, preparacion FROM ordenes WHERE estado = 'Abierta'";
- 
+
+        // 2. Colorear mesas con órdenes abiertas Y actualizar su preparación automáticamente
+        String sqlOrdenes = "SELECT idOrden, idMesa, preparacion FROM ordenes WHERE estado = 'Abierta'";
+
         try (Connection con = ConexionDB.getConexion();
-             Statement st  = con.createStatement();
-             ResultSet rs  = st.executeQuery(sqlOrdenes)) {
- 
+             Statement st = con.createStatement();
+             ResultSet rs = st.executeQuery(sqlOrdenes)) {
+
             while (rs.next()) {
-                int    idx         = rs.getInt("idMesa") - 1;
+                int idOrden = rs.getInt("idOrden");
+                int idx = rs.getInt("idMesa") - 1;
+
+                PedidoDAO.marcarOrdenPreparada(idOrden); 
                 String preparacion = rs.getString("preparacion");
- 
+
                 if (idx >= 0 && idx < mesas.length) {
                     // Entregado → color normal de ocupada (cobrable)
                     // Cualquier otro estado → color no-cobrable
@@ -313,13 +315,13 @@ public class CobrarController implements Initializable {
                     }
                 }
             }
- 
+
             // 3. Mantener el resaltado de selección sobre la mesa actualmente activa
             if (mesaSeleccionada != 0) {
                 Button btn = mesas[mesaSeleccionada - 1];
                 btn.setStyle(btn.getStyle() + ESTILO_BTN_ACTIVO);
             }
- 
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -330,8 +332,8 @@ public class CobrarController implements Initializable {
      */
     private Button[] obtenerArregloMesas() {
         return new Button[] {
-            btnMesa1, btnMesa2, btnMesa3,  btnMesa4,
-            btnMesa5, btnMesa6, btnMesa7,  btnMesa8,
+            btnMesa1, btnMesa2, btnMesa3, btnMesa4,
+            btnMesa5, btnMesa6, btnMesa7, btnMesa8,
             btnMesa9, btnMesa10, btnMesa11, btnMesa12
         };
     }
@@ -547,7 +549,9 @@ public class CobrarController implements Initializable {
         }
     }
 
-    @FXML private void handleCobrarMesa(ActionEvent event) { /* Pantalla actual */ }
+    @FXML private void handleCobrarMesa(ActionEvent event) {
+        
+    }
 
     @FXML private void handleMesas(ActionEvent event) { /*CSS EstadoMesas */ }
 

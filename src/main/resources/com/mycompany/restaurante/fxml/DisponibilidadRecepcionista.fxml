@@ -296,6 +296,13 @@
                                  </padding>
                               </VBox>
                            </right>
+                           <top>
+                              <Label style="-fx-text-fill: #8b6914; -fx-font-style: italic;" text="Toque una mesa Libre para asignarla" BorderPane.alignment="TOP_LEFT">
+                                 <font>
+                                    <Font name="Candara" size="12.0" />
+                                 </font>
+                              </Label>
+                           </top>
                         </BorderPane>
                      </children>
                   </Pane>

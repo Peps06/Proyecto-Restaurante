@@ -25,6 +25,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
  *  - Mostrar las notas del mesero (ordenes.detalles) al pulsar "Ver".
  *
  * @author Citlaly
+ * @version 1.1
  */
 public class PedidoCeldaController implements Initializable {
 
@@ -148,6 +149,7 @@ public class PedidoCeldaController implements Initializable {
 
     /**
      * Maneja el clic en "Marcar Listo".
+     * 
      * Cambia {@code ordenes.preparacion} a 'Preparado' en la BD y
      * notifica al controlador padre para que remueva esta tarjeta del grid.
      */

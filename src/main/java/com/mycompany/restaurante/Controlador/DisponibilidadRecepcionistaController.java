@@ -27,7 +27,8 @@ import javafx.stage.Stage;
  * Controlador de la pantalla de disponibilidad de mesas para la recepción.
  * Permite visualizar el mapa de mesas del restaurante, identificar su estado
  * (Libre, Ocupada, Reservada) mediante colores y navegar hacia la toma de pedidos.
- * * @author Dana
+ * 
+ * @author Dana
  * @version 1.0
  */
 public class DisponibilidadRecepcionistaController implements Initializable {
@@ -48,23 +49,33 @@ public class DisponibilidadRecepcionistaController implements Initializable {
    
     // ESTILOS CSS PARA ESTADOS VISUALES
     private static final String ESTILO_MESA_LIBRE =
-        "-fx-background-color: #627096; -fx-border-color: #627096; -fx-text-fill: #d4c5b0;" +
-        "-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;" +
-        "-fx-text-fill: #0a132b;";
+        "-fx-background-color: #627096;" +
+        "-fx-border-color: #627096;" +
+        "-fx-text-fill: #d4c5b0;" +
+        "-fx-background-radius: 10 10 10 10;" +
+        "-fx-border-radius: 10 10 10 10;";
     private static final String ESTILO_MESA_OCUPADA =
-        "-fx-background-color: #8a3636; -fx-border-color: #8a3636; -fx-text-fill: #d4c5b0;" +
-        "-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;" +
-        "-fx-text-fill: #0a132b;";
+        "-fx-background-color: #8a3636;" +
+        "-fx-border-color: #8a3636;" +
+        "-fx-text-fill: #d4c5b0;" +
+        "-fx-background-radius: 10 10 10 10;" +
+        "-fx-border-radius: 10 10 10 10;";
     private static final String ESTILO_MESA_RESERVADA =
-        "-fx-background-color: #C9A84C; -fx-border-color: #C9A84C; -fx-text-fill: #d4c5b0;" +
-        "-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;" +
-        "-fx-text-fill: #0a132b;";
+        "-fx-background-color: #C9A84C;" +
+        "-fx-border-color: #C9A84C;" +
+        "-fx-text-fill: #d4c5b0;" +
+        "-fx-background-radius: 10 10 10 10;" +
+        "-fx-border-radius: 10 10 10 10;";
     private static final String ESTILO_BTN_ACTIVO =
-        "-fx-background-color: #2c3b62; -fx-text-fill: #d4c5b0; -fx-background-radius: 10 10 10 10;" +
+        "-fx-background-color: #2c3b62;" +
+        "-fx-text-fill: #d4c5b0;" +
+        "-fx-background-radius: 10 10 10 10;" +
         "-fx-border-radius: 10 10 10 10;";
     private static final String ESTILO_BTN_INACTIVO =
-        "-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" +
-        "-fx-border-radius: 10 10 10 10; -fx-text-fill: #d4c5b0;";
+        "-fx-background-color: #8b1a1a;" +
+        "-fx-background-radius: 10 10 10 10;" +
+        "-fx-border-radius: 10 10 10 10;" +
+        "-fx-text-fill: #d4c5b0;";
     
     private final MesasDAO mesasDAO = new MesasDAO();
     

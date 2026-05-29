@@ -1,5 +1,6 @@
 package com.mycompany.restaurante.Controlador;
 
+import com.mycompany.restaurante.DAO.PedidoDAO;
 import com.mycompany.restaurante.DAO.ProductoDAO;
 import com.mycompany.restaurante.Modelo.Producto;
 
@@ -27,7 +28,8 @@ import javafx.stage.Stage;
  * Administra el catálogo de productos disponibles y genera de manera interactiva
  * controles de incremento y decremento por cada artículo, permitiendo aperturar nuevas
  * comandas o anexar elementos a órdenes previamente existentes en la mesa.
- * * @author Dana, Citlaly
+ * 
+ * @author Dana, Citlaly
  * @version 3 (detalles de pedido)
  */
 public class RegistrarPedidoController {
@@ -217,7 +219,7 @@ public class RegistrarPedidoController {
             
             boolean exito;
             int idParaMostrar;
-
+            
             if (idOrdenExistente > 0) {
                 // CAMINO A: La mesa ya tiene orden, añadimos los nuevos platillos al ID existente
                 exito = com.mycompany.restaurante.DAO.PedidoDAO.añadirPlatillosAOrden(idOrdenExistente, masterData);
