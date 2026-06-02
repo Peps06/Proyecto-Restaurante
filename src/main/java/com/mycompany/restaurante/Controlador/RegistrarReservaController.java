@@ -51,24 +51,38 @@ public class RegistrarReservaController {
     
     // ESTILOS CSS BASADOS EN LA INTERFAZ
     private static final String ESTILO_MESA_LIBRE = 
-        "-fx-background-color: #627096; -fx-border-color: #627096; -fx-text-fill: #d4c5b0;" +
-        "-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;";
+        "-fx-background-color: #627096;" +
+        "-fx-border-color: #627096;" +
+        "-fx-text-fill: #d4c5b0;" +
+        "-fx-background-radius: 10 10 10 10;" +
+        "-fx-border-radius: 10 10 10 10;";
     
     private static final String ESTILO_MESA_OCUPADA =
-        "-fx-background-color: #8a3636; -fx-border-color: #8a3636; -fx-text-fill: #d4c5b0;" +
-        "-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;" +
-        "-fx-text-fill: #0a132b;";
+        "-fx-background-color: #8a3636;" +
+        "-fx-border-color: #8a3636;" +
+        "-fx-text-fill: #d4c5b0;" +
+        "-fx-background-radius: 10 10 10 10;" +
+        "-fx-border-radius: 10 10 10 10;";
         
     private static final String ESTILO_MESA_RESERVADA = 
-        "-fx-background-color: #8a3636; -fx-border-color: #8a3636; -fx-text-fill: #d4c5b0;" +
-        "-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;";
+        "-fx-background-color: #8a3636;" +
+        "-fx-border-color: #8a3636;" +
+        "-fx-text-fill: #d4c5b0;" +
+        "-fx-background-radius: 10 10 10 10;" +
+        "-fx-border-radius: 10 10 10 10;";
         
     private static final String ESTILO_MESA_SELECCIONADA = 
-        "-fx-background-color: #C9A84C; -fx-border-color: #C9A84C; -fx-text-fill: #0a132b;" +
-        "-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;";
+        "-fx-background-color: #C9A84C;" +
+        "-fx-border-color: #C9A84C;" +
+        "-fx-text-fill: #0a132b;" +
+        "-fx-background-radius: 10 10 10 10;" +
+        "-fx-border-radius: 10 10 10 10;";
     
     private static final String ESTILO_ERROR  =
-        "-fx-background-color: #FFF0F0; -fx-border-color: #cc0000; -fx-border-width: 2; -fx-border-radius: 5 5 5 5;";
+        "-fx-background-color: #FFF0F0;" +
+        "-fx-border-color: #cc0000;" +
+        "-fx-border-width: 2;" +
+        "-fx-border-radius: 5;";
 
     /**
      * Inicializa el controlador vinculando los eventos de la cuadrícula y cargando sus colores básicos.
@@ -118,6 +132,7 @@ public class RegistrarReservaController {
         for (Mesa mesa : mesas) {
             int idx = mesa.getIdMesa() - 1; 
             if (idx < 0 || idx >= botones.length) continue;
+            setTextoMesa(botones[idx], mesa.getIdMesa(), mesa.getCapacidad());
 
             if (mesasSeleccionadas.contains(mesa.getIdMesa())) {
                 botones[idx].setStyle(ESTILO_MESA_SELECCIONADA);
@@ -314,6 +329,30 @@ public class RegistrarReservaController {
             mostrarAlerta(Alert.AlertType.ERROR, "Error de formato", "El número de personas debe ser un número entero.");
         }
     }
+    
+    /**
+    * Asigna al botón un gráfico con dos líneas:
+    * número de mesa (grande) y capacidad (pequeña).
+    */
+   private void setTextoMesa(Button btn, int numMesa, int capacidad) {
+       javafx.scene.control.Label lblNumero =
+               new javafx.scene.control.Label(String.valueOf(numMesa));
+       lblNumero.setStyle("-fx-font-size: 18px;" + 
+                          "-fx-font-weight: bold;" + 
+                          "-fx-text-fill: #d4c5b0;");
+
+       javafx.scene.control.Label lblCapacidad =
+               new javafx.scene.control.Label(capacidad + " 👥");
+       lblCapacidad.setStyle("-fx-font-size: 10px;" +
+                             "-fx-text-fill: #d4c5b0;");
+
+       javafx.scene.layout.VBox vbox =
+               new javafx.scene.layout.VBox(2, lblNumero, lblCapacidad);
+       vbox.setAlignment(javafx.geometry.Pos.CENTER);
+
+       btn.setText(""); // limpia el texto nativo del botón
+       btn.setGraphic(vbox);
+   }
 
     /**
      * Anula el proceso actual de recolección y cierra el entorno modal de manera segura.

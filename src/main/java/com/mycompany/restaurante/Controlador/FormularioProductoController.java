@@ -11,9 +11,10 @@ import java.io.File;
 /**
  * Esta clase es el controlador del formulario para los productos del menú.
  * Es una ventana "dos en uno": me sirve tanto para registrar un platillo nuevo 
- * desde cero, como para editar uno que ya existe. 
- * y se encarga de devolver el objeto Producto listo para guardarse en la base de datos.
- * @author mrubi
+ * desde cero, como para editar uno que ya existe. También se encarga de
+ * devolver el objeto Producto listo para guardarse en la base de datos.
+ * 
+ * @author Rubi
  * @version 2.0
  */
 public class FormularioProductoController {
@@ -127,18 +128,28 @@ public class FormularioProductoController {
     private void handleSeleccionarImagen() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Seleccionar imagen del producto");
-        
-        // --- RUTA DIRECTA Y FIJA ---
-        String rutaDirecta = "C:\\Users\\dana0\\Documents\\Proyecto-Restaurante-main\\src\\main\\resources\\img";
-        File directorioInicial = new File(rutaDirecta);
-        
-        // Verificamos que la carpeta exista para evitar que el programa choque
-        if (directorioInicial.exists() && directorioInicial.isDirectory()) {
-            fileChooser.setInitialDirectory(directorioInicial);
-        } else {
-            System.out.println("No se encontró la ruta: " + rutaDirecta);
+
+        // --- RUTA DINÁMICA DE RECURSOS ---
+        try {
+            // Buscamos la carpeta 'img' dentro del classpath (src/main/resources/img)
+            java.net.URL resourceUrl = getClass().getClassLoader().getResource("img");
+
+            if (resourceUrl != null) {
+                // Convertimos la URL del recurso a un archivo físico en el disco
+                File directorioInicial = new File(resourceUrl.toURI());
+
+                // Verificamos que exista y sea un directorio antes de asignarlo
+                if (directorioInicial.exists() && directorioInicial.isDirectory()) {
+                    fileChooser.setInitialDirectory(directorioInicial);
+                }
+            } else {
+                System.out.println("Advertencia: No se encontró la carpeta 'img' en los recursos del proyecto.");
+            }
+        } catch (Exception e) {
+            // Captura cualquier problema al convertir la URL a URI (por espacios o caracteres especiales)
+            System.out.println("No se pudo establecer el directorio inicial dinámico: " + e.getMessage());
         }
-        // -----------------------------
+        // ---------------------------------
 
         fileChooser.getExtensionFilters().addAll(
             new FileChooser.ExtensionFilter("Imágenes", "*.png", "*.jpg", "*.jpeg")

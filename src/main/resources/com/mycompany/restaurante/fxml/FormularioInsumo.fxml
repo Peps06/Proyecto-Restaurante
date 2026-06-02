@@ -10,9 +10,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="360.0" prefWidth="350.0" spacing="15.0" style="-fx-background-color: #F5EFE6;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.restaurante.Controlador.FormularioInsumoController">
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="340.0" prefWidth="350.0" spacing="15.0" style="-fx-background-color: #F5EFE6;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.restaurante.Controlador.FormularioInsumoController">
    <children>
-      <VBox prefHeight="80.0" prefWidth="350.0" style="-fx-background-color: #2C3B62;">
+      <VBox prefHeight="60.0" prefWidth="350.0" style="-fx-background-color: #2C3B62;">
          <children>
             <Label fx:id="lblTitulo" alignment="CENTER" prefHeight="50.0" prefWidth="350.0" text="Registro de Insumo" textAlignment="CENTER" textFill="#fffdfd" VBox.vgrow="ALWAYS">
                <font>

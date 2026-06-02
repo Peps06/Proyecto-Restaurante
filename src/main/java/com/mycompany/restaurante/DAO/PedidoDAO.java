@@ -407,6 +407,20 @@ public class PedidoDAO {
 
         return resultado;
     }
+    
+    public static String obtenerEstadoOrden(int idOrden) {
+        String sql = "SELECT estado FROM ordenes WHERE idOrden = ?";
+        try (Connection con = ConexionDB.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, idOrden);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getString("estado");
+            }
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "Error obteniendo estado de orden #" + idOrden, e);
+        }
+        return "";
+    }
 
     /**
      * Marca como 'Preparado' todos los platillos de una orden que actualmente

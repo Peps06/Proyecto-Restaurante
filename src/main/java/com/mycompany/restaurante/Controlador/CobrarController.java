@@ -1,8 +1,10 @@
 package com.mycompany.restaurante.Controlador;
 
+import com.mycompany.restaurante.DAO.MesasDAO;
 import com.mycompany.restaurante.DAO.PagoDAO;
 import com.mycompany.restaurante.DAO.PedidoDAO;
 import com.mycompany.restaurante.Modelo.ConexionDB;
+import com.mycompany.restaurante.Modelo.Mesa;
 import com.mycompany.restaurante.Modelo.OrdenItem;
 import com.mycompany.restaurante.Modelo.Pago;
 
@@ -24,10 +26,13 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.layout.VBox;
 
 /**
  * Controlador principal para la gestión de cobros y monitoreo de mesas.
@@ -277,49 +282,45 @@ public class CobrarController implements Initializable {
      * se muestran en dorado (no cobrables); las demás en azul (libres).
      */
     private void cargarEstadoMesas() {
-        Button[] mesas = obtenerArregloMesas();
- 
-        // 1. Pintar todas las mesas como libres por defecto
-        try (Connection con = ConexionDB.getConexion();
-             Statement st = con.createStatement();
-             ResultSet rs = st.executeQuery("SELECT idMesa FROM mesas")) {
-            while (rs.next()) {
-                int idx = rs.getInt("idMesa") - 1;
-                if (idx >= 0 && idx < mesas.length) {
-                    mesas[idx].setStyle(ESTILO_MESA_LIBRE);
-                }
+        Button[] botones = obtenerArregloMesas();
+        MesasDAO mesasDAO = new MesasDAO();
+        List<Mesa> todasLasMesas = mesasDAO.obtenerTodasLasMesas();
+
+        // 1. Pintar todas como libres y asignar capacidad
+        for (Mesa mesa : todasLasMesas) {
+            int idx = mesa.getIdMesa() - 1;
+            if (idx >= 0 && idx < botones.length) {
+                botones[idx].setStyle(ESTILO_MESA_LIBRE);
+                setTextoMesa(botones[idx], mesa.getIdMesa(), mesa.getCapacidad());
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
- 
-        // 2. Colorear mesas con órdenes abiertas según su preparacion
-        // 'Preparado' → rojo (cobrable)
-        // 'En espera' → dorado (no cobrable, aún en cocina)
+
+        // 2. Colorear mesas con órdenes abiertas según preparacion
         String sqlOrdenes =
             "SELECT idMesa, preparacion FROM ordenes WHERE estado = 'Abierta'";
- 
+
         try (Connection con = ConexionDB.getConexion();
              Statement st = con.createStatement();
              ResultSet rs = st.executeQuery(sqlOrdenes)) {
- 
+
             while (rs.next()) {
                 int idx = rs.getInt("idMesa") - 1;
                 String preparacion = rs.getString("preparacion");
- 
-                if (idx >= 0 && idx < mesas.length) {
-                    mesas[idx].setStyle("Preparado".equals(preparacion)
+
+                if (idx >= 0 && idx < botones.length) {
+                    botones[idx].setStyle("Preparado".equals(preparacion)
                         ? ESTILO_MESA_ACTIVA
                         : ESTILO_MESA_NO_COBRABLE);
+                    // El graphic con capacidad ya fue asignado arriba, no se pierde
                 }
             }
- 
-            // 3. Mantener el resaltado de selección sobre la mesa activa
+
+            // 3. Mantener resaltado de la mesa activa seleccionada
             if (mesaSeleccionada != 0) {
-                Button btn = mesas[mesaSeleccionada - 1];
+                Button btn = botones[mesaSeleccionada - 1];
                 btn.setStyle(btn.getStyle() + ESTILO_BTN_ACTIVO);
             }
- 
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -561,9 +562,27 @@ public class CobrarController implements Initializable {
  
     @FXML private void handleCobrarMesa(ActionEvent event) { /* Pantalla actual */ }
     @FXML private void handleMesas(ActionEvent event) { /* CSS EstadoMesas */ }
- 
+    
     // HELPERS
- 
+    
+    /**
+    * Asigna al botón un gráfico con dos líneas:
+    * número de mesa (grande) y capacidad (pequeña).
+    */
+   private void setTextoMesa(Button btn, int numMesa, int capacidad) {
+       javafx.scene.control.Label lblNumero = new javafx.scene.control.Label(String.valueOf(numMesa));
+       lblNumero.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #d4c5b0;");
+
+       javafx.scene.control.Label lblCapacidad = new javafx.scene.control.Label(capacidad + " 👥");
+       lblCapacidad.setStyle("-fx-font-size: 10px; -fx-text-fill: #d4c5b0;");
+
+       javafx.scene.layout.VBox vbox = new javafx.scene.layout.VBox(2, lblNumero, lblCapacidad);
+       vbox.setAlignment(javafx.geometry.Pos.CENTER);
+
+       btn.setText("");        // limpia el texto nativo del botón
+       btn.setGraphic(vbox);
+   }
+   
     /**
      * Limpia los campos de texto y la tabla cuando no hay una orden activa.
      */

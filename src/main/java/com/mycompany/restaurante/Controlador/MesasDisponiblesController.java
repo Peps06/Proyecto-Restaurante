@@ -56,6 +56,10 @@ public class MesasDisponiblesController implements Initializable {
     @FXML private TableColumn<OrdenItem, Integer> colCantidad;
     
     @FXML private Label labelIdOrden;
+    
+    @FXML private Label txtMesa1, txtMesa2, txtMesa3, txtMesa4;
+    @FXML private Label txtMesa5, txtMesa6, txtMesa7, txtMesa8;
+    @FXML private Label txtMesa9, txtMesa10, txtMesa11, txtMesa12;
 
     @FXML private Button btnMesa1, btnMesa2, btnMesa3, btnMesa4;
     @FXML private Button btnMesa5, btnMesa6, btnMesa7, btnMesa8;
@@ -152,19 +156,19 @@ public class MesasDisponiblesController implements Initializable {
             int idx = mesa.getIdMesa() - 1;
             if (idx < 0 || idx >= botones.length) continue;
 
+            setTextoMesa(botones[idx], mesa.getIdMesa(), mesa.getCapacidad());
+
             switch (mesa.getEstado()) {
                 case "Libre" ->
                     botones[idx].setStyle(ESTILO_MESA_LIBRE);
 
                 case "Ocupada" -> {
                     int idOrden = PedidoDAO.obtenerOrdenAbiertaPorMesa(mesa.getIdMesa());
-                    if (idOrden > 0) {
-                        botones[idx].setStyle(ESTILO_MESA_CON_ORDEN);
-                    } else {
-                        botones[idx].setStyle(ESTILO_MESA_SIN_ORDEN);
-                    }
+                    botones[idx].setStyle(idOrden > 0
+                        ? ESTILO_MESA_CON_ORDEN
+                        : ESTILO_MESA_SIN_ORDEN);
                 }
-                
+
                 case "Cobrada" ->
                     botones[idx].setStyle(ESTILO_MESA_COBRADA);
 
@@ -286,6 +290,17 @@ public class MesasDisponiblesController implements Initializable {
         }
  
         int idOrden = PedidoDAO.obtenerOrdenAbiertaPorMesa(this.mesaParaPedido);
+        
+        if (idOrden > 0) {
+        String estado = PedidoDAO.obtenerEstadoOrden(idOrden); // método faltante
+        if (!"Abierta".equals(estado)) {
+            mostrarAlerta(Alert.AlertType.WARNING,
+                "No disponible",
+                "Esta mesa ya fue cobrada. No se pueden añadir más platillos.");
+            return;
+        }
+    }
+        
         if (idOrden == 0) {
             LOG.info("Abriendo toma de pedido para nueva orden en Mesa "
                    + this.mesaParaPedido);
@@ -293,6 +308,8 @@ public class MesasDisponiblesController implements Initializable {
             LOG.info("Añadiendo platillos a la Orden #" + idOrden
                    + " de la Mesa " + this.mesaParaPedido);
         }
+        
+        
  
         navegarARealizarPedido(this.mesaParaPedido);
  
@@ -579,7 +596,13 @@ public class MesasDisponiblesController implements Initializable {
             btnMesa9, btnMesa10, btnMesa11, btnMesa12
         };
     }
-
+    
+    /**
+     * Agrupa los 12 labels de las mesas en un arreglo indexado para iterarlos.
+     * 
+     * @return Arreglo de label en orden de idMesa (1-12)
+     */
+   
     /**
      * Método genérico para cambiar de pantalla dentro del mismo Stage.
      *
@@ -611,6 +634,30 @@ public class MesasDisponiblesController implements Initializable {
     public void setIdEmpleadoSesion(int id) {
         this.idEmpleadoSesion = id;
     }
+    
+    /**
+    * Asigna al botón un gráfico con dos líneas:
+    * número de mesa (grande) y capacidad (pequeña).
+    */
+   private void setTextoMesa(Button btn, int numMesa, int capacidad) {
+       javafx.scene.control.Label lblNumero =
+               new javafx.scene.control.Label(String.valueOf(numMesa));
+       lblNumero.setStyle("-fx-font-size: 18px;" + 
+                          "-fx-font-weight: bold;" + 
+                          "-fx-text-fill: #d4c5b0;");
+
+       javafx.scene.control.Label lblCapacidad =
+               new javafx.scene.control.Label(capacidad + " 👥");
+       lblCapacidad.setStyle("-fx-font-size: 10px;" +
+                             "-fx-text-fill: #d4c5b0;");
+
+       javafx.scene.layout.VBox vbox =
+               new javafx.scene.layout.VBox(2, lblNumero, lblCapacidad);
+       vbox.setAlignment(javafx.geometry.Pos.CENTER);
+
+       btn.setText(""); // limpia el texto nativo del botón
+       btn.setGraphic(vbox);
+   }
 
     /**
      * Despliega un cuadro de diálogo modal estándar para alertar al usuario.

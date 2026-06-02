@@ -103,6 +103,7 @@ public class DisponibilidadRecepcionistaController implements Initializable {
         for (Mesa mesa : mesas) {
             int idx = mesa.getIdMesa() - 1;    
             if (idx < 0 || idx >= botones.length) continue;
+            setTextoMesa(botones[idx], mesa.getIdMesa(), mesa.getCapacidad());
 
             switch (mesa.getEstado()) {
                 case "Libre" -> botones[idx].setStyle(ESTILO_MESA_LIBRE);
@@ -150,7 +151,8 @@ public class DisponibilidadRecepcionistaController implements Initializable {
 
         if (estiloActual.equals(ESTILO_MESA_LIBRE)) {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/restaurante/fxml/AsignarMesa.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                        "/com/mycompany/restaurante/fxml/AsignarMesa.fxml"));
                 Parent root = loader.load();
 
                 AsignarMesaController controller = loader.getController();
@@ -165,11 +167,15 @@ public class DisponibilidadRecepcionistaController implements Initializable {
                 cargarEstadoMesas();
 
             } catch (IOException e) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Error", "Falta crear AsignarMesa.fxml");
+                mostrarAlerta(Alert.AlertType.ERROR,
+                        "Error",
+                        "Falta crear AsignarMesa.fxml");
                 e.printStackTrace();
             }
         } else {
-            mostrarAlerta(Alert.AlertType.INFORMATION, "Mesa no disponible", "La mesa " + numMesa + " ya está ocupada o reservada.");
+            mostrarAlerta(Alert.AlertType.INFORMATION,
+                    "Mesa no disponible",
+                    "La mesa " + numMesa + " ya está ocupada o reservada.");
         }
     }
 
@@ -207,7 +213,9 @@ public class DisponibilidadRecepcionistaController implements Initializable {
      */
     @FXML
     private void handleMesas(ActionEvent event) {
-        cambiarPantalla(event, "/com/mycompany/restaurante/fxml/DisponibilidadRecepcionista.fxml", "Disponibilidad Mesas");
+        cambiarPantalla(event,
+                "/com/mycompany/restaurante/fxml/DisponibilidadRecepcionista.fxml",
+                "Disponibilidad Mesas");
     }
 
     /**
@@ -216,7 +224,9 @@ public class DisponibilidadRecepcionistaController implements Initializable {
      */
     @FXML
     private void handleReservas(ActionEvent event) {
-        cambiarPantalla(event, "/com/mycompany/restaurante/fxml/GestionReservas.fxml", "Gestionar Reservas");
+        cambiarPantalla(event,
+                "/com/mycompany/restaurante/fxml/GestionReservas.fxml",
+                "Gestionar Reservas");
     }
 
     /**
@@ -225,8 +235,34 @@ public class DisponibilidadRecepcionistaController implements Initializable {
      */
     @FXML
     private void handleListaEsp(ActionEvent event) {
-        cambiarPantalla(event, "/com/mycompany/restaurante/fxml/ListaDeEspera.fxml", "Lista de espera");
+        cambiarPantalla(event,
+                "/com/mycompany/restaurante/fxml/ListaDeEspera.fxml",
+                "Lista de espera");
     }
+    
+    /**
+    * Asigna al botón un gráfico con dos líneas:
+    * número de mesa (grande) y capacidad (pequeña).
+    */
+   private void setTextoMesa(Button btn, int numMesa, int capacidad) {
+       javafx.scene.control.Label lblNumero =
+               new javafx.scene.control.Label(String.valueOf(numMesa));
+       lblNumero.setStyle("-fx-font-size: 18px;" + 
+                          "-fx-font-weight: bold;" + 
+                          "-fx-text-fill: #d4c5b0;");
+
+       javafx.scene.control.Label lblCapacidad =
+               new javafx.scene.control.Label(capacidad + " 👥");
+       lblCapacidad.setStyle("-fx-font-size: 10px;" +
+                             "-fx-text-fill: #d4c5b0;");
+
+       javafx.scene.layout.VBox vbox =
+               new javafx.scene.layout.VBox(2, lblNumero, lblCapacidad);
+       vbox.setAlignment(javafx.geometry.Pos.CENTER);
+
+       btn.setText(""); // limpia el texto nativo del botón
+       btn.setGraphic(vbox);
+   }
 
     /**
      * Valida mediante una ventana de confirmación el cierre de sesión, redirigiendo al Login en caso afirmativo.
@@ -246,7 +282,8 @@ public class DisponibilidadRecepcionistaController implements Initializable {
         if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
             try {
                 // Código para regresar al Login (ejemplo)
-                Parent root = FXMLLoader.load(getClass().getResource("/com/mycompany/restaurante/fxml/LoginPantalla.fxml"));
+                Parent root = FXMLLoader.load(getClass().getResource(
+                        "/com/mycompany/restaurante/fxml/LoginPantalla.fxml"));
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 stage.setScene(new Scene(root));
                 stage.show();

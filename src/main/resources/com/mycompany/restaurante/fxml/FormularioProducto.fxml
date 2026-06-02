@@ -12,7 +12,7 @@
 
 <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="320.0" prefWidth="350.0" spacing="15.0" style="-fx-background-color: #F5EFE6;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.restaurante.Controlador.FormularioProductoController">
    <children>
-      <VBox prefHeight="200.0" prefWidth="50.0" style="-fx-background-color: #2C3B62;">
+      <VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="70.0" prefWidth="350.0" style="-fx-background-color: #2C3B62;">
          <children>
             <Label fx:id="lblTitulo" alignment="CENTER" prefHeight="50.0" prefWidth="350.0" text="Registrar producto" textAlignment="CENTER" textFill="#fffdfd">
                <font>
@@ -89,7 +89,7 @@
             </HBox>
             <HBox prefHeight="50.0" prefWidth="200.0" spacing="10.0">
                <children>
-                  <Label fx:id="lblRutaImagen" prefHeight="26.0" prefWidth="175.0" style="-fx-font-family: &quot;Montserrat&quot;; -fx-font: E5E4E1; -fx-background-color: E5E4E1; -fx-background-radius: 5;" text="   Sin imagen" textFill="#a9a9a9">
+                  <Label fx:id="lblRutaImagen" prefHeight="27.0" prefWidth="175.0" style="-fx-font-family: &quot;Montserrat&quot;; -fx-font: E5E4E1; -fx-background-color: E5E4E1; -fx-background-radius: 5;" text="   Sin imagen" textFill="#a9a9a9">
                      <font>
                         <Font name="Candara" size="12.0" />
                      </font>
