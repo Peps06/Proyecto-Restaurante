@@ -525,7 +525,6 @@ public class PedidoDAO {
      * incluso si hubo cambios desde la última vez que se abrió la pantalla.
      */
     public static void sincronizarTodasLasOrdenes() {
-
         // Se obtine todas las órdenes abiertas
         String sqlOrdenes = "SELECT idOrden FROM ordenes WHERE estado = 'Abierta'";
 
@@ -544,5 +543,11 @@ public class PedidoDAO {
             LOG.log(Level.SEVERE,
                 "PedidoDAO: Error al sincronizar todas las órdenes.", e);
         }
+    }
+
+    public static int contarOrdenesAbiertasPorEmpleado(int idEmpleadoSesion) {
+        List<OrdenCocina> ordenesEnEspera = obtenerOrdenesEnEspera();
+        int ordenesAbiertas = ordenesEnEspera.size();
+        return ordenesAbiertas;
     }
 }

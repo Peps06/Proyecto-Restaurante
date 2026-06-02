@@ -68,7 +68,6 @@ public class RegistrarPedidoController {
         ColumnaNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         ColumnaDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
         
-        // TRUCO VISUAL: Vincula el ancho del texto al de la columna para evitar cortes abruptos
         ColumnaDescripcion.setCellFactory(tc -> new TableCell<>() {
             private final Text text = new Text();
             {

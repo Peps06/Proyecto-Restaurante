@@ -13,6 +13,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.VBox;
 
 /**
  * Controlador de la tarjeta individual {@code PedidoCelda.fxml}.
@@ -44,6 +45,7 @@ public class PedidoCeldaController implements Initializable {
     @FXML private TableColumn<OrdenItem, String> columnaPlato;
     @FXML private Button btnListo;
     @FXML private Button btnVerDetalles;
+    @FXML private VBox vboxConImagen;
 
     // Estado interno
     private OrdenCocina orden;
@@ -51,6 +53,13 @@ public class PedidoCeldaController implements Initializable {
 
         @Override
     public void initialize(URL url, ResourceBundle rb) {
+        
+        String rutaImagen = getClass().getResource("/img/nota.png").toExternalForm();
+        
+        vboxConImagen.setStyle("-fx-background-size: cover;" +
+                               "-fx-background-position: center;" +
+                               "-fx-background-image: url('" + rutaImagen + "');");
+        
         tablaItems.setStyle("-fx-background-color: transparent;");
  
         // Vincular columnas con las propiedades de OrdenItem
@@ -118,6 +127,8 @@ public class PedidoCeldaController implements Initializable {
                     "-fx-text-fill: #463A2B;"
                     + "-fx-font-weight: bold;"));
         });
+        
+        
     }
 
     /**
