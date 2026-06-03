@@ -519,6 +519,12 @@ public class MesasDisponiblesController implements Initializable {
      */
     @FXML
     private void handleCerrarSesion(ActionEvent event) {
+        
+        // En handleCerrarSesion, antes del Alert de confirmación:
+        int ordenesActivas = PedidoDAO.contarOrdenesAbiertasPorEmpleado(idEmpleadoSesion);
+        String mensaje = ordenesActivas > 0
+            ? "Tienes " + ordenesActivas + " pedido(s) activo(s). ¿Deseas cerrar sesión de todas formas?"
+            : "¿Estás seguro de que deseas salir del sistema?";
         Alert alerta = new Alert(Alert.AlertType.CONFIRMATION);
         alerta.setTitle("Confirmar Salida");
         alerta.setHeaderText("Cerrar Sesión");
