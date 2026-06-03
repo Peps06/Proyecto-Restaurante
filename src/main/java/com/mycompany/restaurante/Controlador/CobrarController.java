@@ -23,6 +23,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -537,19 +538,25 @@ public class CobrarController implements Initializable {
      */
     @FXML
     private void handleCerrarSesion(ActionEvent event) {
+        // Contar mesas con órdenes abiertas y preparadas (listas para cobrar)
+        int mesasPendientes = contarMesasPendientesDeCobro();
+
+        String mensaje = mesasPendientes > 0
+            ? "Hay " + mesasPendientes + " mesa(s) con cuenta pendiente de cobro.\n" +
+              "¿Deseas cerrar sesión de todas formas?"
+            : "¿Estás seguro de que deseas salir del sistema?";
+
         Alert alerta = new Alert(Alert.AlertType.CONFIRMATION);
         alerta.setTitle("Confirmar salida");
         alerta.setHeaderText("Cerrar sesión");
-        alerta.setContentText("¿Estás seguro de que deseas salir del sistema?");
- 
+        alerta.setContentText(mensaje);
+
         Optional<ButtonType> resultado = alerta.showAndWait();
- 
         if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
             try {
                 Parent root = FXMLLoader.load(getClass().getResource(
                     "/com/mycompany/restaurante/fxml/LoginPantalla.fxml"));
-                Stage stage = (Stage) ((Node) event.getSource())
-                        .getScene().getWindow();
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 stage.setScene(new Scene(root));
                 stage.show();
             } catch (IOException e) {
@@ -558,6 +565,19 @@ public class CobrarController implements Initializable {
         } else {
             alerta.close();
         }
+    }
+
+    private int contarMesasPendientesDeCobro() {
+        String sql = "SELECT COUNT(*) FROM ordenes " +
+                     "WHERE estado = 'Abierta' AND preparacion = 'Preparado'";
+        try (Connection con = ConexionDB.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
  
     @FXML private void handleCobrarMesa(ActionEvent event) { /* Pantalla actual */ }

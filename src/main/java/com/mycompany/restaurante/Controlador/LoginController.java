@@ -4,8 +4,6 @@ import com.mycompany.restaurante.DAO.EmpleadoDAO;
 import com.mycompany.restaurante.Modelo.Empleado;
 
 import java.io.IOException;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -21,8 +19,9 @@ import javafx.stage.Stage;
  * Controlador principal para la gestión de acceso al sistema Saveurs Paris.
  * Se encarga de validar las credenciales de los usuarios y redirigirlos
  * a sus respectivos paneles de trabajo según su rol asignado.
- * * @author Dana
- * @version 1.0
+ * 
+ * @author Dana
+ * @version 2.0
  */
 public class LoginController {
 
@@ -48,44 +47,42 @@ public class LoginController {
      */
     @FXML
     private void handleIniciarSesion(ActionEvent event) {
-        // Obtener lo que el usuario escribió
-        String usuario = txtUsuario.getText();
+        String usuario  = txtUsuario.getText();
         String password = txtContraseña.getText();
 
-        // Validar que no estén vacíos
-        if (usuario == null || usuario.trim().isEmpty() || password == null || password.trim().isEmpty()) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Campos vacíos", "Por favor, ingresa tu usuario y contraseña.");
+        if (usuario == null || usuario.trim().isEmpty()
+                || password == null || password.trim().isEmpty()) {
+            mostrarAlerta(Alert.AlertType.WARNING,
+                "Campos vacíos",
+                "Por favor, ingresa tu usuario y contraseña.");
             return;
         }
 
-        // Autenticar y obtener el rol
-        String rolEmpleado = autenticarUsuario(usuario, password);
+        // Usamos el método nuevo que devuelve el objeto completo con ID
+        Empleado empleado = EmpleadoDAO.autenticarConId(usuario, password);
 
-        // Redirigir según el rol
-        if (rolEmpleado != null) {
-            switch (rolEmpleado) {
-                case "Mesero":
-                    cargarPantalla("/com/mycompany/restaurante/fxml/MesasDisponiblesPantalla.fxml", "Panel de Mesero");
-                    break;
-                case "Administrador":
-                    cargarPantalla("/com/mycompany/restaurante/fxml/GestionarEmpleado.fxml", "Panel de Administración");
-                    break;
-                case "Chef":
-                    cargarPantalla("/com/mycompany/restaurante/fxml/PedidosActuales.fxml", "Panel de Cocina");
-                    break;
-                case "Cajero":
-                    cargarPantalla("/com/mycompany/restaurante/fxml/CobrarPantalla.fxml", "Panel de Caja");
-                    break;
-                case "Recepcionista":
-                    cargarPantalla("/com/mycompany/restaurante/fxml/DisponibilidadRecepcionista.fxml", "Panel de Recepción");
-                    break;
-                default:
-                    mostrarAlerta(Alert.AlertType.ERROR, "Error de Rol", "El rol asignado no tiene una vista creada aún.");
-                    break;
-            }
-        } else {
-            // Credenciales incorrectas
-            mostrarAlerta(Alert.AlertType.ERROR, "Error de autenticación", "Usuario o contraseña incorrectos.");
+        if (empleado == null) {
+            mostrarAlerta(Alert.AlertType.ERROR,
+                "Error de autenticación",
+                "Usuario o contraseña incorrectos.");
+            return;
+        }
+
+        switch (empleado.getPuesto()) {
+            case "Mesero"         -> cargarPantallaMesero(empleado.getId());
+            case "Administrador"  -> cargarPantalla(
+                "/com/mycompany/restaurante/fxml/GestionarEmpleado.fxml",
+                "Panel de Administración");
+            case "Chef"           -> cargarPantalla(
+                "/com/mycompany/restaurante/fxml/PedidosActuales.fxml",
+                "Panel de Cocina");
+            case "Cajero"         -> cargarPantallaCajero(empleado.getId());
+            case "Recepcionista"  -> cargarPantalla(
+                "/com/mycompany/restaurante/fxml/DisponibilidadRecepcionista.fxml",
+                "Panel de Recepción");
+            default -> mostrarAlerta(Alert.AlertType.ERROR,
+                "Error de Rol",
+                "El rol asignado no tiene una vista creada aún.");
         }
     }
     
@@ -97,11 +94,84 @@ public class LoginController {
     private void handleMenu(ActionEvent event) {
         cargarPantalla("/com/mycompany/restaurante/fxml/Menu.fxml", "Panel de Mesero");
     }
+    
+    /**
+     * Carga la pantalla del mesero e inyecta su ID en el controlador.
+     */
+    private void cargarPantallaMesero(int idEmpleado) {
+        try {
+            java.net.URL url = getClass().getResource(
+                "/com/mycompany/restaurante/fxml/MesasDisponiblesPantalla.fxml");
+
+            if (url == null) {
+                mostrarAlerta(Alert.AlertType.ERROR,
+                    "Archivo no encontrado",
+                    "No se encontró MesasDisponiblesPantalla.fxml");
+                return;
+            }
+
+            FXMLLoader loader = new FXMLLoader(url);
+            Parent root = loader.load();
+
+            // Inyectar el ID real del mesero
+            MesasDisponiblesController ctrl = loader.getController();
+            ctrl.setIdEmpleadoSesion(idEmpleado);
+
+            Stage stage = (Stage) btnIniciarSesion.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Panel de Mesero - Saveurs Paris");
+            stage.centerOnScreen();
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            mostrarAlerta(Alert.AlertType.ERROR,
+                "Error de Carga",
+                "Ocurrió un problema al cargar la pantalla del mesero.");
+        }
+    }
+
+    /**
+     * Carga la pantalla del cajero e inyecta su ID en el controlador.
+     */
+    private void cargarPantallaCajero(int idEmpleado) {
+        try {
+            java.net.URL url = getClass().getResource(
+                "/com/mycompany/restaurante/fxml/CobrarPantalla.fxml");
+
+            if (url == null) {
+                mostrarAlerta(Alert.AlertType.ERROR,
+                    "Archivo no encontrado",
+                    "No se encontró CobrarPantalla.fxml");
+                return;
+            }
+
+            FXMLLoader loader = new FXMLLoader(url);
+            Parent root = loader.load();
+
+            // Inyectar el ID real del cajero
+            CobrarController ctrl = loader.getController();
+            ctrl.setIdEmpleadoActual(idEmpleado);
+
+            Stage stage = (Stage) btnIniciarSesion.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Panel de Caja - Saveurs Paris");
+            stage.centerOnScreen();
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            mostrarAlerta(Alert.AlertType.ERROR,
+                "Error de Carga",
+                "Ocurrió un problema al cargar la pantalla del cajero.");
+        }
+    }
 
     /**
      * Carga y despliega un nuevo archivo FXML sobre el Stage actual del sistema.
      * Realiza una validación previa para mitigar rupturas visuales por rutas erróneas.
-     * * @param rutaFxml Ubicación del archivo de la vista dentro del proyecto.
+     * 
+     * @param rutaFxml Ubicación del archivo de la vista dentro del proyecto.
      * @param titulo Texto que se desplegará en la barra superior de la ventana.
      */
     private void cargarPantalla(String rutaFxml, String titulo) {

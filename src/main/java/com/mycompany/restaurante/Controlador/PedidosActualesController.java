@@ -137,10 +137,17 @@ public class PedidosActualesController implements Initializable {
 
     @FXML
     private void handleCerrarSesion(ActionEvent event) {
+        List<OrdenCocina> pendientes = PedidoDAO.obtenerOrdenesEnEspera();
+
+        String mensaje = !pendientes.isEmpty()
+            ? "Hay " + pendientes.size() + " pedido(s) pendiente(s) de marcar como listo.\n" +
+              "¿Deseas cerrar sesión de todas formas?"
+            : "¿Estás seguro de que deseas salir del sistema?";
+
         Alert alerta = new Alert(Alert.AlertType.CONFIRMATION);
         alerta.setTitle("Confirmar Salida");
         alerta.setHeaderText("Cerrar Sesión");
-        alerta.setContentText("¿Estás seguro de que deseas salir del sistema?");
+        alerta.setContentText(mensaje);
 
         Optional<ButtonType> resultado = alerta.showAndWait();
         if (resultado.isPresent() && resultado.get() == ButtonType.OK) {

@@ -232,11 +232,11 @@ public class RegistrarPedidoController {
                 idParaMostrar = idOrdenExistente;
             } else {
                 // CAMINO B: Mesa vacía/libre, se registra una orden completa desde cero
-                int idEmpleadoTemporal = 3; // El ID de Dana
+                
                 String notasDelMesero = txtDescripcion.getText();
                 
                 idParaMostrar = com.mycompany.restaurante.DAO.PedidoDAO.insertarOrdenCompleta(
-                        idMesaReal, idEmpleadoTemporal, masterData, notasDelMesero
+                        idMesaReal, idEmpleadoReal, masterData, notasDelMesero
                 );
                 exito = (idParaMostrar != -1);
             }
@@ -322,6 +322,14 @@ public class RegistrarPedidoController {
             alerta.close();
         }
     }
+    
+    /**
+    * Inyecta el ID del mesero autenticado para asociarlo a la orden.
+    * @param idEmpleado ID del empleado en sesión.
+    */
+   public void setIdEmpleadoReal(int idEmpleado) {
+       this.idEmpleadoReal = idEmpleado;
+   }
     
     /**
      * Recupera el contenedor principal (Stage) de la escena actual para finalizar su ejecución.
