@@ -1,8 +1,11 @@
 package com.mycompany.restaurante.DAO;
 
 /**
-* Dana
-*/
+ * Acceso a datos para la tabla lista_espera.
+ * Se encarga de controlar el flujo de clientes en espera, permitiendo su lectura,
+ * inserción, actualización general y cambios rápidos de estado.
+ * * @author Dana
+ */
 
 import com.mycompany.restaurante.Modelo.ConexionDB;
 import com.mycompany.restaurante.Modelo.ClienteEspera;
@@ -13,7 +16,10 @@ import java.sql.*;
 
 public class ListaEsperaDAO {
     
-    
+    /**
+     * Devuelve todas las personas en lista de espera de la BD.
+     * @return Una lista observable con todas las personas registradas.
+     */
     public static ObservableList<ClienteEspera> obtenerEsperando() {
         ObservableList<ClienteEspera> lista = FXCollections.observableArrayList();
         
@@ -43,6 +49,8 @@ public class ListaEsperaDAO {
 
     /**
      * Agrega un nuevo cliente a la lista de espera.
+     * @param c Objeto con los datos del cliente a insertar.
+     * @return true si el registro se insertó correctamente, false de lo contrario.
      */
     public static boolean insertar(ClienteEspera c) {
         String sql = "INSERT INTO lista_espera (nombreCliente, telefono, numeroPersonas, estado) VALUES (?, ?, ?, ?)";
@@ -63,29 +71,34 @@ public class ListaEsperaDAO {
     }
     
     /**
-     * Actualiza todos los datos de una reservación existente.
+     * Actualiza todos los datos de un cliente existente en la lista de espera.
+     * @param c Objeto cliente que contiene los datos modificados y su ID.
+     * @return true si la actualización fue exitosa en la BD, false de lo contrario.
      */
-    public static boolean actualizar(ClienteEspera r) {
-        String sql = "UPDATE reservaciones SET nombreCliente=?, telefono=?, numeroPersonas=?, estado=? WHERE idEspera=?";
+    public static boolean actualizar(ClienteEspera c) {
+        String sql = "UPDATE lista_espera SET nombreCliente=?, telefono=?, numeroPersonas=?, estado=? WHERE idEspera=?";
 
         try (Connection con = ConexionDB.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
-            ps.setString(1, r.getNombreCliente());
-            ps.setString(2, r.getTelefono());
-            ps.setInt(3, r.getNumeroPersonas());
-            ps.setString(4, r.getEstado());
-            ps.setInt(5, r.getIdEspera());
+            ps.setString(1, c.getNombreCliente());
+            ps.setString(2, c.getTelefono());
+            ps.setInt(3, c.getNumeroPersonas());
+            ps.setString(4, c.getEstado());
+            ps.setInt(5, c.getIdEspera());
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            System.err.println("ReservacionDAO.actualizar(): " + e.getMessage());
+            System.err.println("ListaEsperaDAO.actualizar(): " + e.getMessage());
         }
         return false;
     }
 
     /**
      * Cambia el estado del cliente a "Asignado" o "Cancelado".
+     * @param idEspera Identificador único del cliente en la lista de espera.
+     * @param nuevoEstado Cadena de texto con el nuevo estado operativo a asignar.
+     * @return true si el estado se actualizó correctamente, false en caso de error.
      */
     public static boolean actualizarEstado(int idEspera, String nuevoEstado) {
         String sql = "UPDATE lista_espera SET estado = ? WHERE idEspera = ?";

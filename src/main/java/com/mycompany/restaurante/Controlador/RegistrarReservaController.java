@@ -17,14 +17,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import java.time.LocalDate;
+import javafx.scene.control.DateCell;
 
 /**
- *
- * @author Dana
+ * Controlador para la creación y edición de reservaciones en el sistema Saveurs Paris.
+ * Permite capturar la información del cliente, validar la disponibilidad de los horarios
+ * con un margen de seguridad de 3 horas e interactuar con la cuadrícula física de mesas.
+ * * @author Dana
+ * @version 1.0
  */
-
 public class RegistrarReservaController {
 
+    // CONTROLES DE LA INTERFAZ FXML
     @FXML private Label lblTitulo;
     @FXML private TextField txtNombre;
     @FXML private DatePicker txtFecha;
@@ -39,36 +43,73 @@ public class RegistrarReservaController {
     @FXML private Button btnMesa5, btnMesa6, btnMesa7, btnMesa8;
     @FXML private Button btnMesa9, btnMesa10, btnMesa11, btnMesa12;
     
+    // ESTADO INTERNO Y ACCESO A DATOS
     private final MesasDAO mesasDAO = new MesasDAO();
     private List<Integer> mesasSeleccionadas = new ArrayList<>();
+    private Reservacion reservaOriginal = null;
+    private Reservacion reservaResultado = null;
     
     // ESTILOS CSS BASADOS EN LA INTERFAZ
     private static final String ESTILO_MESA_LIBRE = 
-        "-fx-background-color: #627096; -fx-border-color: #627096; -fx-text-fill: #d4c5b0;" +
-        "-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;";
+        "-fx-background-color: #627096;" +
+        "-fx-border-color: #627096;" +
+        "-fx-text-fill: #d4c5b0;" +
+        "-fx-background-radius: 10 10 10 10;" +
+        "-fx-border-radius: 10 10 10 10;";
     
     private static final String ESTILO_MESA_OCUPADA =
-        "-fx-background-color: #8a3636; -fx-border-color: #8a3636; -fx-text-fill: #d4c5b0;" +
-        "-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;" +
-        "-fx-text-fill: #0a132b;";
+        "-fx-background-color: #8a3636;" +
+        "-fx-border-color: #8a3636;" +
+        "-fx-text-fill: #d4c5b0;" +
+        "-fx-background-radius: 10 10 10 10;" +
+        "-fx-border-radius: 10 10 10 10;";
         
     private static final String ESTILO_MESA_RESERVADA = 
-        "-fx-background-color: #8a3636; -fx-border-color: #8a3636; -fx-text-fill: #d4c5b0;" +
-        "-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;";
+        "-fx-background-color: #8a3636;" +
+        "-fx-border-color: #8a3636;" +
+        "-fx-text-fill: #d4c5b0;" +
+        "-fx-background-radius: 10 10 10 10;" +
+        "-fx-border-radius: 10 10 10 10;";
         
     private static final String ESTILO_MESA_SELECCIONADA = 
-        "-fx-background-color: #C9A84C; -fx-border-color: #C9A84C; -fx-text-fill: #0a132b;" +
-        "-fx-background-radius: 10 10 10 10; -fx-border-radius: 10 10 10 10;";
+        "-fx-background-color: #C9A84C;" +
+        "-fx-border-color: #C9A84C;" +
+        "-fx-text-fill: #0a132b;" +
+        "-fx-background-radius: 10 10 10 10;" +
+        "-fx-border-radius: 10 10 10 10;";
     
     private static final String ESTILO_ERROR  =
-        "-fx-background-color: #FFF0F0; -fx-border-color: #cc0000; -fx-border-width: 2; -fx-border-radius: 5 5 5 5;";
+        "-fx-background-color: #FFF0F0;" +
+        "-fx-border-color: #cc0000;" +
+        "-fx-border-width: 2;" +
+        "-fx-border-radius: 5;";
 
+    /**
+     * Inicializa el controlador vinculando los eventos de la cuadrícula y cargando sus colores básicos.
+     */
     @FXML
     public void initialize() {
         vincularBotonesMesa();
         cargarEstadoMesas();
+        // Bloquear fechas pasadas en el DatePicker
+        txtFecha.setDayCellFactory(picker -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+                LocalDate hoy = LocalDate.now();
+                
+                // Si la fecha evaluada es antes de hoy, la deshabilitamos
+                if (date.isBefore(hoy)) {
+                    setDisable(true);
+                    setStyle("-fx-background-color: #d3d3d3; -fx-text-fill: #a9a9a9;"); // Se pone gris
+                }
+            }
+        });
     }
 
+    /**
+     * Enlaza dinámicamente la acción de clic a cada uno de los 12 botones de la cuadrícula.
+     */
     private void vincularBotonesMesa() {
         Button[] botones = obtenerArregloMesas();
         for (int i = 0; i < botones.length; i++) {
@@ -78,8 +119,7 @@ public class RegistrarReservaController {
     }
 
     /**
-     * Consulta la base de datos y aplica el estilo visual correspondiente 
-     * a cada botón de mesa según su estado actual.
+     * Sincroniza visualmente los botones de la interfaz con los estados reales ("Libre", "Ocupada", "Reservada") de la BD.
      */
     private void cargarEstadoMesas() {
         Button[] botones = obtenerArregloMesas();
@@ -92,6 +132,7 @@ public class RegistrarReservaController {
         for (Mesa mesa : mesas) {
             int idx = mesa.getIdMesa() - 1; 
             if (idx < 0 || idx >= botones.length) continue;
+            setTextoMesa(botones[idx], mesa.getIdMesa(), mesa.getCapacidad());
 
             if (mesasSeleccionadas.contains(mesa.getIdMesa())) {
                 botones[idx].setStyle(ESTILO_MESA_SELECCIONADA);
@@ -108,6 +149,10 @@ public class RegistrarReservaController {
         }
     }
 
+    /**
+     * Procesa la selección o deselección de una mesa evaluando previamente las reglas horarias de la BD.
+     * @param numMesa Número correlativo de la mesa presionada (1-12).
+     */
     private void handleClickMesa(int numMesa) {
         Mesa mesa = mesasDAO.obtenerMesaPorId(numMesa);
 
@@ -149,6 +194,10 @@ public class RegistrarReservaController {
         cargarEstadoMesas();
     }
 
+    /**
+     * Agrupa los botones inyectados en una estructura de arreglo indexada para facilitar su recorrido.
+     * @return Arreglo estructurado de botones contenedores de las mesas.
+     */
     private Button[] obtenerArregloMesas() {
         return new Button[] {
             btnMesa1, btnMesa2, btnMesa3,  btnMesa4,
@@ -157,14 +206,9 @@ public class RegistrarReservaController {
         };
     }
 
-    // Guardar la referencia de la reserva original si estamos editando
-    private Reservacion reservaOriginal = null;
-    
-    private Reservacion reservaResultado = null;
-
     /**
-     * Se llama desde la ventana principal cuando le damos a "Editar".
-     * Precarga los datos en los campos de texto.
+     * Precarga la información de una reserva existente en el formulario para habilitar el modo edición.
+     * @param reserva Objeto Reservacion con los datos vigentes a modificar.
      */
     public void cargarDatos(Reservacion reserva) {
         this.reservaOriginal = reserva;
@@ -182,14 +226,24 @@ public class RegistrarReservaController {
     }
 
     /**
-     * Devuelve la reserva al controlador principal (null si el usuario canceló)
+     * Proporciona la entidad construida o modificada al flujo o controlador que invocó la ventana modal.
+     * @return El objeto Reservacion procesado, o {@code null} si la operación fue cancelada.
      */
     public Reservacion getReserva() {
         return reservaResultado;
     }
 
+    /**
+     * Valida de manera exhaustiva las restricciones de los campos de texto, formatos y confirmación final de guardado.
+     * @param event Evento de disparo vinculado al botón de confirmación.
+     */
     @FXML
     private void handleGuardar(ActionEvent event) {
+        // Limpiamos los estilos de error previos
+        txtNombre.setStyle("");
+        txtNoPersonas.setStyle("");
+        txtTelefono.setStyle("");
+
         // 1. Validar que no haya campos vacíos
         if (txtNombre.getText().trim().isEmpty()){
             marcarError(txtNombre);
@@ -201,7 +255,7 @@ public class RegistrarReservaController {
         if (txtNoPersonas.getText().trim().isEmpty()){
             marcarError(txtNoPersonas);
             mostrarAlerta(Alert.AlertType.ERROR,"Todos los campos son obligatorios",
-                    "El campo 'Contraseña' no puede estar vacio.");
+                    "El campo 'Número de personas' no puede estar vacio.");
             return;
         }
         
@@ -232,41 +286,98 @@ public class RegistrarReservaController {
             String hora = txtHora.getText().trim();
             String telefono = txtTelefono.getText().trim();
             int numPersonas = Integer.parseInt(txtNoPersonas.getText().trim());
+
+            if (numPersonas <= 0) {
+                 marcarError(txtNoPersonas);
+                 mostrarAlerta(Alert.AlertType.WARNING, "Número inválido", "El número de personas debe ser mayor a 0.");
+                 return;
+            }
             
-            // 3. Crear el objeto con la información (preservando el ID, estado y mesa si editamos)
             int id = (reservaOriginal != null) ? reservaOriginal.getId() : 0;
             int idMesa = mesasSeleccionadas.get(0); 
             String estado = (reservaOriginal != null) ? reservaOriginal.getEstado() : "Pendiente";
 
+            // 3. Validar capacidad de la mesa
+            Mesa mesa = mesasDAO.obtenerMesaPorId(idMesa);
+            if (mesa != null) {
+                if (numPersonas > mesa.getCapacidad()) {
+                    marcarError(txtNoPersonas);
+                    mostrarAlerta(Alert.AlertType.ERROR, "Capacidad excedida", 
+                        "La Mesa " + idMesa + " tiene capacidad máxima para " + mesa.getCapacidad() + " personas.\n" +
+                        "No puedes registrar una reserva de " + numPersonas + " personas allí.");
+                    return; // Detenemos la ejecución
+                }
+            } else {
+                mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se encontró la información de la mesa seleccionada.");
+                return;
+            }
+
+            // 4. Validar disponibilidad de horario (3 horas)
             if (!com.mycompany.restaurante.DAO.ReservacionDAO.validarDisponibilidad(idMesa, fecha, hora, id)) {
                 mostrarAlerta(Alert.AlertType.WARNING, "Mesa no disponible", 
                     "No se puede reservar la mesa " + idMesa + " a las " + hora + ".\n" +
                     "Existe otra reserva activa con menos de 3 horas de diferencia.");
-                return; // Cortamos la ejecución, no se guarda ni se cierra
+                return;
             }
 
+            // 5. Crear objeto final y cerrar
             reservaResultado = new Reservacion(id, nombre, telefono, fecha, hora, numPersonas, idMesa, estado);
-
-            // 4. Cerrar
             cerrarVentana();
 
         } catch (NumberFormatException e) {
+            marcarError(txtNoPersonas);
             mostrarAlerta(Alert.AlertType.ERROR, "Error de formato", "El número de personas debe ser un número entero.");
         }
     }
+    
+    /**
+    * Asigna al botón un gráfico con dos líneas:
+    * número de mesa (grande) y capacidad (pequeña).
+    */
+   private void setTextoMesa(Button btn, int numMesa, int capacidad) {
+       javafx.scene.control.Label lblNumero =
+               new javafx.scene.control.Label(String.valueOf(numMesa));
+       lblNumero.setStyle("-fx-font-size: 18px;" + 
+                          "-fx-font-weight: bold;" + 
+                          "-fx-text-fill: #d4c5b0;");
 
+       javafx.scene.control.Label lblCapacidad =
+               new javafx.scene.control.Label(capacidad + " 👥");
+       lblCapacidad.setStyle("-fx-font-size: 10px;" +
+                             "-fx-text-fill: #d4c5b0;");
+
+       javafx.scene.layout.VBox vbox =
+               new javafx.scene.layout.VBox(2, lblNumero, lblCapacidad);
+       vbox.setAlignment(javafx.geometry.Pos.CENTER);
+
+       btn.setText(""); // limpia el texto nativo del botón
+       btn.setGraphic(vbox);
+   }
+
+    /**
+     * Anula el proceso actual de recolección y cierra el entorno modal de manera segura.
+     * @param event Evento de disparo vinculado al botón Cancelar.
+     */
     @FXML
     private void handleCancelar(ActionEvent event) {
         reservaResultado = null; // Devolvemos nulo indicando que se canceló
         cerrarVentana();
     }
 
+    /**
+     * Recupera el contenedor principal (Stage) del entorno gráfico actual para finalizar su ejecución.
+     */
     private void cerrarVentana() {
         Stage stage = (Stage) btnCancelar.getScene().getWindow();
         stage.close();
     }
 
-    
+    /**
+     * Lanza ventanas de diálogo modales estandarizadas en la pantalla para alertar o informar al operador.
+     * @param tipo El tipo de categorización o icono del aviso ({@code ERROR}, {@code WARNING}, etc.).
+     * @param titulo Texto para la barra superior del recuadro.
+     * @param mensaje Cuerpo descriptivo de la advertencia o error.
+     */
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
         Alert alerta = new Alert(tipo);
         alerta.setTitle(titulo);
@@ -275,6 +386,10 @@ public class RegistrarReservaController {
         alerta.showAndWait();
     }
     
+    /**
+     * Aplica el borde de color rojizo y asigna el foco operativo al control de texto que falló en sus reglas de validación.
+     * @param campo El componente gráfico del tipo TextField afectado.
+     */
     private void marcarError(TextField campo) {
         campo.setStyle(ESTILO_ERROR);
         campo.requestFocus();

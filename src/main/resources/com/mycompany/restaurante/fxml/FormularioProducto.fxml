@@ -12,7 +12,7 @@
 
 <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="320.0" prefWidth="350.0" spacing="15.0" style="-fx-background-color: #F5EFE6;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.restaurante.Controlador.FormularioProductoController">
    <children>
-      <VBox prefHeight="200.0" prefWidth="50.0" style="-fx-background-color: #2C3B62;">
+      <VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="70.0" prefWidth="350.0" style="-fx-background-color: #2C3B62;">
          <children>
             <Label fx:id="lblTitulo" alignment="CENTER" prefHeight="50.0" prefWidth="350.0" text="Registrar producto" textAlignment="CENTER" textFill="#fffdfd">
                <font>
@@ -82,6 +82,32 @@
                         </ComboBox>
                      </children>
                   </VBox>
+               </children>
+               <VBox.margin>
+                  <Insets bottom="10.0" />
+               </VBox.margin>
+            </HBox>
+            <HBox prefHeight="50.0" prefWidth="200.0" spacing="10.0">
+               <children>
+                  <Label fx:id="lblRutaImagen" prefHeight="27.0" prefWidth="175.0" style="-fx-font-family: &quot;Montserrat&quot;; -fx-font: E5E4E1; -fx-background-color: E5E4E1; -fx-background-radius: 5;" text="   Sin imagen" textFill="#a9a9a9">
+                     <font>
+                        <Font name="Candara" size="12.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Label>
+                  <Button fx:id="btnSubirImagen" defaultButton="true" maxHeight="-Infinity" maxWidth="-Infinity" onAction="#handleSeleccionarImagen" prefHeight="26.0" prefWidth="102.0" style="-fx-background-color: #8b1a1a; -fx-text-fill: #d4c5b0; -fx-background-radius: 10 10 10 10;" text="Subir archivo">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Button>
                </children>
             </HBox>
          </children>

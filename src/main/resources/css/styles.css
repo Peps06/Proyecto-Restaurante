@@ -1,4 +1,4 @@
-/* ===== MESAS ===== */
+/* ===== MESAS ===== 
 
 .mesa-libre {
     -fx-background-color: #68A678;
@@ -16,13 +16,13 @@
     -fx-text-fill: #0a132b;
 }
 
-/* Botón seleccionado */
+ Botón seleccionado 
 .mesa-seleccionada {
     -fx-background-color: #2c3b62;
     -fx-text-fill: #d4c5b0;
 }
 
-/* ===== BOTONES ===== */
+ ===== BOTONES ===== 
 
 .btn-activo {
     -fx-background-color: #2c3b62;
@@ -38,7 +38,7 @@
     -fx-border-radius: 10;
 }
 
-/* ===== INPUTS ===== */
+ ===== INPUTS ===== 
 
 .input-normal {
     -fx-background-color: #F7F4ED;
@@ -56,5 +56,9 @@
 .combo-error {
     -fx-border-color: #cc0000;
     -fx-border-width: 2;
-}
+}*/
 
+.button {
+    -fx-wrap-text: true;
+    -fx-text-alignment: center;
+}

@@ -2,6 +2,7 @@ package com.mycompany.restaurante.DAO;
 
 import com.mycompany.restaurante.Modelo.ConexionDB;
 import com.mycompany.restaurante.Modelo.Insumo;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
  * * Aquí escribo las consultas SQL necesarias para guardar, ver, editar o borrar 
  * los insumos (ingredientes y productos). Se encarga de traducir los datos de la 
  * base de datos a objetos de tipo 'Insumo' que Java pueda entender.
+ * 
  * @author Rubi
  * @version 1.0
  */
@@ -25,12 +27,12 @@ public class InsumoDAO {
         List<Insumo> lista = new ArrayList<>();
         String sql = "SELECT * FROM insumos";
 
-        try {
+        try (
             // Pedimos la conexión a nuestra base de datos
             Connection con = ConexionDB.getConexion();
             PreparedStatement ps = con.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
-
+            ){
             // Vamos recorriendo fila por fila lo que nos mandó la base de datos
             while (rs.next()) {
                 // Convertimos cada fila en un objeto Insumo de Java
@@ -58,10 +60,10 @@ public class InsumoDAO {
      */
     public boolean insertar(Insumo insumo) {
         String sql = "INSERT INTO insumos (nombre, categoria, stock, unidad, estado) VALUES (?, ?, ?, ?, ?)";
-        try {
+        try (
             Connection con = ConexionDB.getConexion();
             PreparedStatement ps = con.prepareStatement(sql);
-            
+            ){
             // Reemplazamos los signos '?' por los datos reales del insumo
             ps.setString(1, insumo.getNombre());
             ps.setString(2, insumo.getCategoria());
@@ -84,10 +86,10 @@ public class InsumoDAO {
      */
     public boolean editar(Insumo insumo) {
         String sql = "UPDATE insumos SET nombre=?, categoria=?, stock=?, unidad=?, estado=? WHERE idInsumo=?";
-        try {
+        try (
             Connection con = ConexionDB.getConexion();
             PreparedStatement ps = con.prepareStatement(sql);
-            
+            ){
             ps.setString(1, insumo.getNombre());
             ps.setString(2, insumo.getCategoria());
             ps.setDouble(3, insumo.getStock());
@@ -109,9 +111,10 @@ public class InsumoDAO {
      */
     public boolean eliminar(int id) {
         String sql = "DELETE FROM insumos WHERE idInsumo = ?";
-        try {
+        try (
             Connection con = ConexionDB.getConexion();
             PreparedStatement ps = con.prepareStatement(sql);
+            ){
             ps.setInt(1, id);
             
             return ps.executeUpdate() > 0;

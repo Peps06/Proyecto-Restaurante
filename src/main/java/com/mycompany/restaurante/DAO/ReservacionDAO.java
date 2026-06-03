@@ -20,6 +20,7 @@ public class ReservacionDAO {
     /**
      * Devuelve todas las reservaciones de la BD.
      * Antes de consultar, cancela automáticamente las que tienen +15 minutos de retraso.
+     * @return Una lista observable con todas las reservaciones registradas.
      */
     public static ObservableList<Reservacion> obtenerTodos() {
         ObservableList<Reservacion> lista = FXCollections.observableArrayList();
@@ -65,6 +66,8 @@ public class ReservacionDAO {
 
     /**
      * Inserta una reservación nueva. Devuelve el ID generado, -1 si hay error.
+     * @param r Objeto con la información de la reservación a insertar.
+     * @return El ID numérico generado por la base de datos, o -1 en caso de error.
      */
     public static int insertar(Reservacion r) {
         String sql = "INSERT INTO reservaciones (nombreCliente, telefono, fecha, hora, numeroPersonas, idMesa, estado) VALUES (?,?,?,?,?,?,?)";
@@ -94,6 +97,8 @@ public class ReservacionDAO {
 
     /**
      * Actualiza todos los datos de una reservación existente.
+     * @param r Objeto reservación que contiene los datos modificados y su ID.
+     * @return true si la actualización fue exitosa, false en caso contrario.
      */
     public static boolean actualizar(Reservacion r) {
         String sql = "UPDATE reservaciones SET nombreCliente=?, telefono=?, fecha=?, hora=?, numeroPersonas=?, idMesa=?, estado=? WHERE idReservacion=?";
@@ -119,6 +124,8 @@ public class ReservacionDAO {
 
     /**
      * Cancela una reservación por ID.
+     * @param idReserva Identificador único de la reservación a cancelar.
+     * @return true si se cambió el estado correctamente, false si ocurrió un error.
      */
     public static boolean cancelarReserva(int idReserva) {
         String sql = "UPDATE reservaciones SET estado = 'Cancelada' WHERE idReservacion = ?";
@@ -137,6 +144,11 @@ public class ReservacionDAO {
     
     /**
      * Valida la disponibilidad una reservación.
+     * @param idMesa Número de mesa que se desea validar.
+     * @param fecha Fecha en la que se solicita la reserva.
+     * @param hora Hora asignada para evaluar el horario disponible.
+     * @param idReservaIgnorar ID de la reserva actual para omitirla al editar.
+     * @return true si la mesa está disponible en ese horario, false si hay cruces.
      */
     public static boolean validarDisponibilidad(int idMesa, LocalDate fecha, String hora, int idReservaIgnorar) {
         // Busca cuántas reservas se empalman con un margen de +/- 3 horas

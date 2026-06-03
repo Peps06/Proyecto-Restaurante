@@ -12,8 +12,6 @@ import java.util.regex.Pattern;
  */
 public class DatosFacturacion {
 
-    // PATRONES DE VALIDACIÓN 
-
     /** 
      * Patrón para RFC (México). 
      * Soporta personas físicas (13 caracteres) y morales (12 caracteres).
@@ -37,20 +35,18 @@ public class DatosFacturacion {
     private String regimenFiscal;
     private String usoCfdi;
 
-    /**
-     * Constructor vacío para inicialización parcial o frameworks de persistencia.
-     */
+    /** Constructor vacío para inicialización parcial o frameworks de persistencia. */
     public DatosFacturacion() {}
 
     /**
      * Constructor con todos los parámetros para crear un perfil fiscal completo.
      * 
      * @param nombreRazonSocial Nombre legal o comercial del cliente.
-     * @param rfc               Registro Federal de Contribuyentes.
-     * @param codigoPostal      CP del domicilio fiscal.
-     * @param correo            Dirección de email para envío de XML/PDF.
-     * @param regimenFiscal     Régimen ante el SAT (ej. Sueldos y Salarios).
-     * @param usoCfdi           Clave de uso del CFDI (ej. G03 - Gastos en general).
+     * @param rfc Registro Federal de Contribuyentes.
+     * @param codigoPostal CP del domicilio fiscal.
+     * @param correo Dirección de email para envío de XML/PDF.
+     * @param regimenFiscal Régimen ante el SAT (ej. Sueldos y Salarios).
+     * @param usoCfdi Clave de uso del CFDI (ej. G03 - Gastos en general).
      */
     public DatosFacturacion(String nombreRazonSocial, String rfc, String codigoPostal,
                              String correo, String regimenFiscal, String usoCfdi) {
@@ -62,7 +58,6 @@ public class DatosFacturacion {
         this.usoCfdi = usoCfdi;
     }
 
-    //  MÉTODOS DE VALIDACIÓN
 
     /**
      * Valida si una cadena de texto tiene el formato de un RFC oficial.
@@ -113,65 +108,50 @@ public class DatosFacturacion {
         this.nombreRazonSocial = nombreRazonSocial;
     }
 
-    /** 
-     * @return El RFC registrado. 
-     */
+    /** @return El RFC registrado. */
     public String getRfc() {
         return rfc;
     }
-    /** 
-     * @param rfc Nuevo RFC (será validado externamente). 
-     */
+    
+    /** @param rfc Nuevo RFC (será validado externamente).  */
     public void setRfc(String rfc) {
         this.rfc = rfc;
     }
 
-    /**
-     * @return El código postal fiscal.
-     */
+    /** @return El código postal fiscal. */
     public String getCodigoPostal() {
         return codigoPostal;
     }
-    /**
-     * @param codigoPostal Nuevo código postal.
-     */
+    
+    /** @param codigoPostal Nuevo código postal. */
     public void setCodigoPostal(String codigoPostal) {
         this.codigoPostal = codigoPostal;
     }
 
-    /**
-     * @return El correo electrónico de contacto.
-     */
+    /** @return El correo electrónico de contacto. */
     public String getCorreo() {
         return correo;
     }
-    /**
-     * @param correo Nuevo correo electrónico.
-     */
+    
+    /** @param correo Nuevo correo electrónico. */
     public void setCorreo(String correo) {
         this.correo = correo;
     }
 
-    /**
-     * @return El régimen fiscal del contribuyente.
-     */
+    /** @return El régimen fiscal del contribuyente. */
     public String getRegimenFiscal() {
         return regimenFiscal;
     }
-    /**
-     * @param v Clave del régimen fiscal.
-     */
+    
+    /** @param regimenFiscal Clave del régimen fiscal. */
     public void setRegimenFiscal(String regimenFiscal) {
         this.regimenFiscal = regimenFiscal;
     }
 
-    /**
-     * @return La clave de uso del CFDI. 
-     */
+    /** @return La clave de uso del CFDI.  */
     public String getUsoCfdi() { return usoCfdi; }
-    /** 
-     * @param usoCfdi Clave de uso (ej. G01, G03, P01). 
-     */
+    
+    /** @param usoCfdi Clave de uso (ej. G01, G03, P01).  */
     public void setUsoCfdi(String usoCfdi) {
         this.usoCfdi = usoCfdi;
     }

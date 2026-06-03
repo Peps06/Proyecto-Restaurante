@@ -3,7 +3,6 @@ package com.mycompany.restaurante.Controlador;
 import com.mycompany.restaurante.DAO.InsumoDAO;
 import com.mycompany.restaurante.Modelo.Insumo;
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

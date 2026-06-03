@@ -11,9 +11,11 @@ package com.mycompany.restaurante.Controlador;
 
 
 import com.mycompany.restaurante.DAO.HistorialDAO;
+import com.mycompany.restaurante.Modelo.ConexionDB;
 import com.mycompany.restaurante.Modelo.HistorialOrden;
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,16 +34,34 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class HistorialController implements Initializable {
 
     @FXML private DatePicker dpFechaHistorial;
-    @FXML private TextField txtIdOrden;
+    @FXML private RadioButton rbMatutino;
+    @FXML private RadioButton rbVespertino;
     @FXML private Button btnBuscar;
 
     @FXML private TableView<HistorialOrden> tablaHistorial;
@@ -55,77 +75,180 @@ public class HistorialController implements Initializable {
     private HistorialDAO historialDAO;
     private ObservableList<HistorialOrden> listaHistorial;
 
+  
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // 1. Aquí debes pasarle tu conexión activa a la base de datos.
-        // Como ejemplo usamos una simulación, pero pon la instancia de conexión que use tu equipo:
-        // this.historialDAO = new HistorialDAO(ConexionBD.getConexion());
-        
-        // 2. Colocar la fecha de hoy por defecto
-        dpFechaHistorial.setValue(LocalDate.now());
-
-        // 3. Vincular las columnas de la TableView con las variables del modelo HistorialOrden
-        colIdOrden.setCellValueFactory(new PropertyValueFactory<>("idOrden"));
-        colMesa.setCellValueFactory(new PropertyValueFactory<>("idMesa"));
-        colMesero.setCellValueFactory(new PropertyValueFactory<>("mesero"));
-        colFechaHora.setCellValueFactory(new PropertyValueFactory<>("fechaHora"));
-        colEstado.setCellValueFactory(new PropertyValueFactory<>("estado"));
-        colTotal.setCellValueFactory(new PropertyValueFactory<>("total"));
+    // Inicializar el DAO atrapando la SQLException que arroja tu clase ConexionDB
+    try {
+        this.historialDAO = new HistorialDAO(ConexionDB.getConexion());
+    } catch (SQLException e) {
+        System.err.println("¡Error de conexión con MySQL en el módulo de Historial!");
+        e.printStackTrace();
+        mostrarAlerta("Error de Base de Datos", "No se pudo conectar con el servidor de MySQL. Verifica que esté encendido.");
     }
+    
+    // Colocar la fecha de hoy por defecto
+    dpFechaHistorial.setValue(LocalDate.now());
+
+    // Vincular columnas de la TableView
+    colIdOrden.setCellValueFactory(new PropertyValueFactory<>("idOrden"));
+    colMesa.setCellValueFactory(new PropertyValueFactory<>("idMesa"));
+    colMesero.setCellValueFactory(new PropertyValueFactory<>("mesero"));
+    colFechaHora.setCellValueFactory(new PropertyValueFactory<>("fechaHora"));
+    colEstado.setCellValueFactory(new PropertyValueFactory<>("estado"));
+    colTotal.setCellValueFactory(new PropertyValueFactory<>("total"));
+}
 
     @FXML
     private void handleBuscar(ActionEvent event) {
-        String idTexto = txtIdOrden.getText().trim();
-        
-        // Caso A: Si el usuario escribió un ID de orden en el TextField
-        if (!idTexto.isEmpty()) {
-            try {
-                int idOrden = Integer.parseInt(idTexto);
-                HistorialOrden orden = historialDAO.obtenerOrdenPorId(idOrden);
-                
-                if (orden != null) {
-                    listaHistorial = FXCollections.observableArrayList(orden);
-                    tablaHistorial.setItems(listaHistorial);
-                } else {
-                    mostrarAlerta("Información", "No se encontró ninguna orden con el ID: " + idOrden);
-                    tablaHistorial.setItems(FXCollections.emptyObservableList());
-                }
-            } catch (NumberFormatException e) {
-                mostrarAlerta("Error", "Por favor, ingresa un número válido para el ID de orden.");
-            }
-        } 
-        // Caso B: Si el campo de texto está vacío, busca de forma general por la fecha del DatePicker
-        else {
-            LocalDate fechaSeleccionada = dpFechaHistorial.getValue();
-            if (fechaSeleccionada == null) {
-                mostrarAlerta("Advertencia", "Seleccione una fecha para realizar la búsqueda.");
-                return;
-            }
-            
-            List<HistorialOrden> resultado = historialDAO.obtenerHistorialPorFecha(fechaSeleccionada);
-            if (resultado.isEmpty()) {
-                mostrarAlerta("Información", "No hay registros de órdenes para la fecha seleccionada.");
-                tablaHistorial.setItems(FXCollections.emptyObservableList());
-            } else {
-                listaHistorial = FXCollections.observableArrayList(resultado);
-                tablaHistorial.setItems(listaHistorial);
-            }
-        }
+    LocalDate fechaSeleccionada = dpFechaHistorial.getValue();
+    if (fechaSeleccionada == null) {
+        mostrarAlerta("Advertencia", "Por favor, seleccione una fecha válida.");
+        return;
     }
 
+    // Determinar qué turno está seleccionado
+    String turnoSeleccionado = "";
+    if (rbMatutino.isSelected()) {
+        turnoSeleccionado = "Matutino";
+    } else if (rbVespertino.isSelected()) {
+        turnoSeleccionado = "Vespertino";
+    } else {
+        mostrarAlerta("Advertencia", "Por favor, seleccione un turno para filtrar.");
+        return;
+    }
+
+    // Consultar a la base de datos con ambos filtros
+    List<HistorialOrden> resultado = historialDAO.obtenerHistorialPorFechaYTurno(fechaSeleccionada, turnoSeleccionado);
+    
+    if (resultado.isEmpty()) {
+        mostrarAlerta("Información", "No hay registros de órdenes para el turno " + turnoSeleccionado + " en la fecha elegida.");
+        tablaHistorial.setItems(FXCollections.emptyObservableList());
+    } else {
+        listaHistorial = FXCollections.observableArrayList(resultado);
+        tablaHistorial.setItems(listaHistorial);
+    }
+}
     @FXML
     private void handleExportarPDF(ActionEvent event) {
-        // Aquí meteremos la estructura de iText para el historial
-        if (tablaHistorial.getItems().isEmpty()) {
-            mostrarAlerta("Advertencia", "No hay datos que exportar.");
-            return;
+    if (tablaHistorial.getItems().isEmpty()) {
+        mostrarAlerta("Advertencia", "No hay registros en la tabla para exportar a PDF.");
+        return;
+    }
+
+    FileChooser fileChooser = new FileChooser();
+    fileChooser.setTitle("Guardar Historial PDF");
+    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivos PDF (*.pdf)", "*.pdf"));
+    fileChooser.setInitialFileName("Historial_Pedidos_" + dpFechaHistorial.getValue().toString() + ".pdf");
+
+    Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+    File destino = fileChooser.showSaveDialog(stage);
+
+    if (destino != null) {
+        Document document = new Document();
+        try {
+            PdfWriter.getInstance(document, new FileOutputStream(destino));
+            document.open();
+
+            // Encabezado del PDF
+            document.add(new Paragraph("SAVEURS PARIS - HISTORIAL DE PEDIDOS"));
+            String turnoLog = rbMatutino.isSelected() ? "Matutino" : "Vespertino";
+            document.add(new Paragraph("Fecha: " + dpFechaHistorial.getValue().toString() + "  |  Turno: " + turnoLog));
+            document.add(new Paragraph(" ")); // Espacio en blanco
+
+            // Crear tabla de 6 columnas (id, mesa, mesero, fecha, estado, total)
+            PdfPTable table = new PdfPTable(6);
+            table.setWidthPercentage(100);
+
+            // Encabezados de columnas
+            String[] headers = {"ID Orden", "Mesa", "Mesero", "Fecha/Hora", "Estado", "Total"};
+            for (String header : headers) {
+                PdfPCell cell = new PdfPCell(new Phrase(header));
+                table.addCell(cell);
+            }
+
+            // Llenar datos desde la TableView
+            for (HistorialOrden orden : tablaHistorial.getItems()) {
+                table.addCell(String.valueOf(orden.getIdOrden()));
+                table.addCell(String.valueOf(orden.getIdMesa()));
+                table.addCell(orden.getMesero());
+                table.addCell(orden.getFechaHora().toString().replace("T", " "));
+                table.addCell(orden.getEstado());
+                table.addCell(String.format("$%.2f", orden.getTotal()));
+            }
+
+            document.add(table);
+            mostrarAlerta("Éxito", "El historial se ha exportado correctamente a PDF.");
+
+        } catch (DocumentException | java.io.FileNotFoundException e) {
+            mostrarAlerta("Error", "Ocurrió un error al generar el archivo PDF.");
+            e.printStackTrace();
+        } finally {
+            document.close();
         }
     }
+}
 
     @FXML
     private void handleExportarExcel(ActionEvent event) {
-        // Aquí meteremos la estructura de Apache POI para el historial
+    if (tablaHistorial.getItems().isEmpty()) {
+        mostrarAlerta("Advertencia", "No hay registros en la tabla para exportar a Excel.");
+        return;
     }
+
+    FileChooser fileChooser = new FileChooser();
+    fileChooser.setTitle("Guardar Historial Excel");
+    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivos de Excel (*.xlsx)", "*.xlsx"));
+    fileChooser.setInitialFileName("Historial_Pedidos_" + dpFechaHistorial.getValue().toString() + ".xlsx");
+
+    Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+    File destino = fileChooser.showSaveDialog(stage);
+
+    if (destino != null) {
+        try (Workbook workbook = new XSSFWorkbook()) {
+            String turnoLog = rbMatutino.isSelected() ? "Matutino" : "Vespertino";
+            Sheet pagina = workbook.createSheet("Pedidos " + turnoLog);
+
+            // Cabecera de la hoja
+            Row filaEncabezado = pagina.createRow(0);
+            String[] columnas = {"ID Orden", "Mesa", "Mesero", "Fecha/Hora", "Estado", "Total"};
+            
+            for (int i = 0; i < columnas.length; i++) {
+                Cell celda = filaEncabezado.createCell(i);
+                celda.setCellValue(columnas[i]);
+            }
+
+            // Llenar filas de datos
+            int numeroFila = 1;
+            for (HistorialOrden orden : tablaHistorial.getItems()) {
+                Row filaData = pagina.createRow(numeroFila++);
+                
+                filaData.createCell(0).setCellValue(orden.getIdOrden());
+                filaData.createCell(1).setCellValue(orden.getIdMesa());
+                filaData.createCell(2).setCellValue(orden.getMesero());
+                filaData.createCell(3).setCellValue(orden.getFechaHora().toString().replace("T", " "));
+                filaData.createCell(4).setCellValue(orden.getEstado());
+                filaData.createCell(5).setCellValue(orden.getTotal());
+            }
+
+            // Autoajustar el tamaño de las columnas
+            for (int i = 0; i < columnas.length; i++) {
+                pagina.autoSizeColumn(i);
+            }
+
+            // Escribir el archivo final
+            try (FileOutputStream fileOut = new FileOutputStream(destino)) {
+                workbook.write(fileOut);
+            }
+
+            mostrarAlerta("Éxito", "El historial se ha exportado correctamente a Excel.");
+
+        } catch (IOException e) {
+            mostrarAlerta("Error", "Ocurrió un error al generar el archivo de Excel.");
+            e.printStackTrace();
+        }
+    }
+}
 
     private void mostrarAlerta(String titulo, String mensaje) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);

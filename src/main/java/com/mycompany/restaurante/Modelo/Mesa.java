@@ -34,6 +34,7 @@ public class Mesa {
         return idMesa;
     }
 
+    /** @param idMesa nuevo idMesa*/
     public void setIdMesa(int idMesa) {
         this.idMesa = idMesa;
     }
@@ -43,6 +44,7 @@ public class Mesa {
         return capacidad;
     }
 
+    /** @param capacidad Nueva capacidad de la mesa */
     public void setCapacidad(int capacidad) {
         this.capacidad = capacidad;
     }
@@ -52,6 +54,7 @@ public class Mesa {
         return estado;
     }
 
+    /** @param estado Cambia el estado de la mesa*/
     public void setEstado(String estado) {
         this.estado = estado;
     }

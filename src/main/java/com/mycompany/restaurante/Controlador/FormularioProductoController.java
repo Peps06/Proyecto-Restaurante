@@ -5,12 +5,16 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
+import javafx.stage.FileChooser;
+import java.io.File;
+
 /**
  * Esta clase es el controlador del formulario para los productos del menú.
  * Es una ventana "dos en uno": me sirve tanto para registrar un platillo nuevo 
- * desde cero, como para editar uno que ya existe. 
- * y se encarga de devolver el objeto Producto listo para guardarse en la base de datos.
- * @author mrubi
+ * desde cero, como para editar uno que ya existe. También se encarga de
+ * devolver el objeto Producto listo para guardarse en la base de datos.
+ * 
+ * @author Rubi
  * @version 2.0
  */
 public class FormularioProductoController {
@@ -22,6 +26,10 @@ public class FormularioProductoController {
     @FXML private TextField txtPrecio;     
     @FXML private ComboBox<String> cbTipo; 
     @FXML private Button btnGuardar;     
+    
+    @FXML private Button btnSubirImagen;
+    @FXML private Label lblRutaImagen;
+    private String rutaImagenSeleccionada = null;
 
     // variables de control interno
     private Producto producto;       
@@ -43,7 +51,8 @@ public class FormularioProductoController {
      * Si le pasamos un producto que ya existe, el formulario se "transforma":
      * cambia el título, el texto del botón y rellena todos los campos con la 
      * información actual para que solo tengamos que modificar lo necesario.
-     * * @param p El producto seleccionado de la tabla principal.
+     * 
+     * @param p El producto seleccionado de la tabla principal.
      */
     public void setProducto(Producto p) {
         this.producto = p;
@@ -57,6 +66,10 @@ public class FormularioProductoController {
             txtDescripcion.setText(p.getDescripcion());
             txtPrecio.setText(String.valueOf(p.getPrecio()));
             cbTipo.setValue(p.getTipo());
+            if (p.getImagen() != null && !p.getImagen().isEmpty()) {
+                rutaImagenSeleccionada = p.getImagen();
+                lblRutaImagen.setText("Imagen ya cargada");
+            }
         }
     }
 
@@ -76,15 +89,77 @@ public class FormularioProductoController {
                     Double.parseDouble(txtPrecio.getText()),
                     txtDescripcion.getText()
                 );
+                producto.setImagen(rutaImagenSeleccionada);
+                int idGenerado = com.mycompany.restaurante.DAO.ProductoDAO.insertar(producto);
+                
+                if (idGenerado != -1) {
+                    producto.setId(idGenerado); 
+                    System.out.println("Producto guardado exitosamente en BD con ID: " + idGenerado);
+                } else {
+                    System.err.println("Error al intentar guardar el producto en la BD.");
+                }
             } else {
                 // Caso B: Solo actualizamos la información del producto que ya teníamos
                 producto.setNombre(txtNombre.getText());
                 producto.setDescripcion(txtDescripcion.getText());
                 producto.setPrecio(Double.parseDouble(txtPrecio.getText()));
                 producto.setTipo(cbTipo.getValue());
+                producto.setImagen(rutaImagenSeleccionada);
+                
+                boolean exito = com.mycompany.restaurante.DAO.ProductoDAO.actualizar(producto);
+                
+                if (exito) {
+                    System.out.println("Producto actualizado exitosamente en BD.");
+                } else {
+                    System.err.println("Error al intentar actualizar el producto en la BD.");
+                }
             }
             guardadoExitoso = true;
             cerrarVentana();
+        }
+    }
+    
+    /**
+     * Abre un cuadro de diálogo del sistema para buscar y seleccionar un archivo de imagen.
+     * Configura filtros de extensión para admitir solo formatos (.png, .jpg, .jpeg) e 
+     * intenta abrir directamente la carpeta de imágenes del proyecto para agilizar el proceso.
+     */
+    @FXML
+    private void handleSeleccionarImagen() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Seleccionar imagen del producto");
+
+        // --- RUTA DINÁMICA DE RECURSOS ---
+        try {
+            // Buscamos la carpeta 'img' dentro del classpath (src/main/resources/img)
+            java.net.URL resourceUrl = getClass().getClassLoader().getResource("img");
+
+            if (resourceUrl != null) {
+                // Convertimos la URL del recurso a un archivo físico en el disco
+                File directorioInicial = new File(resourceUrl.toURI());
+
+                // Verificamos que exista y sea un directorio antes de asignarlo
+                if (directorioInicial.exists() && directorioInicial.isDirectory()) {
+                    fileChooser.setInitialDirectory(directorioInicial);
+                }
+            } else {
+                System.out.println("Advertencia: No se encontró la carpeta 'img' en los recursos del proyecto.");
+            }
+        } catch (Exception e) {
+            // Captura cualquier problema al convertir la URL a URI (por espacios o caracteres especiales)
+            System.out.println("No se pudo establecer el directorio inicial dinámico: " + e.getMessage());
+        }
+        // ---------------------------------
+
+        fileChooser.getExtensionFilters().addAll(
+            new FileChooser.ExtensionFilter("Imágenes", "*.png", "*.jpg", "*.jpeg")
+        );
+
+        File file = fileChooser.showOpenDialog(btnSubirImagen.getScene().getWindow());
+
+        if (file != null) {
+            rutaImagenSeleccionada = file.toURI().toString();
+            lblRutaImagen.setText(file.getName());
         }
     }
 

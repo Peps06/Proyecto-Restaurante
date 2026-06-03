@@ -2,6 +2,7 @@ package com.mycompany.restaurante.Controlador;
 
 import com.mycompany.restaurante.DAO.EmpleadoDAO;
 import com.mycompany.restaurante.Modelo.Empleado;
+
 import java.io.IOException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -17,24 +18,34 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 /**
- * 
- * @author Dana
+ * Controlador principal para la gestión de acceso al sistema Saveurs Paris.
+ * Se encarga de validar las credenciales de los usuarios y redirigirlos
+ * a sus respectivos paneles de trabajo según su rol asignado.
+ * * @author Dana
+ * @version 1.0
  */
 public class LoginController {
 
+    // CONTROLES DE LA INTERFAZ FXML
     @FXML private TextField txtUsuario;
-
     @FXML private PasswordField txtContraseña;
-
     @FXML private Button btnIniciarSesion;
 
-    // Lista para almacenar los empleados
-    private ObservableList<Empleado> datosMaestros = FXCollections.observableArrayList();
-
+    /**
+     * Valida las credenciales a través de la capa de acceso a datos de Empleados.
+     * * @param usr Nombre de usuario ingresado.
+     * @param pass Contraseña ingresada.
+     * @return El rol obtenido del empleado, o {@code null} si es inválido.
+     */
     private String autenticarUsuario(String usr, String pass) {
         return EmpleadoDAO.autenticar(usr, pass);
     }
     
+    /**
+     * Gestiona la acción del botón de inicio de sesión: valida campos vacíos,
+     * evalúa el rol de las credenciales y redirige a la vista correspondiente.
+     * * @param event Evento de acción del botón.
+     */
     @FXML
     private void handleIniciarSesion(ActionEvent event) {
         // Obtener lo que el usuario escribió
@@ -78,13 +89,20 @@ public class LoginController {
         }
     }
     
+    /**
+     * Redirige al menú de visualización general del restaurante.
+     * * @param event Evento de acción del botón de menú.
+     */
     @FXML
     private void handleMenu(ActionEvent event) {
         cargarPantalla("/com/mycompany/restaurante/fxml/Menu.fxml", "Panel de Mesero");
     }
 
     /**
-     * Método genérico para cambiar de pantalla
+     * Carga y despliega un nuevo archivo FXML sobre el Stage actual del sistema.
+     * Realiza una validación previa para mitigar rupturas visuales por rutas erróneas.
+     * * @param rutaFxml Ubicación del archivo de la vista dentro del proyecto.
+     * @param titulo Texto que se desplegará en la barra superior de la ventana.
      */
     private void cargarPantalla(String rutaFxml, String titulo) {
         try {
@@ -119,8 +137,12 @@ public class LoginController {
         }
     }
 
-    
-    
+    /**
+     * Despliega un cuadro de diálogo emergente estándar para interactuar con el usuario.
+     * * @param tipo Categoría o icono del aviso ({@code ERROR}, {@code WARNING}, {@code INFORMATION}).
+     * @param titulo Texto que aparecerá en la cabecera de la alerta.
+     * @param mensaje Contenido textual explícito del aviso.
+     */
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
         Alert alerta = new Alert(tipo);
         alerta.setTitle(titulo);

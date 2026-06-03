@@ -1,10 +1,5 @@
 package com.mycompany.restaurante.Controlador;
 
-/**
- *
- * @author Dana
- */
-
 import com.mycompany.restaurante.DAO.MesasDAO;
 import com.mycompany.restaurante.DAO.ReservacionDAO;
 import com.mycompany.restaurante.Modelo.Reservacion;
@@ -25,17 +20,28 @@ import java.util.Optional;
 import javafx.scene.Node;
 import javafx.stage.Modality;
 
+/**
+ * Controlador principal para la administración y control de reservaciones en Saveurs Paris.
+ * Se encarga de desplegar el historial de reservas en un TableView, realizar filtros reactivos,
+ * coordinar la creación y edición de registros mediante ventanas modales, y actualizar
+ * los estados operativos de las mesas físicas en consecuencia.
+ * * @author Dana
+ * @version 1.0
+ */
 public class GestionReservasController {
 
+    // BOTONES DEL MENÚ LATERAL
     @FXML private Button btnReservas;
     @FXML private Button btnMesas;
     @FXML private Button btnListaEsp;
     @FXML private Button btnCerrarSesion;
 
+    // COMPONENTES DE BÚSQUEDA Y FILTRADO
     @FXML private TextField txtBusqueda;
     @FXML private Button btnBuscar;
     @FXML private Button btnMostrarTabla;
 
+    // TABLA DE RESERVACIONES Y SUS COLUMNAS
     @FXML private TableView<Reservacion> tablaReservas;
     @FXML private TableColumn<Reservacion, Integer> colId;
     @FXML private TableColumn<Reservacion, String> colNombre;
@@ -46,11 +52,13 @@ public class GestionReservasController {
     @FXML private TableColumn<Reservacion, String> colEstado;
     @FXML private TableColumn<Reservacion, Integer> colMesa;
 
+    // BOTONES DE ACCIONES OPERATIVAS
     @FXML private Button btnAgregar;
     @FXML private Button btnEditar;
     @FXML private Button btnEliminar;
     @FXML private Button btnEstado; 
     
+    // CONSTANTES ESTILÍSTICAS DE LA INTERFAZ
     private static final String ESTILO_BTN_ACTIVO =
         "-fx-background-color: #2c3b62; -fx-text-fill: #d4c5b0; -fx-background-radius: 10 10 10 10;" +
         "-fx-border-radius: 10 10 10 10;";
@@ -58,10 +66,15 @@ public class GestionReservasController {
         "-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" +
         "-fx-border-radius: 10 10 10 10; -fx-text-fill: #d4c5b0;";
 
+    // LISTAS DE ALMACENAMIENTO DE DATOS EN MEMORIA
     private ObservableList<Reservacion> masterData = FXCollections.observableArrayList();
     private FilteredList<Reservacion> filteredData;
     private final MesasDAO mesasDAO = new MesasDAO();
 
+    /**
+     * Inicializa la interfaz configurando el mapeo de columnas del TableView, 
+     * resaltando visualmente el menú activo y cargando la información desde la base de datos.
+     */
     @FXML
     public void initialize() {
         // 1. Configurar las columnas de la tabla
@@ -80,6 +93,10 @@ public class GestionReservasController {
         cargarTabla();
     }
 
+    /**
+     * Altera los estilos visuales del menú lateral para destacar el submódulo de Reservaciones.
+     * @param event Evento de acción del botón.
+     */
     @FXML
     private void handleReserva(ActionEvent event) {
         btnMesas.setStyle(ESTILO_BTN_INACTIVO);
@@ -88,7 +105,8 @@ public class GestionReservasController {
     }
     
     /**
-     * Carga o recarga los datos desde la BD a la tabla.
+     * Recupera la colección completa de reservaciones a través de la capa DAO e inicializa 
+     * la envoltura FilteredList para habilitar búsquedas reactivas en la tabla.
      */
     private void cargarTabla() {
         masterData = ReservacionDAO.obtenerTodos(); 
@@ -96,6 +114,11 @@ public class GestionReservasController {
         tablaReservas.setItems(filteredData);
     }
     
+    /**
+     * Aplica un predicado dinámico sobre la colección de datos de la tabla evaluando 
+     * coincidencias parciales con el ID de la reservación o el nombre del cliente titular.
+     * @param event Evento lanzado por el trigger de búsqueda.
+     */
     @FXML
     private void manejarBusqueda(ActionEvent event) {
         String texto = txtBusqueda.getText().toLowerCase();
@@ -108,6 +131,10 @@ public class GestionReservasController {
         });
     }
 
+    /**
+     * Blanquea el campo de entrada de búsqueda y remueve los filtros activos sobre el TableView.
+     * @param event Evento de acción del botón.
+     */
     @FXML
     private void handleMostrarTabla(ActionEvent event) {
         // Resetea el filtro para mostrar todas las reservaciones
@@ -116,6 +143,11 @@ public class GestionReservasController {
         cargarTabla();
     }
 
+    /**
+     * Inicializa y despliega la ventana modal encargada del registro de nuevas reservaciones,
+     * persistiendo la información válida e insertándola en la vista actual.
+     * @param event Evento de acción originado por el botón correspondiente.
+     */
     @FXML
     private void manejarAgregar(ActionEvent event) {
         try {
@@ -152,6 +184,11 @@ public class GestionReservasController {
         }
     }
 
+    /**
+     * Recupera el elemento actualmente seleccionado del TableView e inyecta su información 
+     * en el formulario modal para habilitar el proceso de actualización de datos.
+     * @param event Evento de acción originado por el botón de edición.
+     */
     @FXML
     private void manejarEditar(ActionEvent event) {
         Reservacion seleccionada = tablaReservas.getSelectionModel().getSelectedItem();
@@ -204,6 +241,11 @@ public class GestionReservasController {
         }
     }
 
+    /**
+     * Evalúa las restricciones del registro de reservación seleccionado y procesa una confirmación 
+     * para cambiar permanentemente su estado a 'Cancelada', liberando la mesa asignada en la BD.
+     * @param event Evento de acción del botón de cancelación.
+     */
     @FXML
     private void manejarCancelar(ActionEvent event) {
         Reservacion seleccionada = tablaReservas.getSelectionModel().getSelectedItem();
@@ -241,6 +283,11 @@ public class GestionReservasController {
         }
     }
 
+    /**
+     * Modifica el estado de la reserva seleccionada a 'Completada' para registrar la presencia física del cliente,
+     * actualizando de manera síncrona el estado de la mesa asociada a 'Ocupada'.
+     * @param event Evento de acción del botón de llegada de clientes.
+     */
     @FXML
     private void manejarLlegada(ActionEvent event) {
         Reservacion seleccionada = tablaReservas.getSelectionModel().getSelectedItem();
@@ -266,6 +313,12 @@ public class GestionReservasController {
         }
     }
     
+    /**
+     * Centraliza el procedimiento de navegación y cambio de pantallas dentro de la aplicación.
+     * @param event Evento de procedencia que gatilla la navegación.
+     * @param fxmlPath Ubicación física del archivo `.fxml` de destino.
+     * @param titulo Texto base para desplegar en la barra del Stage principal.
+     */
     private void cambiarPantalla(ActionEvent event, String fxmlPath, String titulo) {
         try {
             Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
@@ -282,21 +335,28 @@ public class GestionReservasController {
         }
     }
     
+    /** @param event Evento de navegación hacia la vista de Gestión de Reservas. */
     @FXML
     private void handleReservas(ActionEvent event) {
         cambiarPantalla(event, "/com/mycompany/restaurante/fxml/GestionReservas.fxml", "Gestionar Reservas");
     }
 
+    /** @param event Evento de navegación hacia la vista de Disponibilidad de Mesas. */
     @FXML
     private void handleMesas(ActionEvent event) {
         cambiarPantalla(event, "/com/mycompany/restaurante/fxml/DisponibilidadRecepcionista.fxml", "Disponibilidad Mesas");
     }
 
+    /** @param event Evento de navegación hacia la vista de Lista de Espera. */
     @FXML
     private void handleListaEsp(ActionEvent event) {
         cambiarPantalla(event, "/com/mycompany/restaurante/fxml/ListaDeEspera.fxml", "Lista de espera");
     }
 
+    /**
+     * Invoca una alerta modal de confirmación para cerrar de forma segura la sesión del usuario.
+     * @param event Evento lanzado por el botón de salida.
+     */
     @FXML
     private void handleCerrarSesion(ActionEvent event) {
         // Crear la alerta de confirmación
@@ -323,6 +383,12 @@ public class GestionReservasController {
         }
     }
 
+    /**
+     * Construye y despliega un cuadro emergente modal en pantalla para alertar o notificar al usuario.
+     * @param tipo Nivel de severidad o icono representativo de la alerta ({@code WARNING}, {@code ERROR}, etc.).
+     * @param titulo Texto de encabezado para el marco del diálogo.
+     * @param mensaje Cuerpo descriptivo que detalla la advertencia o confirmación.
+     */
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
         Alert alerta = new Alert(tipo);
         alerta.setTitle(titulo);

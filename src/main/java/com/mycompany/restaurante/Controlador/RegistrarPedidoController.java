@@ -23,13 +23,17 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 /**
- *
+ * Controlador para la ventana de registro y adición de pedidos en Saveurs Paris.
+ * Administra el catálogo de productos disponibles y genera de manera interactiva
+ * controles de incremento y decremento por cada artículo, permitiendo aperturar nuevas
+ * comandas o anexar elementos a órdenes previamente existentes en la mesa.
+ * 
  * @author Dana, Citlaly
  * @version 3 (detalles de pedido)
  */
-
 public class RegistrarPedidoController {
 
+    // COMPONENTES DE LA INTERFAZ GRÁFICA INYECTADOS POR FXML
     @FXML private TextField txtBusqueda; 
     @FXML private TableView<Producto> tableMenu;
     @FXML private TableColumn<Producto, String> ColumnaNombre;
@@ -41,16 +45,22 @@ public class RegistrarPedidoController {
     @FXML private Button btnCerrarSesion;
     @FXML private Button btnCancelarPedido;
 
+    // COLECCIONES PARA EL MANEJO DE DATOS RECONFIGURABLES
     private ObservableList<Producto> masterData = FXCollections.observableArrayList();
     private FilteredList<Producto> filteredData;
     
     private int idEmpleadoReal;
     private int idMesaReal;
 
+    /**
+     * Inicializa el entorno del formulario: resetea los contadores de productos a cero.
+     * 
+     * vincula las propiedades del modelo con el TableView y construye las celdas dinámicas
+     */
     public void initialize() {
         // 1. Cargar datos
         for (Producto p : ProductoDAO.obtenerTodos()) {
-            p.setCantidadPedida(0);   // reinicia cantidad para el pedido
+            p.setCantidadPedida(0);  // reinicia cantidad para el pedido
             masterData.add(p);
         }
 
@@ -78,7 +88,7 @@ public class RegistrarPedidoController {
         
         tableMenu.setFixedCellSize(-1);
 
-        // 3. Columna Cantidad con botones
+        // 3. Columna Cantidad con botones (+ / -) generados dinámicamente
         ColumnaCantidad.setCellFactory(param -> new TableCell<>() {
             private final Button btnMenos = new Button("-");
             private final Button btnMas = new Button("+");
@@ -94,6 +104,7 @@ public class RegistrarPedidoController {
                                 + "-fx-text-fill: white;"
                                 + "-fx-cursor: hand;");
                 
+                // Evento para disminuir las unidades deseadas del platillo
                 btnMenos.setOnAction(e -> {
                     Producto p = getTableView().getItems().get(getIndex());
                     int actual = p.getCantidadPedida();
@@ -103,6 +114,7 @@ public class RegistrarPedidoController {
                     }
                 });
 
+                // Evento para aumentar las unidades deseadas del platillo
                 btnMas.setOnAction(e -> {
                     Producto p = getTableView().getItems().get(getIndex());
                     int actual = p.getCantidadPedida();
@@ -129,7 +141,11 @@ public class RegistrarPedidoController {
         tableMenu.setItems(filteredData);
     }
     
-    // Metodo para recibir la mesa
+    /**
+     * Inyecta el identificador físico de la mesa que solicita o modifica la comanda.
+     * 
+     * @param numMesa Número correlativo de la mesa bajo atención.
+     */
     public void setMesaSeleccionada(int numMesa) {
         this.idMesaReal = numMesa;
         System.out.println("Mesa seleccionada en el controlador de pedidos: "
@@ -138,6 +154,9 @@ public class RegistrarPedidoController {
 
     // --- MÉTODOS DE ACCIÓN ---
 
+    /**
+     * Aplica restricciones de coincidencia parcial sobre los nombres de platillo del menú.
+     */
     @FXML
     private void handleBuscar() {
         String texto = txtBusqueda.getText().toLowerCase();
@@ -147,12 +166,21 @@ public class RegistrarPedidoController {
         txtBusqueda.clear();
     }
     
+    /**
+     * Remueve los criterios de búsqueda activos y restaura el listado completo del menú.
+     */
     @FXML
     private void handleMostrarTabla(){
         filteredData.setPredicate(p -> true);
         txtBusqueda.clear();
     }
 
+    /**
+     * Procesa la confirmación de la comanda: valida la existencia de artículos
+     * construye un desglose textual.
+     * informativo y bifurca el flujo para insertar una nueva orden o actualizar
+     * una preexistente.
+     */
     @FXML
     private void handleConfirmarPedido() {
         boolean hayProductos = false;
@@ -189,14 +217,18 @@ public class RegistrarPedidoController {
         if (result.isPresent() && result.get() == ButtonType.OK) {
             
             // Verificar si la mesa ya cuenta con una orden activa / abierta
-            int idOrdenExistente = com.mycompany.restaurante.DAO.PedidoDAO.obtenerOrdenAbiertaPorMesa(idMesaReal);
+            int idOrdenExistente =
+                com.mycompany.restaurante.DAO.PedidoDAO.obtenerOrdenAbiertaPorMesa(
+                        idMesaReal);
             
             boolean exito;
             int idParaMostrar;
-
+            
             if (idOrdenExistente > 0) {
                 // CAMINO A: La mesa ya tiene orden, añadimos los nuevos platillos al ID existente
-                exito = com.mycompany.restaurante.DAO.PedidoDAO.añadirPlatillosAOrden(idOrdenExistente, masterData);
+                exito =
+                    com.mycompany.restaurante.DAO.PedidoDAO.añadirPlatillosAOrden(
+                            idOrdenExistente, masterData);
                 idParaMostrar = idOrdenExistente;
             } else {
                 // CAMINO B: Mesa vacía/libre, se registra una orden completa desde cero
@@ -246,11 +278,23 @@ public class RegistrarPedidoController {
         cerrarVentana();
     }
     
+    /**
+     * Cancela la toma de orden actual interrumpiendo el flujo sin guardar
+     * y cierra el modal.
+     * 
+     * @param event Evento de acción del botón Cancelar.
+     */
     @FXML
     private void handleCancelarPedido(ActionEvent event){
         cerrarVentana();
     }
 
+    /**
+     * Valida mediante diálogo de confirmación el cierre de sesión,
+     * redirigiendo al Login en caso afirmativo.
+     * 
+     * @param event Evento lanzado por el botón de cierre de sesión.
+     */
     @FXML
     private void handleCerrarSesion(ActionEvent event) {
         // Crear la alerta de confirmación
@@ -279,6 +323,9 @@ public class RegistrarPedidoController {
         }
     }
     
+    /**
+     * Recupera el contenedor principal (Stage) de la escena actual para finalizar su ejecución.
+     */
     private void cerrarVentana() {
         Stage stage = (Stage) btnCancelarPedido.getScene().getWindow();
         stage.close();
