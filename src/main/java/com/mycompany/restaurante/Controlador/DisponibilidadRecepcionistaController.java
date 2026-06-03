@@ -1,6 +1,7 @@
 package com.mycompany.restaurante.Controlador;
 
 import com.mycompany.restaurante.DAO.MesasDAO;
+import com.mycompany.restaurante.DAO.ReservacionDAO;
 import com.mycompany.restaurante.Modelo.Mesa;
 
 import java.io.IOException;
@@ -108,7 +109,14 @@ public class DisponibilidadRecepcionistaController implements Initializable {
             switch (mesa.getEstado()) {
                 case "Libre" -> botones[idx].setStyle(ESTILO_MESA_LIBRE);
                 case "Ocupada" -> botones[idx].setStyle(ESTILO_MESA_OCUPADA);
-                case "Reservada" -> botones[idx].setStyle(ESTILO_MESA_RESERVADA);
+                case "Reservada" -> {
+                    boolean esProxima = ReservacionDAO.tieneReservaProxima(mesa.getIdMesa());
+                    if (esProxima) {
+                        botones[idx].setStyle(ESTILO_MESA_RESERVADA); // Amarillo: reserva próxima
+                    } else {
+                        botones[idx].setStyle(ESTILO_MESA_LIBRE);     // Azul: reserva lejana, mesa disponible
+                    }
+                }
                 default -> botones[idx].setStyle(ESTILO_MESA_LIBRE);
             }
         }
@@ -146,10 +154,21 @@ public class DisponibilidadRecepcionistaController implements Initializable {
     @FXML
     private void manejarClicMesa(ActionEvent event) {
         Button btnClickeado = (Button) event.getSource();
-        int numMesa = Integer.parseInt(btnClickeado.getText());
-        String estiloActual = btnClickeado.getStyle();
 
-        if (estiloActual.equals(ESTILO_MESA_LIBRE)) {
+        // Obtener número de mesa desde el fx:id
+        String idBoton = btnClickeado.getId();
+        int numMesa = Integer.parseInt(idBoton.replace("btnMesa", ""));
+
+        // Consultar estado real en BD (más confiable que leer el estilo CSS)
+        Mesa mesa = mesasDAO.obtenerMesaPorId(numMesa);
+
+        if (mesa == null) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Error", 
+                "No se encontró la mesa " + numMesa);
+            return;
+        }
+
+        if ("Libre".equals(mesa.getEstado())) {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource(
                         "/com/mycompany/restaurante/fxml/AsignarMesa.fxml"));
@@ -163,19 +182,18 @@ public class DisponibilidadRecepcionistaController implements Initializable {
                 stage.initModality(Modality.APPLICATION_MODAL);
                 stage.setScene(new Scene(root));
                 stage.showAndWait();
-                
+
                 cargarEstadoMesas();
 
             } catch (IOException e) {
-                mostrarAlerta(Alert.AlertType.ERROR,
-                        "Error",
-                        "Falta crear AsignarMesa.fxml");
+                mostrarAlerta(Alert.AlertType.ERROR, "Error",
+                        "No se pudo abrir la ventana de asignación.");
                 e.printStackTrace();
             }
         } else {
             mostrarAlerta(Alert.AlertType.INFORMATION,
                     "Mesa no disponible",
-                    "La mesa " + numMesa + " ya está ocupada o reservada.");
+                    "La mesa " + numMesa + " ya está " + mesa.getEstado().toLowerCase() + ".");
         }
     }
 

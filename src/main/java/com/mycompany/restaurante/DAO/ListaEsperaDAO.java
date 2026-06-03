@@ -115,4 +115,24 @@ public class ListaEsperaDAO {
             return false;
         }
     }
+    
+    /**
+    * Cancela automáticamente todos los clientes en espera de días anteriores al actual.
+    * Se llama al iniciar la pantalla de lista de espera para limpiar el día anterior.
+    */
+   public static void limpiarEsperasDiasAnteriores() {
+       String sql = "UPDATE lista_espera SET estado = 'Cancelado' "
+                  + "WHERE estado = 'Esperando' "
+                  + "AND DATE(horaLlegada) < CURDATE()";
+
+       try (Connection con = ConexionDB.getConexion();
+            PreparedStatement ps = con.prepareStatement(sql)) {
+           int filas = ps.executeUpdate();
+           if (filas > 0) {
+               System.out.println("ListaEsperaDAO: " + filas + " esperas del día anterior limpiadas.");
+           }
+       } catch (SQLException e) {
+           System.err.println("ListaEsperaDAO.limpiarEsperasDiasAnteriores(): " + e.getMessage());
+       }
+   }
 }

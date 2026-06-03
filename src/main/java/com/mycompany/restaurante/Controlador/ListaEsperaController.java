@@ -66,8 +66,9 @@ public class ListaEsperaController {
         colTelefono.setCellValueFactory(new PropertyValueFactory<>("telefono"));
         colNumPersonas.setCellValueFactory(new PropertyValueFactory<>("numeroPersonas"));
         colEstado.setCellValueFactory(new PropertyValueFactory<>("estado"));
+        ListaEsperaDAO.limpiarEsperasDiasAnteriores();
 
-        // Configuración especial para que la hora se vea elegante (Ej: 14:30 PM)
+        // Configuración especial para que la hora se vea elegante 
         colLlegada.setCellValueFactory(cellData -> {
             LocalDateTime fechaHora = cellData.getValue().getHoraLlegada();
             String horaFormateada = fechaHora != null ? fechaHora.format(DateTimeFormatter.ofPattern("hh:mm a")) : "";
@@ -168,7 +169,35 @@ public class ListaEsperaController {
      */
     @FXML
     private void manejarCancelar(ActionEvent event) {
-        System.out.println("Botón Cancelar presionado");
+        ClienteEspera seleccionada = tablaListaEspera.getSelectionModel().getSelectedItem();
+
+        if (seleccionada == null) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Sin selección", "Por favor, selecciona cliente en espera para cancelar.");
+            return;
+        }
+
+        String estadoActual = seleccionada.getEstado();
+        if (estadoActual.equalsIgnoreCase("Cancelado")) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Acción no permitida", 
+                "No puedes cancelar a un cliente en espera  que ya se encuentra cancelada ");
+            return; 
+        }
+
+        // 2. Configurar la alerta de confirmación
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Confirmar Cancelación");
+        confirm.setHeaderText("¿Deseas cancelar la espera del cliente?");
+
+        Optional<ButtonType> result = confirm.showAndWait();
+
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            if (ListaEsperaDAO.actualizarEstado(seleccionada.getIdEspera(), "Cancelado")) {
+                cargarDatosTabla();
+                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito", "La espera ha sido cancelada correctamente.");
+            } else {
+                mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo actualizar el estado del cliente en la base de datos.");
+            }
+        }
     }
 
     /**

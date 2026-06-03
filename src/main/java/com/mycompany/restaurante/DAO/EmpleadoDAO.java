@@ -188,4 +188,37 @@ public static ObservableList<Empleado> obtenerTodos() {
         }
         return false;
     }
+    
+    /**
+     * Autentica al empleado y devuelve el objeto completo con su ID y puesto.
+     * Devuelve null si las credenciales son incorrectas.
+     */
+    public static Empleado autenticarConId(String nombre, String password) {
+        String sql = "SELECT idEmpleado, nombre, puesto FROM empleados "
+                   + "WHERE LOWER(nombre) LIKE ? AND password = ?";
+
+        try (Connection con = ConexionDB.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, nombre.toLowerCase().trim() + "%");
+            ps.setString(2, password);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new Empleado(
+                        rs.getInt("idEmpleado"),
+                        rs.getString("nombre"),
+                        password,
+                        rs.getString("puesto"),
+                        "Ausente",
+                        ""
+                    );
+                }
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error en EmpleadoDAO.autenticarConId(): " + e.getMessage());
+        }
+        return null;
+}
 }

@@ -358,8 +358,7 @@ public class PedidoDAO {
      */
     public static List<OrdenCocina> obtenerOrdenesEnEspera() {
         List<OrdenCocina> resultado = new ArrayList<>();
-
-        // Filtramos tanto la orden (Abierta) como los detalles (En espera)
+        
         String sql = "SELECT o.idOrden, o.idMesa, o.detalles, o.preparacion, "
                    + "       p.nombre AS nombreProducto, "
                    + "       d.cantidad AS cantidadProducto, "
@@ -369,7 +368,7 @@ public class PedidoDAO {
                    + "JOIN productos p ON p.idProductos = d.idProducto "
                    + "WHERE o.estado = 'Abierta' "
                    + "  AND d.preparacion = 'En espera' "
-                   + "ORDER BY o.idOrden ASC, p.nombre ASC";
+                   + "ORDER BY o.fechaHora ASC, p.nombre ASC";
 
         Map<Integer, OrdenCocina> mapa = new LinkedHashMap<>();
 
@@ -544,10 +543,19 @@ public class PedidoDAO {
                 "PedidoDAO: Error al sincronizar todas las órdenes.", e);
         }
     }
-
-    public static int contarOrdenesAbiertasPorEmpleado(int idEmpleadoSesion) {
-        List<OrdenCocina> ordenesEnEspera = obtenerOrdenesEnEspera();
-        int ordenesAbiertas = ordenesEnEspera.size();
-        return ordenesAbiertas;
+    
+    public static int contarOrdenesAbiertasPorEmpleado(int idEmpleado) {
+        String sql = "SELECT COUNT(*) FROM ordenes " +
+                     "WHERE estado = 'Abierta' AND idEmpleado = ?";
+        try (Connection con = ConexionDB.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, idEmpleado);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "Error contando órdenes abiertas del empleado " + idEmpleado, e);
+        }
+        return 0;
     }
 }

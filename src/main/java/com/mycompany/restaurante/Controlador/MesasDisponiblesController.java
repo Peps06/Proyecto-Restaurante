@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -29,6 +31,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 /**
  * Controlador de la pantalla principal de gestión de mesas para el Mesero.
@@ -76,6 +79,7 @@ public class MesasDisponiblesController implements Initializable {
     private int idOrdenActual = 0;
     private int mesaParaPedido = 0;
     private int idEmpleadoSesion;
+    private Timeline pollingTimeline;
     
     private static final String ESTILO_MESA_LIBRE =
         "-fx-background-color: #627096;" +
@@ -132,12 +136,18 @@ public class MesasDisponiblesController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         btnDisponibilidad.setStyle(ESTILO_BTN_ACTIVO);
-        
         colProducto.setCellValueFactory(new PropertyValueFactory<>("producto"));
         colCantidad.setCellValueFactory(new PropertyValueFactory<>("cantidad"));
-        
         vincularBotonesMesa();
         cargarEstadoMesas();
+
+        // Polling cada 10 segundos para simular tiempo real
+        pollingTimeline = new Timeline(new KeyFrame(
+            Duration.seconds(10),
+            e -> cargarEstadoMesas()
+        ));
+        pollingTimeline.setCycleCount(Timeline.INDEFINITE);
+        pollingTimeline.play();
     }
 
     /**
@@ -279,46 +289,41 @@ public class MesasDisponiblesController implements Initializable {
      */
     @FXML
     private void handleNuevoPlato(ActionEvent event) {
-        LOG.info("handleNuevoPlato activado.");
- 
         if (this.mesaParaPedido == 0) {
-            mostrarAlerta(Alert.AlertType.WARNING,
-                "Seleccione una mesa",
-                "Por favor, haga clic sobre una mesa antes de "
-                + "intentar añadir un platillo.");
+            mostrarAlerta(Alert.AlertType.WARNING, "Seleccione una mesa",
+                "Por favor, haga clic sobre una mesa antes de intentar añadir un platillo.");
             return;
         }
- 
+
+        // Verificar estado de la mesa
+        Mesa mesa = mesasDAO.obtenerMesaPorId(this.mesaParaPedido);
+        if (mesa == null || !"Ocupada".equals(mesa.getEstado())) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Mesa no activa",
+                "Solo se pueden añadir platillos a mesas activas (Ocupadas).");
+            return;
+        }
+
         int idOrden = PedidoDAO.obtenerOrdenAbiertaPorMesa(this.mesaParaPedido);
-        
-        if (idOrden > 0) {
-        String estado = PedidoDAO.obtenerEstadoOrden(idOrden); // método faltante
+
+        // Verifca que ya halla una orden
+        if (idOrden == 0) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Sin pedido registrado",
+                "Esta mesa no tiene un pedido registrado aún. " +
+                "Registre el pedido inicial antes de añadir platillos.");
+            return;
+        }
+
+        String estado = PedidoDAO.obtenerEstadoOrden(idOrden);
         if (!"Abierta".equals(estado)) {
-            mostrarAlerta(Alert.AlertType.WARNING,
-                "No disponible",
+            mostrarAlerta(Alert.AlertType.WARNING, "No disponible",
                 "Esta mesa ya fue cobrada. No se pueden añadir más platillos.");
             return;
         }
-    }
-        
-        if (idOrden == 0) {
-            LOG.info("Abriendo toma de pedido para nueva orden en Mesa "
-                   + this.mesaParaPedido);
-        } else {
-            LOG.info("Añadiendo platillos a la Orden #" + idOrden
-                   + " de la Mesa " + this.mesaParaPedido);
-        }
-        
-        
- 
+
         navegarARealizarPedido(this.mesaParaPedido);
- 
-        // Refrescamos la tabla si ya había una orden activa
-        if (idOrden > 0) {
-            ObservableList<OrdenItem> ordenActualizada =
-                    PedidoDAO.obtenerDetalleOrden(idOrden);
-            tablaVerPedido.setItems(ordenActualizada);
-        }
+
+        ObservableList<OrdenItem> ordenActualizada = PedidoDAO.obtenerDetalleOrden(idOrden);
+        tablaVerPedido.setItems(ordenActualizada);
     }
     
     /**
@@ -496,8 +501,27 @@ public class MesasDisponiblesController implements Initializable {
      */
     @FXML
     private void handleRealizarPedido(ActionEvent event) {
-        cambiarPantalla("/com/mycompany/restaurante/fxml/RegistrarPedidoPantalla.fxml",
-                 "Realizar Pedido - Saveurs Paris", event);
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                "/com/mycompany/restaurante/fxml/RegistrarPedidoPantalla.fxml"
+            ));
+            Parent root = loader.load();
+
+            RegistrarPedidoController ctrl = loader.getController();
+            ctrl.setIdEmpleadoReal(idEmpleadoSesion); // inyectar ID
+            // La mesa se selecciona dentro de la pantalla si viene del menú lateral
+            // así que no seteamos mesa aquí
+
+            Stage stageActual = (Stage) ((javafx.scene.Node) event.getSource())
+                    .getScene().getWindow();
+            stageActual.setScene(new Scene(root));
+            stageActual.setTitle("Realizar Pedido - Saveurs Paris");
+            stageActual.show();
+
+        } catch (IOException e) {
+            LOG.severe("[MesasDisponiblesController] Error cargando RegistrarPedidoPantalla");
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -519,20 +543,21 @@ public class MesasDisponiblesController implements Initializable {
      */
     @FXML
     private void handleCerrarSesion(ActionEvent event) {
-        
-        // En handleCerrarSesion, antes del Alert de confirmación:
         int ordenesActivas = PedidoDAO.contarOrdenesAbiertasPorEmpleado(idEmpleadoSesion);
+
         String mensaje = ordenesActivas > 0
-            ? "Tienes " + ordenesActivas + " pedido(s) activo(s). ¿Deseas cerrar sesión de todas formas?"
+            ? "Tienes " + ordenesActivas + " pedido(s) activo(s) en tus mesas.\n" +
+              "¿Deseas cerrar sesión de todas formas?"
             : "¿Estás seguro de que deseas salir del sistema?";
+
         Alert alerta = new Alert(Alert.AlertType.CONFIRMATION);
         alerta.setTitle("Confirmar Salida");
         alerta.setHeaderText("Cerrar Sesión");
-        alerta.setContentText("¿Estás seguro de que deseas salir del sistema?");
+        alerta.setContentText(mensaje);
 
         Optional<ButtonType> resultado = alerta.showAndWait();
-
         if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
+            if (pollingTimeline != null) pollingTimeline.stop();
             try {
                 Parent root = FXMLLoader.load(getClass().getResource(
                     "/com/mycompany/restaurante/fxml/LoginPantalla.fxml"));
@@ -570,6 +595,7 @@ public class MesasDisponiblesController implements Initializable {
 
             RegistrarPedidoController ctrl = loader.getController();
             ctrl.setMesaSeleccionada(numMesa);
+            ctrl.setIdEmpleadoReal(idEmpleadoSesion); // <-- línea nueva
 
             Stage nuevoStage = new Stage();
             nuevoStage.setScene(new Scene(root));
@@ -580,6 +606,7 @@ public class MesasDisponiblesController implements Initializable {
             nuevoStage.showAndWait();
 
             cargarEstadoMesas();
+
         } catch (IOException e) {
             LOG.severe("[MesasDisponiblesController] No se pudo cargar RegistrarPedidoPantalla: "
                        + e.getMessage());

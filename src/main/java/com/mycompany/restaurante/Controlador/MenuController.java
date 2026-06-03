@@ -18,6 +18,8 @@ import javafx.geometry.Pos;
 import javafx.geometry.Insets;
 import java.io.IOException;
 import java.util.List;
+import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
 
 /**
  * Controlador principal para la visualización del catálogo dinámico de Saveurs Paris.
@@ -33,6 +35,18 @@ public class MenuController {
     @FXML private GridPane gridMenu;
     @FXML private ImageView idvolver;
     @FXML private Label cantidadPedidos;
+    @FXML private Button btnTodos;
+    @FXML private Button btnEntradas;
+    @FXML private Button btnPlatillos;
+    @FXML private Button btnPostres;
+    @FXML private Button btnBebidas;
+    
+    private static final String ESTILO_BTN_ACTIVO =
+        "-fx-background-color: #2c3b62; -fx-text-fill: #d4c5b0; -fx-background-radius: 10 10 10 10;" +
+        "-fx-border-radius: 10 10 10 10;";
+    private static final String ESTILO_BTN_INACTIVO =
+        "-fx-background-color: #8b1a1a; -fx-background-radius: 10 10 10 10;" +
+        "-fx-border-radius: 10 10 10 10; -fx-text-fill: #d4c5b0;";
 
     /**
      * Inicializa el entorno de la vista ejecutando la construcción 
@@ -40,16 +54,24 @@ public class MenuController {
      */
     @FXML
     public void initialize() {
-        cargarMenuDinamico();
+        btnTodos.setUserData("Todos");
+        btnEntradas.setUserData("Entrada");     
+        btnPlatillos.setUserData("Plato fuerte");  
+        btnPostres.setUserData("Postre");      
+        btnBebidas.setUserData("Bebida");       
+
+        cargarMenuDinamico("Todos");
     }
 
     /**
      * Recupera todos los productos activos de la BD y los renderiza de forma individual,
      * programando la matriz de coordenadas con una distribución máxima de 4 columnas por fila.
      */
-    private void cargarMenuDinamico() {
-        List<Producto> productos = ProductoDAO.obtenerTodos();
-        
+    private void cargarMenuDinamico(String categoria) {
+        gridMenu.getChildren().clear(); 
+
+        List<Producto> productos = ProductoDAO.obtenerPorTipo(categoria);
+
         int columna = 0;
         int fila = 0;
 
@@ -64,11 +86,11 @@ public class MenuController {
             Label lblNombre = new Label(p.getNombre());
             lblNombre.setStyle("-fx-text-fill: #f5efe6; -fx-font-family: 'Candara'; -fx-font-size: 18px;");
 
-            // Contenedor de la imagen (Marco Polaroid)
+            // Contenedor de la imagen 
             VBox marcoImagen = new VBox();
             marcoImagen.setAlignment(Pos.CENTER);
             marcoImagen.setPrefSize(156, 148);
-            marcoImagen.getStyleClass().add("marco-polaroid"); // Hoja de estilos CSS adjunta
+            marcoImagen.getStyleClass().add("marco-polaroid"); 
             
             ImageView imgView = new ImageView();
             imgView.setFitHeight(130);
@@ -80,8 +102,7 @@ public class MenuController {
                 if (p.getImagen() != null && !p.getImagen().isEmpty()) {
                     imgView.setImage(new Image(p.getImagen()));
                 } else {
-                    // Pon una imagen de "No disponible" en tu carpeta img
-                    imgView.setImage(new Image(getClass().getResourceAsStream("/img/platoVacio.jpg")));
+                    imgView.setImage(new Image(getClass().getResourceAsStream("/img/PlatoVacio.jpg")));
                 }
             } catch (Exception e) {
                 System.out.println("No se pudo cargar la imagen: " + p.getImagen());
@@ -100,19 +121,31 @@ public class MenuController {
             lblDesc.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
             lblDesc.setMaxWidth(230);
 
-            // Armamos la tarjeta estructural con todos sus nodos hijos
             tarjeta.getChildren().addAll(lblNombre, marcoImagen, lblPrecio, lblDesc);
 
-            // Añadimos al GridPane en la coordenada correspondiente
             gridMenu.add(tarjeta, columna, fila);
 
-            // Control de columnas (4 columnas máximo por fila)
             columna++;
             if (columna == 4) {
                 columna = 0;
                 fila++;
             }
         }
+    }
+    
+    // 3. Agrega el handler de los botones
+    @FXML
+    private void handleFiltroCategoria(ActionEvent event) {
+        Button clickeado = (Button) event.getSource();
+        String categoria = (String) clickeado.getUserData(); // Usa el texto del botón como filtro
+
+        // Marcar el botón activo y los demás inactivos
+        for (Button btn : new Button[]{btnTodos, btnEntradas, btnPlatillos, btnPostres, btnBebidas}) {
+            btn.setStyle(ESTILO_BTN_INACTIVO);
+        }
+        clickeado.setStyle(ESTILO_BTN_ACTIVO);
+
+        cargarMenuDinamico(categoria);
     }
 
     /**

@@ -54,6 +54,46 @@ public class ProductoDAO {
         }
         return lista;
     }
+    
+    /**
+    * Devuelve los productos filtrados por tipo/categoría.
+    * @param tipo La categoría a filtrar .
+    * Si es null o vacío, devuelve todos.
+    * @return Lista observable con los productos del tipo solicitado.
+    */
+    public static ObservableList<Producto> obtenerPorTipo(String tipo) {
+        ObservableList<Producto> lista = FXCollections.observableArrayList();
+
+        String sql = (tipo == null || tipo.equals("Todos"))
+            ? "SELECT idProductos, nombre, tipo, precio, descripcion, imagen FROM productos"
+            : "SELECT idProductos, nombre, tipo, precio, descripcion, imagen FROM productos WHERE tipo = ?";
+
+        try (Connection con = ConexionDB.getConexion();
+            PreparedStatement ps = con.prepareStatement(sql)) {
+
+            if (tipo != null && !tipo.equals("Todos")) {
+                ps.setString(1, tipo);
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Producto p = new Producto(
+                        rs.getString("nombre"),
+                        rs.getString("tipo"),
+                        rs.getDouble("precio"),
+                        rs.getString("descripcion")
+                    );
+                       p.setImagen(rs.getString("imagen"));
+                       p.setId(rs.getInt("idProductos"));
+                       p.setCantidadPedida(0);
+                       lista.add(p);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("ProductoDAO.obtenerPorTipo(): " + e.getMessage());
+        }
+        return lista;
+    }
 
     /**
      * Registra un nuevo producto en la base de datos.
