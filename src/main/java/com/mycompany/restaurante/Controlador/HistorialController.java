@@ -1,19 +1,8 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.restaurante.Controlador;
-
-/**
- *
- * @author mrubi
- */
-
 
 import com.mycompany.restaurante.DAO.HistorialDAO;
 import com.mycompany.restaurante.Modelo.ConexionDB;
 import com.mycompany.restaurante.Modelo.HistorialOrden;
-import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -38,7 +27,6 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.Stage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -56,6 +44,12 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+/**
+ *
+ * @author Rubi
+ * @version 1.0
+ */
 
 public class HistorialController implements Initializable {
 

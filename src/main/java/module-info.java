@@ -16,4 +16,5 @@ module com.mycompany.restaurante {
     exports com.mycompany.restaurante.Controlador;
     exports com.mycompany.restaurante.DAO;
     exports com.mycompany.restaurante.Modelo;
+    exports com.mycompany.restaurante.Util;
 }

@@ -7,6 +7,7 @@ import com.mycompany.restaurante.Modelo.ConexionDB;
 import com.mycompany.restaurante.Modelo.Mesa;
 import com.mycompany.restaurante.Modelo.OrdenItem;
 import com.mycompany.restaurante.Modelo.Pago;
+import com.mycompany.restaurante.Util.TicketPDF;
 
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -19,8 +20,10 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.FileChooser;
 
 import java.io.IOException;
+import java.io.File;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -31,6 +34,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.List;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
@@ -440,39 +445,62 @@ public class CobrarController implements Initializable {
      */
     private boolean registrarPagoEnBD() {
         Pago pago;
- 
+
         if ("EFECTIVO".equals(metodoPago)) {
             double montoRecibido = spinnerMonto.getValue();
             pago = Pago.efectivo(idOrdenActual, idEmpleadoActual,
                                   total, montoRecibido);
         } else {
-            // TARJETA — se usa "Debito" como valor por defecto
             pago = Pago.tarjeta(idOrdenActual, idEmpleadoActual,
                                  total, "Debito");
         }
- 
+
         int idPagoGenerado = PagoDAO.registrarPago(pago, mesaSeleccionada);
- 
+
         if (idPagoGenerado != -1) {
+
             mostrarAlerta(Alert.AlertType.INFORMATION,
                 "Pago registrado",
                 "Pago #" + idPagoGenerado + " registrado correctamente.\n"
                 + "Mesa " + mesaSeleccionada + " queda cobrada.\n"
                 + "Orden #" + idOrdenActual + " cerrada.");
- 
-            // Refrescar interfaz tras el cobro exitoso
+
+            // Guardar valores ANTES de resetear
+            int idOrdenParaTicket   = idOrdenActual;
+            int mesaParaTicket      = mesaSeleccionada;
+
+            // Preguntar PDF
+            Alert preguntaPDF = new Alert(Alert.AlertType.CONFIRMATION);
+            preguntaPDF.setTitle("Generar Ticket");
+            preguntaPDF.setHeaderText("¿Desea guardar el ticket en PDF?");
+            preguntaPDF.setContentText(
+                "Se abrirá una ventana para que elija dónde guardar el comprobante.");
+
+            ButtonType btnSi = new ButtonType("Sí, guardar PDF");
+            ButtonType btnNo = new ButtonType("No, omitir",
+                    ButtonBar.ButtonData.CANCEL_CLOSE);
+            preguntaPDF.getButtonTypes().setAll(btnSi, btnNo);
+
+            Optional<ButtonType> respPDF = preguntaPDF.showAndWait();
+
+            if (respPDF.isPresent() && respPDF.get() == btnSi) {
+                // Pasamos los valores guardados al método
+                generarTicketPDF(idPagoGenerado, idOrdenParaTicket, mesaParaTicket);
+            }
+
+            // Ahora sí reseteamos
             cargarEstadoMesas();
             mesaSeleccionada = 0;
-            idOrdenActual = 0;
+            idOrdenActual    = 0;
             limpiarInterfazOrden();
             labelMesa.setText("—");
-            return true;
- 
+            return true;  
+            
         } else {
             mostrarAlerta(Alert.AlertType.ERROR,
                 "Error al registrar pago",
                 "Ocurrió un error al guardar el pago en la base de datos.\n"
-                + "Intente nuevamente. Los datos del cobro se conservan.");
+                + "Intente nuevamente.");
             return false;
         }
     }
@@ -631,6 +659,82 @@ public class CobrarController implements Initializable {
             btnMesa9, btnMesa10, btnMesa11, btnMesa12
         };
     }
+    
+    /**
+    * Abre un FileChooser para que el cajero elija dónde guardar el ticket PDF.
+    *
+    * @param idPago ID del pago recién registrado
+    * @param idOrden ID de la orden cerrada
+    * @param numMesa Número de mesa cobrada
+    */
+   private void generarTicketPDF(int idPago, int idOrden, int numMesa) {
+
+       //  Diálogo para elegir ubicación 
+       FileChooser fileChooser = new FileChooser();
+       fileChooser.setTitle("Guardar Ticket PDF");
+       fileChooser.setInitialFileName(
+               "ticket_pago_" + idPago + "_mesa_" + numMesa + ".pdf");
+       fileChooser.getExtensionFilters().add(
+               new FileChooser.ExtensionFilter("PDF (*.pdf)", "*.pdf"));
+
+       // Carpeta inicial: Documentos del usuario
+       File carpetaInicial = new File(
+               System.getProperty("user.home") + "/Documents");
+       if (carpetaInicial.exists()) {
+           fileChooser.setInitialDirectory(carpetaInicial);
+       }
+
+       Stage stage = (Stage) btnRegistrarPago.getScene().getWindow();
+       File archivo = fileChooser.showSaveDialog(stage);
+
+       // Si el usuario canceló el diálogo no hacemos nada
+       if (archivo == null) return;
+
+       try {
+           //  Obtener ítems de la orden 
+           ObservableList<OrdenItem> itemsObservable =
+                   PedidoDAO.obtenerDetalleOrden(idOrden);
+
+           List<OrdenItem> items = new ArrayList<>(itemsObservable);
+
+           //  Datos de efectivo solo si el método fue efectivo 
+           Double efectivoVal = null;
+           Double cambioVal   = null;
+
+           if ("EFECTIVO".equals(metodoPago) && spinnerMonto.getValue() != null) {
+               efectivoVal = spinnerMonto.getValue();
+               cambioVal = Math.max(0.0, efectivoVal - total);
+           }
+
+           //  Generar el PDF 
+           TicketPDF.generar(
+                   archivo.getAbsolutePath(),
+                   idPago,
+                   numMesa,
+                   idOrden,
+                   items,
+                   subtotal,
+                   iva,
+                   total,
+                   metodoPago,
+                   efectivoVal,
+                   cambioVal
+           );
+
+           //  Confirmación de éxito 
+           mostrarAlerta(Alert.AlertType.INFORMATION,
+                   "Ticket guardado",
+                   "El ticket se guardó correctamente.\n\n"
+                   + "Ubicación:\n" + archivo.getAbsolutePath());
+
+       } catch (Exception e) {
+           e.printStackTrace();
+           mostrarAlerta(Alert.AlertType.ERROR,
+                   "Error al generar PDF",
+                   "No se pudo crear el archivo PDF.\n"
+                   + "Detalle: " + e.getMessage());
+       }
+   }
  
     /**
      * Despliega un cuadro de diálogo modal estándar para alertar al usuario.
