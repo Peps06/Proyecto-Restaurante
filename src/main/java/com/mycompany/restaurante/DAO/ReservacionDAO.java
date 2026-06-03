@@ -32,7 +32,7 @@ public class ReservacionDAO {
                            
         // 2. Consulta de todas las reservaciones
         String sqlSelect = "SELECT idReservacion, nombreCliente, telefono, fecha, hora, numeroPersonas, idMesa, estado "
-                         + "FROM reservaciones ORDER BY fecha DESC, hora DESC";
+                 + "FROM reservaciones ORDER BY fecha ASC, hora ASC";
 
         try (Connection con = ConexionDB.getConexion();
              PreparedStatement psCancel = con.prepareStatement(sqlCancelar);
@@ -181,4 +181,27 @@ public class ReservacionDAO {
         }
         return false; 
     }
+    
+    /**
+    * Verifica si una mesa tiene una reserva activa dentro de las próximas 3 horas.
+    * @param idMesa ID de la mesa a verificar.
+    * @return true si hay una reserva en ese rango de tiempo, false si no.
+    */
+   public static boolean tieneReservaProxima(int idMesa) {
+       String sql = "SELECT COUNT(*) FROM reservaciones "
+                  + "WHERE idMesa = ? "
+                  + "AND estado IN ('Pendiente', 'Confirmada') "
+                  + "AND TIMESTAMP(fecha, hora) BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 3 HOUR)";
+
+       try (Connection con = ConexionDB.getConexion();
+            PreparedStatement ps = con.prepareStatement(sql)) {
+           ps.setInt(1, idMesa);
+           try (ResultSet rs = ps.executeQuery()) {
+               if (rs.next()) return rs.getInt(1) > 0;
+           }
+       } catch (SQLException e) {
+           System.err.println("ReservacionDAO.tieneReservaProxima(): " + e.getMessage());
+       }
+       return false;
+   }
 }
