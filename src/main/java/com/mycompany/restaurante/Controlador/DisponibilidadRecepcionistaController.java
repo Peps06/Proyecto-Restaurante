@@ -1,6 +1,7 @@
 package com.mycompany.restaurante.Controlador;
 
 import com.mycompany.restaurante.DAO.MesasDAO;
+import com.mycompany.restaurante.DAO.ReservacionDAO;
 import com.mycompany.restaurante.Modelo.Mesa;
 
 import java.io.IOException;
@@ -108,7 +109,14 @@ public class DisponibilidadRecepcionistaController implements Initializable {
             switch (mesa.getEstado()) {
                 case "Libre" -> botones[idx].setStyle(ESTILO_MESA_LIBRE);
                 case "Ocupada" -> botones[idx].setStyle(ESTILO_MESA_OCUPADA);
-                case "Reservada" -> botones[idx].setStyle(ESTILO_MESA_RESERVADA);
+                case "Reservada" -> {
+                    boolean esProxima = ReservacionDAO.tieneReservaProxima(mesa.getIdMesa());
+                    if (esProxima) {
+                        botones[idx].setStyle(ESTILO_MESA_RESERVADA); // Amarillo: reserva próxima
+                    } else {
+                        botones[idx].setStyle(ESTILO_MESA_LIBRE);     // Azul: reserva lejana, mesa disponible
+                    }
+                }
                 default -> botones[idx].setStyle(ESTILO_MESA_LIBRE);
             }
         }

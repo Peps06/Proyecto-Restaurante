@@ -109,8 +109,11 @@ public class GestionReservasController {
      * la envoltura FilteredList para habilitar búsquedas reactivas en la tabla.
      */
     private void cargarTabla() {
-        masterData = ReservacionDAO.obtenerTodos(); 
-        filteredData = new FilteredList<>(masterData, p -> true);
+        masterData = ReservacionDAO.obtenerTodos();
+        LocalDate hoy = LocalDate.now();
+        filteredData = new FilteredList<>(masterData, reserva ->
+            !reserva.getFecha().isBefore(hoy)
+        );
         tablaReservas.setItems(filteredData);
     }
     
@@ -138,9 +141,10 @@ public class GestionReservasController {
     @FXML
     private void handleMostrarTabla(ActionEvent event) {
         // Resetea el filtro para mostrar todas las reservaciones
-        filteredData.setPredicate(p -> true);
+        LocalDate hoy = LocalDate.now();
+        // Al limpiar la búsqueda, mantener el filtro de fechas pasadas
+        filteredData.setPredicate(reserva -> !reserva.getFecha().isBefore(hoy));
         txtBusqueda.clear();
-        cargarTabla();
     }
 
     /**
